@@ -1,1 +1,39 @@
+name: Daily EthioJobs Pipeline
 
+# Runs every day at 06:00 UTC — an hour after the ReliefWeb pipeline, so the
+# two never contend for the runner if they're ever in the same repo.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}   # lets you also trigger it manually from the Actions tab
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r ethiojobs_pipeline/requirements.txt
+
+      - name: Install Playwright's Chromium
+        run: playwright install --with-deps chromium
+
+      - name: Run pipeline
+        working-directory: ethiojobs_pipeline
+        run: python ethiojobs_pipeline.py
+
+      - name: Commit updated tracker back to the repo
+        working-directory: ethiojobs_pipeline
+        run: |
+          git config user.name "ethiojobs-pipeline-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add ethiojobs_tracker.xlsx
+          git diff --quiet --cached || git commit -m "Daily EthioJobs tracker update $(date -u +%Y-%m-%d)"
+          git push
