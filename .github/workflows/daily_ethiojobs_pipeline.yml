@@ -1,6 +1,8 @@
 name: Daily EthioJobs Pipeline
+
 permissions:
   contents: write
+
 on:
   schedule:
     - cron: "0 6 * * *"
@@ -27,10 +29,13 @@ jobs:
       - name: Run pipeline
         run: python ethiojobs_pipeline.py
 
-      - name: Commit updated tracker back to the repo
+      - name: Build dashboard data (daily / weekly / monthly / quarterly / yearly rollups)
+        run: python rollup_ethiojobs.py
+
+      - name: Commit updated tracker and dashboard data back to the repo
         run: |
           git config user.name "ethiojobs-pipeline-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add ethiojobs_tracker.xlsx
-          git diff --quiet --cached || git commit -m "Daily EthioJobs tracker update $(date -u +%Y-%m-%d)"
+          git add ethiojobs_tracker.xlsx docs/data/rollups.json
+          git diff --quiet --cached || git commit -m "Daily EthioJobs update $(date -u +%Y-%m-%d)"
           git push
