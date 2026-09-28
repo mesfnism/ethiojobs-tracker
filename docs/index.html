@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethiopia Labour Market Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ink: #20242B;
+    --ink-soft: #4B5259;
+    --paper: #FAF7F0;
+    --paper-raised: #FFFFFF;
+    --line: #E3DDCE;
+    --navy: #1F3B57;
+    --navy-soft: #2E4B6B;
+    --gold: #B5892B;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Sans 3", sans-serif;
+  }
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+  }
+  header.page-head {
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    font-size: clamp(22px, 4vw, 30px);
+    margin: 0 0 6px;
+    color: var(--navy);
+  }
+  .sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 22px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .tab-btn {
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .tab-btn:hover { border-color: var(--navy-soft); color: var(--navy); }
+  .tab-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+  .stat-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .stat-tile {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 140px;
+  }
+  .stat-tile .num {
+    font-family: "Fraunces", serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.1;
+  }
+  .stat-tile .label {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 3px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px 12px;
+  }
+  .panel h2 {
+    font-family: "Fraunces", serif;
+    font-size: 16.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 2px;
+  }
+  .panel .panel-sub {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+  .chart-holder {
+    position: relative;
+  }
+  .empty-state {
+    padding: 30px 10px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+  }
+  footer.page-foot {
+    margin-top: 26px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .panel.wide { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page-head">
+    <h1>Ethiopia Labour Market Dashboard</h1>
+    <p class="sub">Skills, education levels, and sectors in demand — tracked automatically from live job postings.</p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="stat-row" id="statRow"></div>
+
+  <div class="grid">
+    <div class="panel wide">
+      <h2>Most In-Demand Skills</h2>
+      <p class="panel-sub" id="skillsSub"></p>
+      <div class="chart-holder"><canvas id="skillsChart" height="260"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Education Level Required</h2>
+      <p class="panel-sub" id="eduSub"></p>
+      <div class="chart-holder"><canvas id="eduChart" height="220"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Most Active Sectors</h2>
+      <p class="panel-sub" id="catSub"></p>
+      <div class="chart-holder"><canvas id="catChart" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <footer class="page-foot">
+    <span id="generatedAt">Loading…</span>
+    <span>Source: EthioJobs postings, tracked daily</span>
+  </footer>
+</div>
+
+<script>
+const NAVY = "#1F3B57";
+const LINE = "#E3DDCE";
+const INK = "#20242B";
+const INK_SOFT = "#4B5259";
+
+const WINDOW_LABELS = {
+  daily: "Daily", weekly: "Weekly", monthly: "Monthly",
+  quarterly: "Quarterly", yearly: "Yearly", all_time: "All Time"
+};
+const WINDOW_ORDER = ["daily", "weekly", "monthly", "quarterly", "yearly", "all_time"];
+
+let payload = null;
+let charts = { skills: null, edu: null, cat: null };
+let currentWindow = "monthly";
+
+function commonOpts(maxVal) {
+  return {
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: "#20242B",
+        padding: 10,
+        titleFont: { family: "Source Sans 3" },
+        bodyFont: { family: "Source Sans 3" }
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        suggestedMax: maxVal,
+        grid: { color: LINE },
+        ticks: { display: false },
+        border: { display: false }
+      },
+      y: {
+        grid: { display: false },
+        border: { display: false },
+        ticks: { color: INK, font: { family: "Source Sans 3", size: 12.5 } }
+      }
+    }
+  };
+}
+
+function drawBar(canvasId, key, items, labelKey, countKey) {
+  const ctx = document.getElementById(canvasId);
+  const holder = ctx.parentElement;
+  if (charts[key]) { charts[key].destroy(); charts[key] = null; }
+
+  if (!items || items.length === 0) {
+    ctx.style.display = "none";
+    let empty = holder.querySelector(".empty-state");
+    if (!empty) {
+      empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "Not enough data yet for this time window — check back after a few more days of tracking.";
+      holder.appendChild(empty);
+    }
+    return;
+  }
+  const existingEmpty = holder.querySelector(".empty-state");
+  if (existingEmpty) existingEmpty.remove();
+  ctx.style.display = "block";
+
+  const labels = items.map(d => d[labelKey]).reverse();
+  const values = items.map(d => d[countKey]).reverse();
+  const maxVal = Math.max(...values);
+
+  charts[key] = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: NAVY,
+        borderRadius: 4,
+        barThickness: 18,
+      }]
+    },
+    options: commonOpts(maxVal * 1.15),
+    plugins: [{
+      id: "valueLabels",
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets[0].data.forEach((val, i) => {
+          const meta = chart.getDatasetMeta(0);
+          const bar = meta.data[i];
+          ctx.save();
+          ctx.fillStyle = INK;
+          ctx.font = "600 12px 'Source Sans 3', sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+          ctx.fillText(val, bar.x + 6, bar.y);
+          ctx.restore();
+        });
+      }
+    }]
+  });
+}
+
+function renderStatRow(windowData, windowKey) {
+  const statRow = document.getElementById("statRow");
+  const edu = windowData.education;
+  const pct = edu.total > 0 ? Math.round((edu.known_total / edu.total) * 100) : 0;
+  statRow.innerHTML = `
+    <div class="stat-tile">
+      <div class="num">${windowData.posting_count}</div>
+      <div class="label">Postings tracked (${WINDOW_LABELS[windowKey].toLowerCase()})</div>
+    </div>
+    <div class="stat-tile">
+      <div class="num">${edu.known_total}</div>
+      <div class="label">State a clear education level (${pct}%)</div>
+    </div>
+  `;
+}
+
+function renderWindow(windowKey) {
+  currentWindow = windowKey;
+  const data = payload.windows[windowKey];
+  if (!data) return;
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.window === windowKey);
+  });
+
+  renderStatRow(data, windowKey);
+
+  document.getElementById("skillsSub").textContent =
+    `Top skills explicitly required — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("eduSub").textContent =
+    `${data.education.known_total} of ${data.education.total} postings state a level`;
+  document.getElementById("catSub").textContent =
+    `Top sectors by postings tracked — ${WINDOW_LABELS[windowKey]} view`;
+
+  drawBar("skillsChart", "skills", data.top_skills, "label", "count");
+  drawBar("eduChart", "edu", data.education.levels, "label", "count");
+  drawBar("catChart", "cat", data.top_categories, "label", "count");
+}
+
+function buildTabs() {
+  const tabsEl = document.getElementById("tabs");
+  tabsEl.innerHTML = "";
+  WINDOW_ORDER.forEach(w => {
+    if (!payload.windows[w]) return;
+    const btn = document.createElement("button");
+    btn.className = "tab-btn";
+    btn.dataset.window = w;
+    btn.textContent = WINDOW_LABELS[w];
+    btn.onclick = () => renderWindow(w);
+    tabsEl.appendChild(btn);
+  });
+}
+
+fetch("./data/rollups.json", { cache: "no-store" })
+  .then(r => {
+    if (!r.ok) throw new Error("rollups.json not found");
+    return r.json();
+  })
+  .then(json => {
+    payload = json;
+    document.getElementById("generatedAt").textContent =
+      `Last updated: ${payload.generated_at}`;
+    buildTabs();
+    // Prefer the first window that actually has data, default monthly
+    const preferred = payload.windows.monthly && payload.windows.monthly.posting_count > 0
+      ? "monthly" : WINDOW_ORDER.find(w => payload.windows[w] && payload.windows[w].posting_count > 0) || "all_time";
+    renderWindow(preferred);
+  })
+  .catch(err => {
+    document.getElementById("generatedAt").textContent = "Could not load data.";
+    document.getElementById("tabs").innerHTML =
+      `<p style="color:var(--ink-soft); font-size:13px;">Dashboard data isn't available yet — it appears after the first successful pipeline run.</p>`;
+    console.error(err);
+  });
+</script>
+</body>
+</html>
