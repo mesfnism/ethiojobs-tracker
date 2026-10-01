@@ -58,6 +58,17 @@ TOP_N_FOR_TRENDS = 10
 CLIMB_THRESHOLD = 2          # rank positions moved up to count as a "climber"
 COVERAGE_CONCERN_PCT = 50    # a field known for under this % of postings is flagged as a data gap
 
+# Recorded on every edition so that a later change in skill or sector counts
+# can be told apart from a change in how the classifier works, per the
+# project critique's point that "international taxonomies" alone do not
+# guarantee comparability over time, stable classifier logic does. Bump
+# CLASSIFIER_VERSION by hand whenever the keyword rules or category
+# mappings in taxonomy.py or rollup_ethiojobs.py change in a way that could
+# shift skill, education or sector counts on its own, independent of any
+# real change in the underlying postings.
+CLASSIFIER_VERSION = "v1.0"
+TAXONOMY_VERSIONS = "ESCO groups (own keyword mapping), ISCO-08, ISCED 2011, ISIC Rev.4"
+
 TRACKED_LISTS = ["top_skills", "top_categories", "top_jobs", "top_locations", "top_employers"]
 LIST_DISPLAY_NAMES = {
     "top_skills": "skills",
@@ -433,6 +444,12 @@ PAGE_HEAD = """<!DOCTYPE html>
   .tag.gap {{ background: #FBF1DE; color: var(--gold); }}
   .tag.stable {{ background: #EFEAE0; color: var(--ink-soft); }}
   ul.plain {{ font-size: 14.5px; line-height: 1.8; padding-left: 20px; margin: 0 0 14px; }}
+  .scope-box {{ background: var(--paper-raised); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px 4px; margin: 4px 0 20px; }}
+  .scope-box h3 {{ margin-top: 0; font-size: 14.5px; }}
+  .scope-cols {{ display: flex; gap: 24px; flex-wrap: wrap; }}
+  .scope-cols > div {{ flex: 1; min-width: 200px; }}
+  .scope-head {{ font-weight: 700; font-size: 12.5px; color: var(--navy); margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.03em; }}
+  .scope-box ul.plain {{ font-size: 13px; margin-bottom: 10px; }}
   ol.ref-list {{ font-size: 13px; line-height: 1.9; padding-left: 20px; }}
   ol.ref-list li {{ margin-bottom: 10px; }}
   .page-foot {{ font-size: 11.5px; color: var(--ink-soft); margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--line); }}
@@ -475,6 +492,8 @@ def build_cover(report_title, window_label, period_label, generated_at, other_re
   <div><strong>Author and Project Owner</strong> {esc(AUTHOR_NAME)}</div>
   <div><strong>Contact</strong> {esc(AUTHOR_CONTACT)}</div>
   <div><strong>Generated</strong> {esc(generated_at)}</div>
+  <div><strong>Classifier version</strong> {esc(CLASSIFIER_VERSION)}</div>
+  <div><strong>Taxonomies applied</strong> {esc(TAXONOMY_VERSIONS)}</div>
   <div class="nav-links">
     <a href="{esc(dashboard_link)}">Live dashboard &rarr;</a>
     <a href="{esc(other_report_link)}">Companion report &rarr;</a>
@@ -510,23 +529,49 @@ def build_executive_summary(window_label, period_label, current, insights):
             f"Relative to the comparable {window_label} window around "
             f"{esc(insights['baseline_date'])}, tracked volume shows {direction} of "
             f"{abs(insights['volume_change_pct'])} percent, which this report treats as an "
-            f"indicative signal of short-term market movement rather than a precise "
+            f"indicative signal of market movement in the short run rather than a precise "
             f"measure of total vacancy creation in the economy."
         )
     else:
         trend_sentence = (
-            "This is the first snapshot recorded for this reporting cycle, so no "
-            "week-on-week or month-on-month comparison is yet possible; subsequent "
-            "editions of this report will carry trend comparisons as tracking history "
-            "accumulates."
+            "This is the first snapshot recorded for this reporting cycle, so a "
+            "comparison from one week to the next, or one month to the next, is not "
+            "yet possible. Subsequent editions of this report will carry trend "
+            "comparisons as tracking history accumulates."
         )
 
     stat_tiles = f"""
     <div class="stat-row">
       <div class="stat-tile"><div class="num">{current['posting_count']}</div><div class="label">Postings tracked ({window_label})</div></div>
-      <div class="stat-tile"><div class="num">{esc(top_skill)}</div><div class="label">Leading skill in demand</div></div>
-      <div class="stat-tile"><div class="num">{esc(top_sector)}</div><div class="label">Most active sector</div></div>
-      <div class="stat-tile"><div class="num">{esc(top_employer)}</div><div class="label">Leading hiring employer</div></div>
+      <div class="stat-tile"><div class="num">{esc(top_skill)}</div><div class="label">Most frequently mentioned skill</div></div>
+      <div class="stat-tile"><div class="num">{esc(top_sector)}</div><div class="label">Leading economic activity (ISIC)</div></div>
+      <div class="stat-tile"><div class="num">{esc(top_employer)}</div><div class="label">Employer with the most postings</div></div>
+    </div>
+    """
+
+    scope_box = """
+    <div class="scope-box">
+      <h3>What this report measures, and what it does not</h3>
+      <div class="scope-cols">
+        <div>
+          <p class="scope-head">It measures</p>
+          <ul class="plain">
+            <li>Online vacancy advertisements on six tracked job boards</li>
+            <li>Skills, qualifications and experience as advertised in those postings</li>
+            <li>Employer and economic activity patterns within that advertised set</li>
+            <li>Period to period change in what is advertised online</li>
+          </ul>
+        </div>
+        <div>
+          <p class="scope-head">It does not measure</p>
+          <ul class="plain">
+            <li>Total vacancies or total labour demand in Ethiopia</li>
+            <li>Unemployment or skill shortages</li>
+            <li>Whether a posting results in an actual hire</li>
+            <li>Informal or unadvertised recruitment</li>
+          </ul>
+        </div>
+      </div>
     </div>
     """
 
@@ -539,13 +584,18 @@ over time. The purpose of this exercise is not to replace Ethiopia's official la
 information architecture, but to complement it. The national E-LMIS and the Ethiopian Statistical
 Service's household and establishment surveys provide periodic, authoritative but infrequent
 measurement of the labour market [1][3]. This report offers a continuously updated, narrower read
-of what employers are actually advertising for, close to real time.</p>
-<p>The leading skill requested this period was <strong>{esc(top_skill)}</strong>, the most active
-sector was <strong>{esc(top_sector)}</strong>, and the single largest identifiable hiring employer
-was <strong>{esc(top_employer)}</strong>. {trend_sentence} The Analysis section below sets out these
-patterns in full, with supporting tables and figures; the Data Sources and Limitations sections set
-out, without qualification, what this exercise can and cannot yet claim to measure.</p>
+of what employers are actually advertising for, close to real time. It tracks advertised demand.
+It does not measure labour shortages, unemployment or actual hiring outcomes, which require the
+survey and administrative sources cited above.</p>
+<p>The most frequently mentioned skill this period was <strong>{esc(top_skill)}</strong>, the
+leading economic activity by posting count was <strong>{esc(top_sector)}</strong>, and the employer
+with the most identifiable postings was <strong>{esc(top_employer)}</strong>. A posting mentioning a
+skill is not by itself evidence that the skill is scarce or that employers struggle to find it.
+{trend_sentence} The Analysis section below sets out these patterns in full, with supporting tables
+and figures. The Data Sources and Limitations sections set out, without qualification, what this
+exercise can and cannot yet claim to measure.</p>
 {stat_tiles}
+{scope_box}
 """
     return page(body)
 
@@ -570,7 +620,7 @@ classified against four international standards. ESCO for skills, ISCO-08 for oc
 requirements comparable across sources and legible to anyone already familiar with those schemes,
 including statistical agencies and development partners.</p>
 <p>This {window_label} report covers {esc(period_label).lower()}. It is one of two companion editions
-produced on a rolling basis. A weekly edition captures short-term movement, and a monthly edition
+produced on a rolling basis. A weekly edition captures movement over the short run, and a monthly edition
 captures a steadier baseline. Both are generated automatically from the same underlying dataset and
 published alongside a live, continuously updated dashboard.</p>
 <h2>Scope and methodology, briefly</h2>
@@ -629,17 +679,19 @@ def build_analysis(window_label, current, insights, window_data):
         for i, s in enumerate(current["top_skills"][:10])
     )
     skills_table = (
-        f'<table class="data-table"><caption>Table 1. Top skills explicitly requested, {esc(window_label)} window.</caption>'
-        f'<thead><tr><th>#</th><th>Skill (ESCO-normalized)</th><th>Postings</th></tr></thead>'
+        f'<table class="data-table"><caption>Table 1. Most frequently mentioned skills, {esc(window_label)} window.</caption>'
+        f'<thead><tr><th>#</th><th>Skill (normalized to ESCO)</th><th>Postings mentioning it</th></tr></thead>'
         f'<tbody>{skills_table_rows}</tbody></table>'
     ) if skills_table_rows else "<p><em>Not enough postings with stated skills yet to tabulate.</em></p>"
 
     skills_fig = bar_chart_svg(current["top_skills"], max_items=8)
     skills_figure = (
-        f'<figure>{skills_fig}<figcaption>Figure 1. Posting counts for the top requested skills, {esc(window_label)} window.</figcaption></figure>'
+        f'<figure>{skills_fig}<figcaption>Figure 1. Posting counts for the most frequently mentioned skills, {esc(window_label)} window.</figcaption></figure>'
     ) if skills_fig else ""
 
-    # Sector x top critical skill table, using the full window payload (not the condensed insight)
+    # Sector x top critical skill table, using the full window payload (not the condensed insight).
+    # Labelled as economic activity (ISIC), not occupation, since the two are different things and a
+    # posting's employer-level industry is not a stand-in for the role being advertised.
     sector_rows = []
     crit_by_sector = window_data.get("critical_skills_by_sector", {})
     for sec in window_data.get("top_categories", [])[:8]:
@@ -648,8 +700,8 @@ def build_analysis(window_label, current, insights, window_data):
         top_skill = entry["skills"][0]["label"] if entry and entry.get("skills") else "Not enough postings with stated skills"
         sector_rows.append(f"<tr><td>{esc(label)}</td><td>{sec['count']}</td><td>{esc(top_skill)}</td></tr>")
     sector_table = (
-        f'<table class="data-table"><caption>Table 2. Most active sectors and each sector’s single most-requested skill, {esc(window_label)} window.</caption>'
-        f'<thead><tr><th>Sector (ISIC Rev.4)</th><th>Postings</th><th>Leading skill in this sector</th></tr></thead>'
+        f'<table class="data-table"><caption>Table 2. Economic activities represented among online postings (ISIC), with the skill most often mentioned within each, {esc(window_label)} window.</caption>'
+        f'<thead><tr><th>Economic activity (ISIC Rev.4)</th><th>Postings</th><th>Most frequently mentioned skill within it</th></tr></thead>'
         f'<tbody>{"".join(sector_rows)}</tbody></table>'
     ) if sector_rows else "<p><em>Not enough classified sector data yet to tabulate.</em></p>"
 
@@ -700,22 +752,27 @@ def build_analysis(window_label, current, insights, window_data):
 
     body = f"""
 <h1 class="page-title" id="analysis">Analysis</h1>
-<h2>Skills in demand</h2>
+<h2>Most frequently mentioned skills</h2>
+<p>A skill mentioned often in postings is not, by itself, a skill employers cannot find. Generic
+transversal skills such as communication are routinely written into job advertisements regardless of
+how hard the role is to fill, so the counts below describe what is advertised, not what is scarce.</p>
 <p>{skills_table}</p>
 {skills_figure}
-<h2>Where those skills matter, sectoral patterns</h2>
-<p>Skill demand is not uniform across the economy. The sector a posting sits in shapes which specific
-skill is most sought after within it. Table 2 reports, for each of the most active sectors this
-period, the single skill most frequently requested within postings tagged to that sector, subject to
-a minimum of three postings in that sector stating explicit skills, so that a one-off posting is
-never reported as a sector's standard.</p>
+<h2>Where those mentions cluster, patterns by economic activity</h2>
+<p>Which skill is mentioned most often varies by the employer's economic activity. Table 2 reports,
+for each of the economic activities with the most postings this period, the single skill most
+frequently mentioned within postings tied to that activity, subject to a minimum of three postings
+in that activity stating explicit skills, so that a single posting is never reported as an activity's
+standard. An economic activity (ISIC) describes the employer's industry, not the occupation being
+advertised, and the two should not be read as interchangeable.</p>
 {sector_table}
 <h2>Education, experience and pay profile</h2>
 <p>{coverage_sentence}</p>
 <h2>Persistent and emerging patterns</h2>
-<p>Comparing this period against the closest available prior snapshot distinguishes demand that is
-structurally embedded in the market from demand that is newly rising or fading. A single snapshot on
-its own cannot make that distinction.</p>
+<p>Comparing this period against the closest available prior snapshot distinguishes mentions that
+recur across periods from ones that are newly rising or fading. A single snapshot on its own cannot
+make that distinction, and a recurring mention still describes what is advertised, not a confirmed
+shortage or structural need.</p>
 {''.join(pattern_paras)}
 """
     return page(body)
@@ -737,14 +794,14 @@ def build_limitations(insights):
 <h2>Advantages of this approach</h2>
 <ul class="plain">
   <li>Continuous, low cost measurement that refreshes automatically, in contrast to periodic labour
-  market information based on surveys that updates on a multi-year cycle.</li>
+  market information based on surveys that updates only every few years.</li>
   <li>Standardized against the same international taxonomies (ESCO, ISCO-08, ISCED 2011, ISIC Rev.4)
   used in official reporting on labour markets, so figures here are directly comparable to other work
   using the same schemes.</li>
   <li>Full transparency on what is and is not captured. A field that cannot be classified confidently
   is excluded from that breakdown rather than estimated, and every honesty threshold used in this
-  report (for example a minimum posting count before a most-requested skill is reported for a group)
-  is stated rather than hidden.</li>
+  report (for example a minimum posting count before a skill is reported as most requested for a
+  group) is stated rather than hidden.</li>
 </ul>
 <h2>Limitations</h2>
 <ul class="plain">
@@ -761,7 +818,7 @@ def build_limitations(insights):
 </ul>
 {gap_sentence}
 <h2>Planned improvements</h2>
-<p>Near-term priorities are extending the language coverage of the skills and sector classifiers to
+<p>The priorities for the near future are extending the language coverage of the skills and sector classifiers to
 Amharic text, closing the volume gap on the three sources that currently fall short, and adding
 additional sources, including, subject to feasibility and permission, sources beyond Ethiopia's
 borders within the Horn of Africa. Readers who hold data, funding, or institutional mandate relevant
@@ -773,15 +830,30 @@ to any of these priorities are invited to make contact (see the cover page for d
 def build_conclusion(window_label, current, insights):
     top_skill = current["top_skills"][0]["label"] if current["top_skills"] else "no single skill"
     top_sector = current["top_categories"][0]["label"] if current["top_categories"] else "no single sector"
+
+    if insights["has_baseline"]:
+        pattern_sentence = (
+            f"This concentration, together with the recurrence observed across reporting periods for a "
+            f"stable set of top mentioned skills and economic activities, is consistent with a set of "
+            f"advertised requirements that holds steady from one period to the next rather than shifting "
+            f"unpredictably. That pattern describes what is advertised, not a confirmed shortage, and it "
+            f"still has implications for how training providers and jobseekers might prioritise their "
+            f"effort."
+        )
+    else:
+        pattern_sentence = (
+            "This edition establishes a baseline. It does not yet show whether this concentration holds "
+            "from one period to the next, since no prior snapshot exists for comparison. Subsequent "
+            "editions will show whether the same skills and economic activities recur or whether this "
+            "snapshot reflects a temporary pattern."
+        )
+
     body = f"""
 <h1 class="page-title" id="conclusion">Conclusion</h1>
-<p>Over this {window_label} window, Ethiopia's tracked online vacancy market continued to concentrate
-around a recognisable core of skill and sector demand, led by {esc(top_skill)} as the single most
-requested skill and {esc(top_sector)} as the most active sector. This concentration, together with the
-persistence observed across reporting periods for a recurring set of top skills and sectors, is
-consistent with a labour market in which demand is structurally embedded in a small number of sectors
-and roles rather than shifting unpredictably from one period to the next. That pattern itself has
-implications for how training providers and jobseekers might prioritise their effort.</p>
+<p>Over this {window_label} window, Ethiopia's tracked online vacancy market concentrated around a
+recognisable core of mentioned skills and economic activity, led by {esc(top_skill)} as the most
+frequently mentioned skill and {esc(top_sector)} as the economic activity with the most postings.
+{pattern_sentence}</p>
 <p>At the same time, the gaps documented in this report, thin wage disclosure, uneven coverage across
 sources, and a language barrier on postings written only in Amharic, mean that this report's picture
 of the market, while directionally useful, remains partial. It is offered as a complement to, not a
@@ -810,7 +882,7 @@ reporting is welcomed.</p>
 <h2>For jobseekers</h2>
 <p>The Top Skills table and the tables of leading skill by sector in this report (Analysis section)
 are a practical starting point for prioritising which skills to acquire or present, particularly
-where a skill appears as both persistent and leading in its sector rather than a one-off spike.</p>
+where a skill appears as both persistent and leading in its sector rather than a single spike.</p>
 <h2>Scaling and collaboration</h2>
 <p>The underlying pipeline is built to extend to further sources, further geographies within the Horn
 of Africa, and partnership with institutional initiatives in labour market information or ones
