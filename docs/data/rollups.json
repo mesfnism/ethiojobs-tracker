@@ -1,134 +1,126 @@
 {
-  "generated_at": "2026-09-30 11:41:32 UTC",
+  "generated_at": "2026-10-01 12:12:12 UTC",
   "source": "EthioJobs",
   "windows": {
     "daily": {
-      "posting_count": 154,
+      "posting_count": 126,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 79
+          "count": 46
         },
         {
           "label": "Attention to detail",
-          "count": 37
+          "count": 29
         },
         {
           "label": "Problem solving",
-          "count": 19
+          "count": 22
         },
         {
-          "label": "Teamwork",
-          "count": 11
+          "label": "Decision-making",
+          "count": 15
+        },
+        {
+          "label": "Adaptability",
+          "count": 9
+        },
+        {
+          "label": "education, Social Work, Project Management",
+          "count": 7
         },
         {
           "label": "Accounting",
           "count": 6
         },
         {
-          "label": "Decision-making",
+          "label": "A genuine passion for education and student development",
           "count": 6
         },
         {
-          "label": "Adaptability",
-          "count": 4
+          "label": "Good communication and teamwork",
+          "count": 6
         },
         {
-          "label": "Creativity",
-          "count": 4
-        },
-        {
-          "label": "Strong coordination and networking skills",
-          "count": 4
-        },
-        {
-          "label": "Human Resource Management, Management, Business Administration,",
-          "count": 4
+          "label": "Proficiency in AutoCAD and related design software",
+          "count": 6
         }
       ],
       "education": {
-        "known_total": 43,
-        "total": 154,
+        "known_total": 41,
+        "total": 126,
         "levels": [
           {
             "label": "Bachelor's degree",
-            "count": 28
+            "count": 34
           },
           {
             "label": "Master's degree",
-            "count": 11
+            "count": 6
           },
           {
             "label": "Diploma",
-            "count": 2
-          },
-          {
-            "label": "Certificate",
-            "count": 1
-          },
-          {
-            "label": "PhD",
             "count": 1
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Social Sciences and Communications",
+          "label": "Engineering",
           "count": 32
         },
         {
           "label": "Accounting and Finance",
-          "count": 28
+          "count": 26
         },
         {
-          "label": "Engineering",
-          "count": 25
-        },
-        {
-          "label": "Natural Sciences",
-          "count": 22
-        },
-        {
-          "label": "Hotel and Hospitality",
-          "count": 17
-        },
-        {
-          "label": "Business and Administra",
-          "count": 17
-        },
-        {
-          "label": "Sales and Marketing",
+          "label": "Social Sciences and Communications",
           "count": 16
         },
         {
-          "label": "Health Care",
-          "count": 15
+          "label": "Natural Sciences",
+          "count": 11
         },
         {
           "label": "Management",
-          "count": 15
+          "count": 10
         },
         {
-          "label": "Economics",
-          "count": 11
+          "label": "Business and Administra",
+          "count": 9
+        },
+        {
+          "label": "Sales and Marketing",
+          "count": 8
+        },
+        {
+          "label": "Health Care",
+          "count": 8
+        },
+        {
+          "label": "IT, Computer Science an",
+          "count": 8
+        },
+        {
+          "label": "Architecture and Constr",
+          "count": 8
         }
       ]
     },
     "weekly": {
-      "posting_count": 722,
+      "posting_count": 546,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 321
+          "count": 220
         },
         {
           "label": "Attention to detail",
-          "count": 146
+          "count": 134
         },
         {
           "label": "Problem solving",
-          "count": 119
+          "count": 81
         },
         {
           "label": "Decision-making",
@@ -136,48 +128,48 @@
         },
         {
           "label": "Accounting",
-          "count": 34
-        },
-        {
-          "label": "Teamwork",
-          "count": 33
+          "count": 27
         },
         {
           "label": "Creativity",
-          "count": 28
-        },
-        {
-          "label": "Accounting Principles (GAAP), IFRS and ERP",
-          "count": 25
+          "count": 24
         },
         {
           "label": "Strong coordination and networking skills",
-          "count": 23
+          "count": 19
         },
         {
-          "label": "Team work",
-          "count": 20
+          "label": "Good communication and teamwork",
+          "count": 19
+        },
+        {
+          "label": "Adaptability",
+          "count": 18
+        },
+        {
+          "label": "Accounting Principles (GAAP), IFRS and ERP",
+          "count": 17
         }
       ],
       "education": {
-        "known_total": 243,
-        "total": 722,
+        "known_total": 167,
+        "total": 546,
         "levels": [
           {
             "label": "Bachelor's degree",
-            "count": 146
+            "count": 110
           },
           {
             "label": "Master's degree",
-            "count": 68
+            "count": 39
           },
           {
             "label": "Diploma",
-            "count": 17
+            "count": 10
           },
           {
             "label": "Certificate",
-            "count": 8
+            "count": 4
           },
           {
             "label": "PhD",
@@ -187,106 +179,106 @@
       },
       "top_categories": [
         {
-          "label": "Social Sciences and Communications",
-          "count": 151
-        },
-        {
           "label": "Accounting and Finance",
-          "count": 143
+          "count": 108
         },
         {
-          "label": "Business and Administra",
-          "count": 110
+          "label": "Social Sciences and Communications",
+          "count": 95
         },
         {
           "label": "Engineering",
-          "count": 88
+          "count": 92
+        },
+        {
+          "label": "Business and Administra",
+          "count": 67
         },
         {
           "label": "Natural Sciences",
-          "count": 80
-        },
-        {
-          "label": "Sales and Marketing",
-          "count": 73
-        },
-        {
-          "label": "Health Care",
-          "count": 71
+          "count": 63
         },
         {
           "label": "Management",
-          "count": 64
+          "count": 45
         },
         {
-          "label": "Economics",
-          "count": 42
+          "label": "Sales and Marketing",
+          "count": 44
         },
         {
           "label": "Hotel and Hospitality",
           "count": 36
+        },
+        {
+          "label": "Health Care",
+          "count": 33
+        },
+        {
+          "label": "Economics",
+          "count": 31
         }
       ]
     },
     "monthly": {
-      "posting_count": 722,
+      "posting_count": 848,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 321
+          "count": 367
         },
         {
           "label": "Attention to detail",
-          "count": 146
+          "count": 175
         },
         {
           "label": "Problem solving",
-          "count": 119
+          "count": 141
         },
         {
           "label": "Decision-making",
-          "count": 52
+          "count": 67
         },
         {
           "label": "Accounting",
-          "count": 34
+          "count": 40
         },
         {
           "label": "Teamwork",
-          "count": 33
+          "count": 35
         },
         {
           "label": "Creativity",
-          "count": 28
+          "count": 33
         },
         {
           "label": "Accounting Principles (GAAP), IFRS and ERP",
-          "count": 25
+          "count": 28
         },
         {
           "label": "Strong coordination and networking skills",
-          "count": 23
+          "count": 27
         },
         {
-          "label": "Team work",
-          "count": 20
+          "label": "Adaptability",
+          "count": 25
         }
       ],
       "education": {
-        "known_total": 243,
-        "total": 722,
+        "known_total": 284,
+        "total": 848,
         "levels": [
           {
             "label": "Bachelor's degree",
-            "count": 146
+            "count": 180
           },
           {
             "label": "Master's degree",
-            "count": 68
+            "count": 74
           },
           {
             "label": "Diploma",
-            "count": 17
+            "count": 18
           },
           {
             "label": "Certificate",
@@ -300,106 +292,106 @@
       },
       "top_categories": [
         {
-          "label": "Social Sciences and Communications",
-          "count": 151
-        },
-        {
           "label": "Accounting and Finance",
-          "count": 143
+          "count": 169
         },
         {
-          "label": "Business and Administra",
-          "count": 110
+          "label": "Social Sciences and Communications",
+          "count": 167
         },
         {
           "label": "Engineering",
-          "count": 88
+          "count": 120
+        },
+        {
+          "label": "Business and Administra",
+          "count": 119
         },
         {
           "label": "Natural Sciences",
-          "count": 80
+          "count": 91
         },
         {
           "label": "Sales and Marketing",
-          "count": 73
+          "count": 81
         },
         {
           "label": "Health Care",
-          "count": 71
+          "count": 79
         },
         {
           "label": "Management",
-          "count": 64
+          "count": 74
         },
         {
           "label": "Economics",
-          "count": 42
+          "count": 49
         },
         {
-          "label": "Hotel and Hospitality",
-          "count": 36
+          "label": "IT, Computer Science an",
+          "count": 43
         }
       ]
     },
     "quarterly": {
-      "posting_count": 722,
+      "posting_count": 848,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 321
+          "count": 367
         },
         {
           "label": "Attention to detail",
-          "count": 146
+          "count": 175
         },
         {
           "label": "Problem solving",
-          "count": 119
+          "count": 141
         },
         {
           "label": "Decision-making",
-          "count": 52
+          "count": 67
         },
         {
           "label": "Accounting",
-          "count": 34
+          "count": 40
         },
         {
           "label": "Teamwork",
-          "count": 33
+          "count": 35
         },
         {
           "label": "Creativity",
-          "count": 28
+          "count": 33
         },
         {
           "label": "Accounting Principles (GAAP), IFRS and ERP",
-          "count": 25
+          "count": 28
         },
         {
           "label": "Strong coordination and networking skills",
-          "count": 23
+          "count": 27
         },
         {
-          "label": "Team work",
-          "count": 20
+          "label": "Adaptability",
+          "count": 25
         }
       ],
       "education": {
-        "known_total": 243,
-        "total": 722,
+        "known_total": 284,
+        "total": 848,
         "levels": [
           {
             "label": "Bachelor's degree",
-            "count": 146
+            "count": 180
           },
           {
             "label": "Master's degree",
-            "count": 68
+            "count": 74
           },
           {
             "label": "Diploma",
-            "count": 17
+            "count": 18
           },
           {
             "label": "Certificate",
@@ -413,106 +405,106 @@
       },
       "top_categories": [
         {
-          "label": "Social Sciences and Communications",
-          "count": 151
-        },
-        {
           "label": "Accounting and Finance",
-          "count": 143
+          "count": 169
         },
         {
-          "label": "Business and Administra",
-          "count": 110
+          "label": "Social Sciences and Communications",
+          "count": 167
         },
         {
           "label": "Engineering",
-          "count": 88
+          "count": 120
+        },
+        {
+          "label": "Business and Administra",
+          "count": 119
         },
         {
           "label": "Natural Sciences",
-          "count": 80
+          "count": 91
         },
         {
           "label": "Sales and Marketing",
-          "count": 73
+          "count": 81
         },
         {
           "label": "Health Care",
-          "count": 71
+          "count": 79
         },
         {
           "label": "Management",
-          "count": 64
+          "count": 74
         },
         {
           "label": "Economics",
-          "count": 42
+          "count": 49
         },
         {
-          "label": "Hotel and Hospitality",
-          "count": 36
+          "label": "IT, Computer Science an",
+          "count": 43
         }
       ]
     },
     "yearly": {
-      "posting_count": 722,
+      "posting_count": 848,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 321
+          "count": 367
         },
         {
           "label": "Attention to detail",
-          "count": 146
+          "count": 175
         },
         {
           "label": "Problem solving",
-          "count": 119
+          "count": 141
         },
         {
           "label": "Decision-making",
-          "count": 52
+          "count": 67
         },
         {
           "label": "Accounting",
-          "count": 34
+          "count": 40
         },
         {
           "label": "Teamwork",
-          "count": 33
+          "count": 35
         },
         {
           "label": "Creativity",
-          "count": 28
+          "count": 33
         },
         {
           "label": "Accounting Principles (GAAP), IFRS and ERP",
-          "count": 25
+          "count": 28
         },
         {
           "label": "Strong coordination and networking skills",
-          "count": 23
+          "count": 27
         },
         {
-          "label": "Team work",
-          "count": 20
+          "label": "Adaptability",
+          "count": 25
         }
       ],
       "education": {
-        "known_total": 243,
-        "total": 722,
+        "known_total": 284,
+        "total": 848,
         "levels": [
           {
             "label": "Bachelor's degree",
-            "count": 146
+            "count": 180
           },
           {
             "label": "Master's degree",
-            "count": 68
+            "count": 74
           },
           {
             "label": "Diploma",
-            "count": 17
+            "count": 18
           },
           {
             "label": "Certificate",
@@ -526,106 +518,106 @@
       },
       "top_categories": [
         {
-          "label": "Social Sciences and Communications",
-          "count": 151
-        },
-        {
           "label": "Accounting and Finance",
-          "count": 143
+          "count": 169
         },
         {
-          "label": "Business and Administra",
-          "count": 110
+          "label": "Social Sciences and Communications",
+          "count": 167
         },
         {
           "label": "Engineering",
-          "count": 88
+          "count": 120
+        },
+        {
+          "label": "Business and Administra",
+          "count": 119
         },
         {
           "label": "Natural Sciences",
-          "count": 80
+          "count": 91
         },
         {
           "label": "Sales and Marketing",
-          "count": 73
+          "count": 81
         },
         {
           "label": "Health Care",
-          "count": 71
+          "count": 79
         },
         {
           "label": "Management",
-          "count": 64
+          "count": 74
         },
         {
           "label": "Economics",
-          "count": 42
+          "count": 49
         },
         {
-          "label": "Hotel and Hospitality",
-          "count": 36
+          "label": "IT, Computer Science an",
+          "count": 43
         }
       ]
     },
     "all_time": {
-      "posting_count": 722,
+      "posting_count": 848,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 321
+          "count": 367
         },
         {
           "label": "Attention to detail",
-          "count": 146
+          "count": 175
         },
         {
           "label": "Problem solving",
-          "count": 119
+          "count": 141
         },
         {
           "label": "Decision-making",
-          "count": 52
+          "count": 67
         },
         {
           "label": "Accounting",
-          "count": 34
+          "count": 40
         },
         {
           "label": "Teamwork",
-          "count": 33
+          "count": 35
         },
         {
           "label": "Creativity",
-          "count": 28
+          "count": 33
         },
         {
           "label": "Accounting Principles (GAAP), IFRS and ERP",
-          "count": 25
+          "count": 28
         },
         {
           "label": "Strong coordination and networking skills",
-          "count": 23
+          "count": 27
         },
         {
-          "label": "Team work",
-          "count": 20
+          "label": "Adaptability",
+          "count": 25
         }
       ],
       "education": {
-        "known_total": 243,
-        "total": 722,
+        "known_total": 284,
+        "total": 848,
         "levels": [
           {
             "label": "Bachelor's degree",
-            "count": 146
+            "count": 180
           },
           {
             "label": "Master's degree",
-            "count": 68
+            "count": 74
           },
           {
             "label": "Diploma",
-            "count": 17
+            "count": 18
           },
           {
             "label": "Certificate",
@@ -639,44 +631,44 @@
       },
       "top_categories": [
         {
-          "label": "Social Sciences and Communications",
-          "count": 151
-        },
-        {
           "label": "Accounting and Finance",
-          "count": 143
+          "count": 169
         },
         {
-          "label": "Business and Administra",
-          "count": 110
+          "label": "Social Sciences and Communications",
+          "count": 167
         },
         {
           "label": "Engineering",
-          "count": 88
+          "count": 120
+        },
+        {
+          "label": "Business and Administra",
+          "count": 119
         },
         {
           "label": "Natural Sciences",
-          "count": 80
+          "count": 91
         },
         {
           "label": "Sales and Marketing",
-          "count": 73
+          "count": 81
         },
         {
           "label": "Health Care",
-          "count": 71
+          "count": 79
         },
         {
           "label": "Management",
-          "count": 64
+          "count": 74
         },
         {
           "label": "Economics",
-          "count": 42
+          "count": 49
         },
         {
-          "label": "Hotel and Hospitality",
-          "count": 36
+          "label": "IT, Computer Science an",
+          "count": 43
         }
       ]
     }
