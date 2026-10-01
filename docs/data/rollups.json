@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01 16:31:54 UTC",
+  "generated_at": "2026-10-01 16:51:32 UTC",
   "source": "EthioJobs + HaHuJobs",
   "taxonomies": {
     "skills": "ESCO (EU skills/competences taxonomy)",
@@ -669,6 +669,23 @@
             }
           ]
         },
+        "Development and Project": {
+          "postings_considered": 8,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 5
+            },
+            {
+              "label": "Data Analysis",
+              "count": 1
+            },
+            {
+              "label": "Dashboard Design and Data Visualization",
+              "count": 1
+            }
+          ]
+        },
         "Health Care": {
           "postings_considered": 14,
           "skills": [
@@ -700,23 +717,6 @@
             {
               "label": "Compliace Knowledge",
               "count": 2
-            }
-          ]
-        },
-        "Development and Project": {
-          "postings_considered": 8,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 5
-            },
-            {
-              "label": "Data Analysis",
-              "count": 1
-            },
-            {
-              "label": "Dashboard Design and Data Visualization",
-              "count": 1
             }
           ]
         },
@@ -2502,6 +2502,40 @@
         }
       ],
       "critical_skills_by_subsector": {
+        "Hotel and Hospitality": {
+          "postings_considered": 36,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 27
+            },
+            {
+              "label": "Attention to detail",
+              "count": 15
+            },
+            {
+              "label": "Teamwork",
+              "count": 10
+            }
+          ]
+        },
+        "Social Sciences and Communications": {
+          "postings_considered": 109,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 103
+            },
+            {
+              "label": "Attention to detail",
+              "count": 35
+            },
+            {
+              "label": "Problem solving",
+              "count": 34
+            }
+          ]
+        },
         "Business and Administra": {
           "postings_considered": 75,
           "skills": [
@@ -2536,40 +2570,6 @@
             }
           ]
         },
-        "Social Sciences and Communications": {
-          "postings_considered": 109,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 103
-            },
-            {
-              "label": "Attention to detail",
-              "count": 35
-            },
-            {
-              "label": "Problem solving",
-              "count": 34
-            }
-          ]
-        },
-        "Hotel and Hospitality": {
-          "postings_considered": 36,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 27
-            },
-            {
-              "label": "Attention to detail",
-              "count": 15
-            },
-            {
-              "label": "Teamwork",
-              "count": 10
-            }
-          ]
-        },
         "Fmcg and Manufacturing": {
           "postings_considered": 29,
           "skills": [
@@ -2584,23 +2584,6 @@
             {
               "label": "Attention to detail",
               "count": 6
-            }
-          ]
-        },
-        "Quality Assurance": {
-          "postings_considered": 9,
-          "skills": [
-            {
-              "label": "Problem solving",
-              "count": 7
-            },
-            {
-              "label": "Microsoft Office",
-              "count": 2
-            },
-            {
-              "label": "Requirement Skill",
-              "count": 2
             }
           ]
         },
@@ -2621,20 +2604,20 @@
             }
           ]
         },
-        "Health Care": {
-          "postings_considered": 39,
+        "Quality Assurance": {
+          "postings_considered": 9,
           "skills": [
             {
-              "label": "Communication",
-              "count": 15
-            },
-            {
-              "label": "Health",
+              "label": "Problem solving",
               "count": 7
             },
             {
-              "label": "Problem solving",
-              "count": 4
+              "label": "Microsoft Office",
+              "count": 2
+            },
+            {
+              "label": "Requirement Skill",
+              "count": 2
             }
           ]
         },
@@ -2652,6 +2635,23 @@
             {
               "label": "Attention to detail",
               "count": 18
+            }
+          ]
+        },
+        "Health Care": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 15
+            },
+            {
+              "label": "Health",
+              "count": 7
+            },
+            {
+              "label": "Problem solving",
+              "count": 4
             }
           ]
         },
@@ -5535,23 +5535,6 @@
         }
       ],
       "critical_skills_by_subsector": {
-        "Sales and Marketing": {
-          "postings_considered": 81,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 64
-            },
-            {
-              "label": "Negotiation",
-              "count": 16
-            },
-            {
-              "label": "Problem solving",
-              "count": 12
-            }
-          ]
-        },
         "Social Sciences and Communications": {
           "postings_considered": 180,
           "skills": [
@@ -5566,6 +5549,23 @@
             {
               "label": "Attention to detail",
               "count": 53
+            }
+          ]
+        },
+        "Sales and Marketing": {
+          "postings_considered": 81,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 64
+            },
+            {
+              "label": "Negotiation",
+              "count": 16
+            },
+            {
+              "label": "Problem solving",
+              "count": 12
             }
           ]
         },
@@ -5705,23 +5705,6 @@
             }
           ]
         },
-        "Business and Administra": {
-          "postings_considered": 126,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 88
-            },
-            {
-              "label": "Problem solving",
-              "count": 37
-            },
-            {
-              "label": "Attention to detail",
-              "count": 31
-            }
-          ]
-        },
         "Development and Project": {
           "postings_considered": 39,
           "skills": [
@@ -5736,6 +5719,23 @@
             {
               "label": "Coordination",
               "count": 4
+            }
+          ]
+        },
+        "Business and Administra": {
+          "postings_considered": 126,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 88
+            },
+            {
+              "label": "Problem solving",
+              "count": 37
+            },
+            {
+              "label": "Attention to detail",
+              "count": 31
             }
           ]
         },
@@ -9164,23 +9164,6 @@
         }
       ],
       "critical_skills_by_subsector": {
-        "Sales and Marketing": {
-          "postings_considered": 81,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 64
-            },
-            {
-              "label": "Negotiation",
-              "count": 16
-            },
-            {
-              "label": "Problem solving",
-              "count": 12
-            }
-          ]
-        },
         "Social Sciences and Communications": {
           "postings_considered": 180,
           "skills": [
@@ -9195,6 +9178,23 @@
             {
               "label": "Attention to detail",
               "count": 53
+            }
+          ]
+        },
+        "Sales and Marketing": {
+          "postings_considered": 81,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 64
+            },
+            {
+              "label": "Negotiation",
+              "count": 16
+            },
+            {
+              "label": "Problem solving",
+              "count": 12
             }
           ]
         },
@@ -9334,23 +9334,6 @@
             }
           ]
         },
-        "Business and Administra": {
-          "postings_considered": 126,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 88
-            },
-            {
-              "label": "Problem solving",
-              "count": 37
-            },
-            {
-              "label": "Attention to detail",
-              "count": 31
-            }
-          ]
-        },
         "Development and Project": {
           "postings_considered": 39,
           "skills": [
@@ -9365,6 +9348,23 @@
             {
               "label": "Coordination",
               "count": 4
+            }
+          ]
+        },
+        "Business and Administra": {
+          "postings_considered": 126,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 88
+            },
+            {
+              "label": "Problem solving",
+              "count": 37
+            },
+            {
+              "label": "Attention to detail",
+              "count": 31
             }
           ]
         },
@@ -12793,23 +12793,6 @@
         }
       ],
       "critical_skills_by_subsector": {
-        "Sales and Marketing": {
-          "postings_considered": 81,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 64
-            },
-            {
-              "label": "Negotiation",
-              "count": 16
-            },
-            {
-              "label": "Problem solving",
-              "count": 12
-            }
-          ]
-        },
         "Social Sciences and Communications": {
           "postings_considered": 180,
           "skills": [
@@ -12824,6 +12807,23 @@
             {
               "label": "Attention to detail",
               "count": 53
+            }
+          ]
+        },
+        "Sales and Marketing": {
+          "postings_considered": 81,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 64
+            },
+            {
+              "label": "Negotiation",
+              "count": 16
+            },
+            {
+              "label": "Problem solving",
+              "count": 12
             }
           ]
         },
@@ -12963,23 +12963,6 @@
             }
           ]
         },
-        "Business and Administra": {
-          "postings_considered": 126,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 88
-            },
-            {
-              "label": "Problem solving",
-              "count": 37
-            },
-            {
-              "label": "Attention to detail",
-              "count": 31
-            }
-          ]
-        },
         "Development and Project": {
           "postings_considered": 39,
           "skills": [
@@ -12994,6 +12977,23 @@
             {
               "label": "Coordination",
               "count": 4
+            }
+          ]
+        },
+        "Business and Administra": {
+          "postings_considered": 126,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 88
+            },
+            {
+              "label": "Problem solving",
+              "count": 37
+            },
+            {
+              "label": "Attention to detail",
+              "count": 31
             }
           ]
         },
@@ -16422,23 +16422,6 @@
         }
       ],
       "critical_skills_by_subsector": {
-        "Sales and Marketing": {
-          "postings_considered": 81,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 64
-            },
-            {
-              "label": "Negotiation",
-              "count": 16
-            },
-            {
-              "label": "Problem solving",
-              "count": 12
-            }
-          ]
-        },
         "Social Sciences and Communications": {
           "postings_considered": 180,
           "skills": [
@@ -16453,6 +16436,23 @@
             {
               "label": "Attention to detail",
               "count": 53
+            }
+          ]
+        },
+        "Sales and Marketing": {
+          "postings_considered": 81,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 64
+            },
+            {
+              "label": "Negotiation",
+              "count": 16
+            },
+            {
+              "label": "Problem solving",
+              "count": 12
             }
           ]
         },
@@ -16592,23 +16592,6 @@
             }
           ]
         },
-        "Business and Administra": {
-          "postings_considered": 126,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 88
-            },
-            {
-              "label": "Problem solving",
-              "count": 37
-            },
-            {
-              "label": "Attention to detail",
-              "count": 31
-            }
-          ]
-        },
         "Development and Project": {
           "postings_considered": 39,
           "skills": [
@@ -16623,6 +16606,23 @@
             {
               "label": "Coordination",
               "count": 4
+            }
+          ]
+        },
+        "Business and Administra": {
+          "postings_considered": 126,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 88
+            },
+            {
+              "label": "Problem solving",
+              "count": 37
+            },
+            {
+              "label": "Attention to detail",
+              "count": 31
             }
           ]
         },
