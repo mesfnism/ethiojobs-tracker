@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01 12:31:40 UTC",
+  "generated_at": "2026-10-01 13:19:48 UTC",
   "source": "EthioJobs + HaHuJobs",
   "taxonomies": {
     "skills": "ESCO (EU skills/competences taxonomy)",
@@ -7,13 +7,17 @@
     "education": "ISCED 2011 (UNESCO International Standard Classification of Education)",
     "sectors": "ISIC Rev.4 (UN International Standard Industrial Classification)"
   },
+  "notes": {
+    "education_specializations": "Field-of-study is extracted from free-text descriptions, which only HaHuJobs postings have \u2014 EthioJobs postings contribute to each level's total but rarely to a specific field.",
+    "employer_type": "Private / Public / NGO is a keyword heuristic on the employer's own name, not a verified registry lookup."
+  },
   "windows": {
     "daily": {
-      "posting_count": 952,
+      "posting_count": 1095,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 71
+          "count": 84
         },
         {
           "label": "Attention to detail",
@@ -25,53 +29,49 @@
         },
         {
           "label": "Accounting",
-          "count": 17
+          "count": 18
+        },
+        {
+          "label": "Teamwork",
+          "count": 15
         },
         {
           "label": "Decision-making",
           "count": 15
         },
         {
-          "label": "Teamwork",
-          "count": 10
-        },
-        {
           "label": "Adaptability",
           "count": 9
         },
         {
-          "label": "education, Social Work, Project Management",
-          "count": 7
-        },
-        {
-          "label": "A genuine passion for education and student development",
-          "count": 6
-        },
-        {
           "label": "Creativity",
           "count": 6
+        },
+        {
+          "label": "Analytical thinking",
+          "count": 5
+        },
+        {
+          "label": "Coordination",
+          "count": 5
         }
       ],
       "skill_groups": [
         {
           "label": "Communication, collaboration and creativity",
-          "count": 91
+          "count": 109
         },
         {
           "label": "Information skills",
-          "count": 65
+          "count": 63
         },
         {
           "label": "Working with computers",
-          "count": 49
+          "count": 43
         },
         {
           "label": "Management skills",
-          "count": 41
-        },
-        {
-          "label": "Constructing",
-          "count": 15
+          "count": 23
         },
         {
           "label": "Working with machinery and specialised equipment",
@@ -82,35 +82,39 @@
           "count": 2
         },
         {
+          "label": "Constructing",
+          "count": 2
+        },
+        {
           "label": "Assisting and caring",
           "count": 1
         }
       ],
       "education": {
-        "known_total": 232,
-        "total": 952,
+        "known_total": 265,
+        "total": 1095,
         "levels": [
           {
             "label": "Certificate",
-            "count": 15,
+            "count": 16,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 117,
+            "count": 135,
             "isced_level": 5,
             "isced_label": "Short-cycle tertiary education"
           },
           {
             "label": "Bachelor's degree",
-            "count": 80,
+            "count": 93,
             "isced_level": 6,
             "isced_label": "Bachelor's or equivalent"
           },
           {
             "label": "Master's degree",
-            "count": 17,
+            "count": 18,
             "isced_level": 7,
             "isced_label": "Master's or equivalent"
           },
@@ -122,76 +126,153 @@
           }
         ]
       },
+      "education_specializations": {
+        "Certificate": {
+          "total": 16,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Diploma": {
+          "total": 135,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Bachelor's degree": {
+          "total": 93,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Master's degree": {
+          "total": 18,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "PhD": {
+          "total": 3,
+          "with_field_stated": 0,
+          "fields": []
+        }
+      },
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 392
+          "count": 450
         },
         {
           "label": "Education",
-          "count": 161
+          "count": 184
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 86
+          "count": 96
         },
         {
           "label": "Human health and social work activities",
-          "count": 85
+          "count": 95
         },
         {
           "label": "Financial and insurance activities",
-          "count": 62
+          "count": 81
         },
         {
           "label": "Transportation and storage",
-          "count": 55
-        },
-        {
-          "label": "Construction",
-          "count": 34
+          "count": 73
         },
         {
           "label": "Information and communication",
-          "count": 31
+          "count": 38
+        },
+        {
+          "label": "Construction",
+          "count": 38
         },
         {
           "label": "Wholesale and retail trade",
-          "count": 24
+          "count": 28
         },
         {
           "label": "Manufacturing",
           "count": 20
         }
       ],
+      "sector_subcategories": [
+        {
+          "label": "Business",
+          "count": 294
+        },
+        {
+          "label": "Finance",
+          "count": 171
+        },
+        {
+          "label": "Engineering",
+          "count": 149
+        },
+        {
+          "label": "Accounting",
+          "count": 123
+        },
+        {
+          "label": "Education",
+          "count": 99
+        },
+        {
+          "label": "Teaching",
+          "count": 82
+        },
+        {
+          "label": "Health Care",
+          "count": 78
+        },
+        {
+          "label": "Marketing Management",
+          "count": 74
+        },
+        {
+          "label": "Accounting and Finance",
+          "count": 72
+        },
+        {
+          "label": "Hospitality",
+          "count": 54
+        },
+        {
+          "label": "Business Administration",
+          "count": 51
+        },
+        {
+          "label": "Human Resource Management",
+          "count": 42
+        }
+      ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 373
+          "count": 427
         },
         {
           "label": "Managers",
-          "count": 145
+          "count": 170
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 80
+          "count": 86
         },
         {
           "label": "Service and sales workers",
-          "count": 46
+          "count": 53
         },
         {
           "label": "Clerical support workers",
-          "count": 36
+          "count": 42
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 16
+          "count": 19
         },
         {
           "label": "Craft and related trades workers",
-          "count": 10
+          "count": 12
         },
         {
           "label": "Elementary occupations",
@@ -201,27 +282,27 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 689
+          "count": 802
         },
         {
           "label": "Bule Hora",
-          "count": 49
+          "count": 54
         },
         {
           "label": "Oromia",
-          "count": 22
+          "count": 26
         },
         {
           "label": "Hawassa",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Jimma",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Adama",
-          "count": 14
+          "count": 15
         },
         {
           "label": "Arba Minch",
@@ -232,35 +313,157 @@
           "count": 7
         },
         {
-          "label": "Akaki",
-          "count": 6
+          "label": "Assosa",
+          "count": 7
         },
         {
-          "label": "Assosa",
-          "count": 5
+          "label": "Akaki",
+          "count": 7
         }
       ],
+      "experience": {
+        "known_total": 1014,
+        "total": 1095,
+        "buckets": [
+          {
+            "label": "0-1 years",
+            "count": 268
+          },
+          {
+            "label": "1-3 years",
+            "count": 225
+          },
+          {
+            "label": "3-5 years",
+            "count": 233
+          },
+          {
+            "label": "5-8 years",
+            "count": 215
+          },
+          {
+            "label": "8+ years",
+            "count": 73
+          }
+        ]
+      },
+      "salary": {
+        "known_total": 49,
+        "total": 1095,
+        "buckets": [
+          {
+            "label": "Under 10,000 ETB",
+            "count": 6
+          },
+          {
+            "label": "10,000\u201320,000 ETB",
+            "count": 29
+          },
+          {
+            "label": "20,000\u201335,000 ETB",
+            "count": 9
+          },
+          {
+            "label": "60,000+ ETB",
+            "count": 5
+          }
+        ]
+      },
+      "top_employers": [
+        {
+          "label": "Bule Hora University",
+          "count": 54
+        },
+        {
+          "label": "Lesso Ethiopia Trading PLC",
+          "count": 17
+        },
+        {
+          "label": "Ethiopian Food and Drug Authority (Efda)",
+          "count": 16
+        },
+        {
+          "label": "Leofam Business Group",
+          "count": 15
+        },
+        {
+          "label": "Talent Search - Ethiojobs",
+          "count": 12
+        },
+        {
+          "label": "Radisson Blu Hotel Addis Ababa",
+          "count": 12
+        },
+        {
+          "label": "Ethiopian Civil Aviation Authority \u2013 Employee Welfare and Consumer Affairs Officer, Human Resources and Administration Department",
+          "count": 11
+        },
+        {
+          "label": "Amg Holdings PLC",
+          "count": 11
+        },
+        {
+          "label": "Arba Minch Conference Resort By Ethiopian Skylight Hospitality Group",
+          "count": 11
+        },
+        {
+          "label": "Ethiopian Construction Works Corporation",
+          "count": 10
+        }
+      ],
+      "employer_type": {
+        "known_total": 609,
+        "total": 1095,
+        "types": [
+          {
+            "label": "Private",
+            "count": 442
+          },
+          {
+            "label": "Public",
+            "count": 120
+          },
+          {
+            "label": "NGO",
+            "count": 47
+          },
+          {
+            "label": "Unclassified",
+            "count": 486
+          }
+        ]
+      },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 819
+          "count": 946
         },
         {
           "label": "EthioJobs",
-          "count": 114
+          "count": 121
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 19
+          "count": 28
+        }
+      ],
+      "source_sites": [
+        {
+          "label": "HaHuJobs",
+          "count": 974
+        },
+        {
+          "label": "EthioJobs",
+          "count": 149
         }
       ]
     },
     "weekly": {
-      "posting_count": 1372,
+      "posting_count": 1515,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 312
+          "count": 325
         },
         {
           "label": "Attention to detail",
@@ -272,11 +475,11 @@
         },
         {
           "label": "Teamwork",
-          "count": 64
+          "count": 69
         },
         {
           "label": "Accounting",
-          "count": 63
+          "count": 64
         },
         {
           "label": "Decision-making",
@@ -302,62 +505,62 @@
       "skill_groups": [
         {
           "label": "Communication, collaboration and creativity",
-          "count": 436
+          "count": 454
         },
         {
           "label": "Information skills",
-          "count": 262
+          "count": 254
         },
         {
           "label": "Working with computers",
-          "count": 149
+          "count": 134
         },
         {
           "label": "Management skills",
-          "count": 142
-        },
-        {
-          "label": "Constructing",
-          "count": 32
+          "count": 85
         },
         {
           "label": "Assisting and caring",
-          "count": 16
+          "count": 15
         },
         {
           "label": "Working with machinery and specialised equipment",
-          "count": 13
+          "count": 10
+        },
+        {
+          "label": "Constructing",
+          "count": 6
         },
         {
           "label": "Handling and moving",
-          "count": 6
+          "count": 5
         }
       ],
       "education": {
-        "known_total": 374,
-        "total": 1372,
+        "known_total": 408,
+        "total": 1515,
         "levels": [
           {
             "label": "Certificate",
-            "count": 22,
+            "count": 23,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 132,
+            "count": 151,
             "isced_level": 5,
             "isced_label": "Short-cycle tertiary education"
           },
           {
             "label": "Bachelor's degree",
-            "count": 159,
+            "count": 172,
             "isced_level": 6,
             "isced_label": "Bachelor's or equivalent"
           },
           {
             "label": "Master's degree",
-            "count": 54,
+            "count": 55,
             "isced_level": 7,
             "isced_label": "Master's or equivalent"
           },
@@ -369,76 +572,153 @@
           }
         ]
       },
+      "education_specializations": {
+        "Certificate": {
+          "total": 23,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Diploma": {
+          "total": 151,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Bachelor's degree": {
+          "total": 172,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Master's degree": {
+          "total": 55,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "PhD": {
+          "total": 7,
+          "with_field_stated": 0,
+          "fields": []
+        }
+      },
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 570
+          "count": 628
         },
         {
           "label": "Education",
-          "count": 174
+          "count": 197
         },
         {
           "label": "Financial and insurance activities",
-          "count": 162
+          "count": 181
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 121
+          "count": 131
         },
         {
           "label": "Human health and social work activities",
-          "count": 117
+          "count": 127
         },
         {
           "label": "Transportation and storage",
-          "count": 77
+          "count": 95
         },
         {
           "label": "Wholesale and retail trade",
-          "count": 64
+          "count": 68
         },
         {
           "label": "Information and communication",
-          "count": 55
+          "count": 62
         },
         {
           "label": "Administrative and support service activities",
-          "count": 51
+          "count": 52
         },
         {
-          "label": "Manufacturing",
-          "count": 43
+          "label": "Construction",
+          "count": 45
+        }
+      ],
+      "sector_subcategories": [
+        {
+          "label": "Business",
+          "count": 294
+        },
+        {
+          "label": "Engineering",
+          "count": 209
+        },
+        {
+          "label": "Finance",
+          "count": 171
+        },
+        {
+          "label": "Accounting and Finance",
+          "count": 154
+        },
+        {
+          "label": "Accounting",
+          "count": 123
+        },
+        {
+          "label": "Education",
+          "count": 112
+        },
+        {
+          "label": "Social Sciences and Communications",
+          "count": 105
+        },
+        {
+          "label": "Health Care",
+          "count": 103
+        },
+        {
+          "label": "Teaching",
+          "count": 82
+        },
+        {
+          "label": "Marketing Management",
+          "count": 74
+        },
+        {
+          "label": "Business and Administra",
+          "count": 73
+        },
+        {
+          "label": "Natural Sciences",
+          "count": 63
         }
       ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 533
+          "count": 587
         },
         {
           "label": "Managers",
-          "count": 192
+          "count": 217
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 117
+          "count": 123
         },
         {
           "label": "Service and sales workers",
-          "count": 80
+          "count": 87
         },
         {
           "label": "Clerical support workers",
-          "count": 49
+          "count": 55
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 25
+          "count": 28
         },
         {
           "label": "Craft and related trades workers",
-          "count": 17
+          "count": 19
         },
         {
           "label": "Elementary occupations",
@@ -448,27 +728,27 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 996
+          "count": 1109
         },
         {
           "label": "Oromia",
-          "count": 70
+          "count": 74
         },
         {
           "label": "Bule Hora",
-          "count": 49
+          "count": 54
         },
         {
           "label": "Hawassa",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Jimma",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Adama",
-          "count": 14
+          "count": 15
         },
         {
           "label": "Arba Minch",
@@ -487,27 +767,149 @@
           "count": 7
         }
       ],
+      "experience": {
+        "known_total": 1251,
+        "total": 1515,
+        "buckets": [
+          {
+            "label": "0-1 years",
+            "count": 298
+          },
+          {
+            "label": "1-3 years",
+            "count": 295
+          },
+          {
+            "label": "3-5 years",
+            "count": 289
+          },
+          {
+            "label": "5-8 years",
+            "count": 268
+          },
+          {
+            "label": "8+ years",
+            "count": 101
+          }
+        ]
+      },
+      "salary": {
+        "known_total": 51,
+        "total": 1515,
+        "buckets": [
+          {
+            "label": "Under 10,000 ETB",
+            "count": 7
+          },
+          {
+            "label": "10,000\u201320,000 ETB",
+            "count": 30
+          },
+          {
+            "label": "20,000\u201335,000 ETB",
+            "count": 9
+          },
+          {
+            "label": "60,000+ ETB",
+            "count": 5
+          }
+        ]
+      },
+      "top_employers": [
+        {
+          "label": "Bule Hora University",
+          "count": 54
+        },
+        {
+          "label": "Talent Search - Ethiojobs",
+          "count": 18
+        },
+        {
+          "label": "Lesso Ethiopia Trading PLC",
+          "count": 17
+        },
+        {
+          "label": "Ethiopian Food and Drug Authority (Efda)",
+          "count": 16
+        },
+        {
+          "label": "Amg Holdings",
+          "count": 15
+        },
+        {
+          "label": "Leofam Business Group",
+          "count": 15
+        },
+        {
+          "label": "Mercy Corps Ethiopia",
+          "count": 13
+        },
+        {
+          "label": "Commercial Nominees PLC",
+          "count": 13
+        },
+        {
+          "label": "Radisson Blu",
+          "count": 13
+        },
+        {
+          "label": "Radisson Blu Hotel Addis Ababa",
+          "count": 12
+        }
+      ],
+      "employer_type": {
+        "known_total": 826,
+        "total": 1515,
+        "types": [
+          {
+            "label": "Private",
+            "count": 639
+          },
+          {
+            "label": "Public",
+            "count": 126
+          },
+          {
+            "label": "NGO",
+            "count": 61
+          },
+          {
+            "label": "Unclassified",
+            "count": 689
+          }
+        ]
+      },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 819
+          "count": 946
         },
         {
           "label": "EthioJobs",
-          "count": 385
+          "count": 375
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 168
+          "count": 194
+        }
+      ],
+      "source_sites": [
+        {
+          "label": "HaHuJobs",
+          "count": 1140
+        },
+        {
+          "label": "EthioJobs",
+          "count": 569
         }
       ]
     },
     "monthly": {
-      "posting_count": 1674,
+      "posting_count": 1817,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 494
+          "count": 507
         },
         {
           "label": "Problem solving",
@@ -519,11 +921,11 @@
         },
         {
           "label": "Teamwork",
-          "count": 97
+          "count": 102
         },
         {
           "label": "Accounting",
-          "count": 93
+          "count": 94
         },
         {
           "label": "Decision-making",
@@ -549,62 +951,62 @@
       "skill_groups": [
         {
           "label": "Communication, collaboration and creativity",
-          "count": 697
+          "count": 715
         },
         {
           "label": "Information skills",
-          "count": 356
-        },
-        {
-          "label": "Management skills",
-          "count": 212
+          "count": 343
         },
         {
           "label": "Working with computers",
-          "count": 210
+          "count": 193
         },
         {
-          "label": "Constructing",
-          "count": 42
+          "label": "Management skills",
+          "count": 125
         },
         {
           "label": "Assisting and caring",
-          "count": 21
+          "count": 20
         },
         {
           "label": "Working with machinery and specialised equipment",
-          "count": 19
+          "count": 16
+        },
+        {
+          "label": "Constructing",
+          "count": 8
         },
         {
           "label": "Handling and moving",
-          "count": 7
+          "count": 6
         }
       ],
       "education": {
-        "known_total": 500,
-        "total": 1674,
+        "known_total": 536,
+        "total": 1817,
         "levels": [
           {
             "label": "Certificate",
-            "count": 27,
+            "count": 28,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 148,
+            "count": 168,
             "isced_level": 5,
             "isced_label": "Short-cycle tertiary education"
           },
           {
             "label": "Bachelor's degree",
-            "count": 229,
+            "count": 242,
             "isced_level": 6,
             "isced_label": "Bachelor's or equivalent"
           },
           {
             "label": "Master's degree",
-            "count": 89,
+            "count": 91,
             "isced_level": 7,
             "isced_label": "Master's or equivalent"
           },
@@ -616,76 +1018,153 @@
           }
         ]
       },
+      "education_specializations": {
+        "Certificate": {
+          "total": 28,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Diploma": {
+          "total": 168,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Bachelor's degree": {
+          "total": 242,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Master's degree": {
+          "total": 91,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "PhD": {
+          "total": 7,
+          "with_field_stated": 0,
+          "fields": []
+        }
+      },
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 675
+          "count": 733
         },
         {
           "label": "Financial and insurance activities",
-          "count": 232
+          "count": 251
         },
         {
           "label": "Education",
-          "count": 181
+          "count": 204
         },
         {
           "label": "Human health and social work activities",
-          "count": 164
+          "count": 174
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 125
-        },
-        {
-          "label": "Wholesale and retail trade",
-          "count": 101
+          "count": 135
         },
         {
           "label": "Transportation and storage",
-          "count": 98
+          "count": 116
         },
         {
-          "label": "Administrative and support service activities",
-          "count": 69
+          "label": "Wholesale and retail trade",
+          "count": 105
         },
         {
           "label": "Information and communication",
-          "count": 68
+          "count": 75
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 70
         },
         {
           "label": "Manufacturing",
           "count": 52
         }
       ],
+      "sector_subcategories": [
+        {
+          "label": "Business",
+          "count": 294
+        },
+        {
+          "label": "Engineering",
+          "count": 237
+        },
+        {
+          "label": "Accounting and Finance",
+          "count": 215
+        },
+        {
+          "label": "Social Sciences and Communications",
+          "count": 177
+        },
+        {
+          "label": "Finance",
+          "count": 171
+        },
+        {
+          "label": "Health Care",
+          "count": 149
+        },
+        {
+          "label": "Business and Administra",
+          "count": 125
+        },
+        {
+          "label": "Accounting",
+          "count": 123
+        },
+        {
+          "label": "Education",
+          "count": 119
+        },
+        {
+          "label": "Natural Sciences",
+          "count": 91
+        },
+        {
+          "label": "Sales and Marketing",
+          "count": 82
+        },
+        {
+          "label": "Teaching",
+          "count": 82
+        }
+      ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 624
+          "count": 678
         },
         {
           "label": "Managers",
-          "count": 251
+          "count": 276
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 143
+          "count": 149
         },
         {
           "label": "Service and sales workers",
-          "count": 93
+          "count": 100
         },
         {
           "label": "Clerical support workers",
-          "count": 61
+          "count": 67
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 26
+          "count": 29
         },
         {
           "label": "Craft and related trades workers",
-          "count": 21
+          "count": 23
         },
         {
           "label": "Elementary occupations",
@@ -695,30 +1174,30 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1230
+          "count": 1343
         },
         {
           "label": "Oromia",
-          "count": 91
+          "count": 95
         },
         {
           "label": "Bule Hora",
-          "count": 49
+          "count": 54
         },
         {
           "label": "Hawassa",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Jimma",
+          "count": 17
+        },
+        {
+          "label": "Adama",
           "count": 15
         },
         {
           "label": "Somali",
-          "count": 14
-        },
-        {
-          "label": "Adama",
           "count": 14
         },
         {
@@ -734,27 +1213,153 @@
           "count": 10
         }
       ],
+      "experience": {
+        "known_total": 1413,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "0-1 years",
+            "count": 318
+          },
+          {
+            "label": "1-3 years",
+            "count": 338
+          },
+          {
+            "label": "3-5 years",
+            "count": 328
+          },
+          {
+            "label": "5-8 years",
+            "count": 311
+          },
+          {
+            "label": "8+ years",
+            "count": 118
+          }
+        ]
+      },
+      "salary": {
+        "known_total": 57,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "Under 10,000 ETB",
+            "count": 7
+          },
+          {
+            "label": "10,000\u201320,000 ETB",
+            "count": 30
+          },
+          {
+            "label": "20,000\u201335,000 ETB",
+            "count": 9
+          },
+          {
+            "label": "35,000\u201360,000 ETB",
+            "count": 5
+          },
+          {
+            "label": "60,000+ ETB",
+            "count": 6
+          }
+        ]
+      },
+      "top_employers": [
+        {
+          "label": "Bule Hora University",
+          "count": 54
+        },
+        {
+          "label": "Talent Search - Ethiojobs",
+          "count": 19
+        },
+        {
+          "label": "Lesso Ethiopia Trading PLC",
+          "count": 17
+        },
+        {
+          "label": "Ethiopian Food and Drug Authority (Efda)",
+          "count": 16
+        },
+        {
+          "label": "Commercial Nominees PLC",
+          "count": 15
+        },
+        {
+          "label": "Amg Holdings",
+          "count": 15
+        },
+        {
+          "label": "Leofam Business Group",
+          "count": 15
+        },
+        {
+          "label": "Mercy Corps Ethiopia",
+          "count": 13
+        },
+        {
+          "label": "Radisson Blu",
+          "count": 13
+        },
+        {
+          "label": "Ethiopian Public Health Institute",
+          "count": 12
+        }
+      ],
+      "employer_type": {
+        "known_total": 994,
+        "total": 1817,
+        "types": [
+          {
+            "label": "Private",
+            "count": 775
+          },
+          {
+            "label": "Public",
+            "count": 132
+          },
+          {
+            "label": "NGO",
+            "count": 87
+          },
+          {
+            "label": "Unclassified",
+            "count": 823
+          }
+        ]
+      },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 819
+          "count": 946
         },
         {
           "label": "EthioJobs",
-          "count": 603
+          "count": 585
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 252
+          "count": 286
+        }
+      ],
+      "source_sites": [
+        {
+          "label": "HaHuJobs",
+          "count": 1232
+        },
+        {
+          "label": "EthioJobs",
+          "count": 871
         }
       ]
     },
     "quarterly": {
-      "posting_count": 1674,
+      "posting_count": 1817,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 494
+          "count": 507
         },
         {
           "label": "Problem solving",
@@ -766,11 +1371,11 @@
         },
         {
           "label": "Teamwork",
-          "count": 97
+          "count": 102
         },
         {
           "label": "Accounting",
-          "count": 93
+          "count": 94
         },
         {
           "label": "Decision-making",
@@ -796,62 +1401,62 @@
       "skill_groups": [
         {
           "label": "Communication, collaboration and creativity",
-          "count": 697
+          "count": 715
         },
         {
           "label": "Information skills",
-          "count": 356
-        },
-        {
-          "label": "Management skills",
-          "count": 212
+          "count": 343
         },
         {
           "label": "Working with computers",
-          "count": 210
+          "count": 193
         },
         {
-          "label": "Constructing",
-          "count": 42
+          "label": "Management skills",
+          "count": 125
         },
         {
           "label": "Assisting and caring",
-          "count": 21
+          "count": 20
         },
         {
           "label": "Working with machinery and specialised equipment",
-          "count": 19
+          "count": 16
+        },
+        {
+          "label": "Constructing",
+          "count": 8
         },
         {
           "label": "Handling and moving",
-          "count": 7
+          "count": 6
         }
       ],
       "education": {
-        "known_total": 500,
-        "total": 1674,
+        "known_total": 536,
+        "total": 1817,
         "levels": [
           {
             "label": "Certificate",
-            "count": 27,
+            "count": 28,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 148,
+            "count": 168,
             "isced_level": 5,
             "isced_label": "Short-cycle tertiary education"
           },
           {
             "label": "Bachelor's degree",
-            "count": 229,
+            "count": 242,
             "isced_level": 6,
             "isced_label": "Bachelor's or equivalent"
           },
           {
             "label": "Master's degree",
-            "count": 89,
+            "count": 91,
             "isced_level": 7,
             "isced_label": "Master's or equivalent"
           },
@@ -863,76 +1468,153 @@
           }
         ]
       },
+      "education_specializations": {
+        "Certificate": {
+          "total": 28,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Diploma": {
+          "total": 168,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Bachelor's degree": {
+          "total": 242,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Master's degree": {
+          "total": 91,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "PhD": {
+          "total": 7,
+          "with_field_stated": 0,
+          "fields": []
+        }
+      },
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 675
+          "count": 733
         },
         {
           "label": "Financial and insurance activities",
-          "count": 232
+          "count": 251
         },
         {
           "label": "Education",
-          "count": 181
+          "count": 204
         },
         {
           "label": "Human health and social work activities",
-          "count": 164
+          "count": 174
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 125
-        },
-        {
-          "label": "Wholesale and retail trade",
-          "count": 101
+          "count": 135
         },
         {
           "label": "Transportation and storage",
-          "count": 98
+          "count": 116
         },
         {
-          "label": "Administrative and support service activities",
-          "count": 69
+          "label": "Wholesale and retail trade",
+          "count": 105
         },
         {
           "label": "Information and communication",
-          "count": 68
+          "count": 75
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 70
         },
         {
           "label": "Manufacturing",
           "count": 52
         }
       ],
+      "sector_subcategories": [
+        {
+          "label": "Business",
+          "count": 294
+        },
+        {
+          "label": "Engineering",
+          "count": 237
+        },
+        {
+          "label": "Accounting and Finance",
+          "count": 215
+        },
+        {
+          "label": "Social Sciences and Communications",
+          "count": 177
+        },
+        {
+          "label": "Finance",
+          "count": 171
+        },
+        {
+          "label": "Health Care",
+          "count": 149
+        },
+        {
+          "label": "Business and Administra",
+          "count": 125
+        },
+        {
+          "label": "Accounting",
+          "count": 123
+        },
+        {
+          "label": "Education",
+          "count": 119
+        },
+        {
+          "label": "Natural Sciences",
+          "count": 91
+        },
+        {
+          "label": "Sales and Marketing",
+          "count": 82
+        },
+        {
+          "label": "Teaching",
+          "count": 82
+        }
+      ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 624
+          "count": 678
         },
         {
           "label": "Managers",
-          "count": 251
+          "count": 276
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 143
+          "count": 149
         },
         {
           "label": "Service and sales workers",
-          "count": 93
+          "count": 100
         },
         {
           "label": "Clerical support workers",
-          "count": 61
+          "count": 67
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 26
+          "count": 29
         },
         {
           "label": "Craft and related trades workers",
-          "count": 21
+          "count": 23
         },
         {
           "label": "Elementary occupations",
@@ -942,30 +1624,30 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1230
+          "count": 1343
         },
         {
           "label": "Oromia",
-          "count": 91
+          "count": 95
         },
         {
           "label": "Bule Hora",
-          "count": 49
+          "count": 54
         },
         {
           "label": "Hawassa",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Jimma",
+          "count": 17
+        },
+        {
+          "label": "Adama",
           "count": 15
         },
         {
           "label": "Somali",
-          "count": 14
-        },
-        {
-          "label": "Adama",
           "count": 14
         },
         {
@@ -981,27 +1663,153 @@
           "count": 10
         }
       ],
+      "experience": {
+        "known_total": 1413,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "0-1 years",
+            "count": 318
+          },
+          {
+            "label": "1-3 years",
+            "count": 338
+          },
+          {
+            "label": "3-5 years",
+            "count": 328
+          },
+          {
+            "label": "5-8 years",
+            "count": 311
+          },
+          {
+            "label": "8+ years",
+            "count": 118
+          }
+        ]
+      },
+      "salary": {
+        "known_total": 57,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "Under 10,000 ETB",
+            "count": 7
+          },
+          {
+            "label": "10,000\u201320,000 ETB",
+            "count": 30
+          },
+          {
+            "label": "20,000\u201335,000 ETB",
+            "count": 9
+          },
+          {
+            "label": "35,000\u201360,000 ETB",
+            "count": 5
+          },
+          {
+            "label": "60,000+ ETB",
+            "count": 6
+          }
+        ]
+      },
+      "top_employers": [
+        {
+          "label": "Bule Hora University",
+          "count": 54
+        },
+        {
+          "label": "Talent Search - Ethiojobs",
+          "count": 19
+        },
+        {
+          "label": "Lesso Ethiopia Trading PLC",
+          "count": 17
+        },
+        {
+          "label": "Ethiopian Food and Drug Authority (Efda)",
+          "count": 16
+        },
+        {
+          "label": "Commercial Nominees PLC",
+          "count": 15
+        },
+        {
+          "label": "Amg Holdings",
+          "count": 15
+        },
+        {
+          "label": "Leofam Business Group",
+          "count": 15
+        },
+        {
+          "label": "Mercy Corps Ethiopia",
+          "count": 13
+        },
+        {
+          "label": "Radisson Blu",
+          "count": 13
+        },
+        {
+          "label": "Ethiopian Public Health Institute",
+          "count": 12
+        }
+      ],
+      "employer_type": {
+        "known_total": 994,
+        "total": 1817,
+        "types": [
+          {
+            "label": "Private",
+            "count": 775
+          },
+          {
+            "label": "Public",
+            "count": 132
+          },
+          {
+            "label": "NGO",
+            "count": 87
+          },
+          {
+            "label": "Unclassified",
+            "count": 823
+          }
+        ]
+      },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 819
+          "count": 946
         },
         {
           "label": "EthioJobs",
-          "count": 603
+          "count": 585
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 252
+          "count": 286
+        }
+      ],
+      "source_sites": [
+        {
+          "label": "HaHuJobs",
+          "count": 1232
+        },
+        {
+          "label": "EthioJobs",
+          "count": 871
         }
       ]
     },
     "yearly": {
-      "posting_count": 1674,
+      "posting_count": 1817,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 494
+          "count": 507
         },
         {
           "label": "Problem solving",
@@ -1013,11 +1821,11 @@
         },
         {
           "label": "Teamwork",
-          "count": 97
+          "count": 102
         },
         {
           "label": "Accounting",
-          "count": 93
+          "count": 94
         },
         {
           "label": "Decision-making",
@@ -1043,62 +1851,62 @@
       "skill_groups": [
         {
           "label": "Communication, collaboration and creativity",
-          "count": 697
+          "count": 715
         },
         {
           "label": "Information skills",
-          "count": 356
-        },
-        {
-          "label": "Management skills",
-          "count": 212
+          "count": 343
         },
         {
           "label": "Working with computers",
-          "count": 210
+          "count": 193
         },
         {
-          "label": "Constructing",
-          "count": 42
+          "label": "Management skills",
+          "count": 125
         },
         {
           "label": "Assisting and caring",
-          "count": 21
+          "count": 20
         },
         {
           "label": "Working with machinery and specialised equipment",
-          "count": 19
+          "count": 16
+        },
+        {
+          "label": "Constructing",
+          "count": 8
         },
         {
           "label": "Handling and moving",
-          "count": 7
+          "count": 6
         }
       ],
       "education": {
-        "known_total": 500,
-        "total": 1674,
+        "known_total": 536,
+        "total": 1817,
         "levels": [
           {
             "label": "Certificate",
-            "count": 27,
+            "count": 28,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 148,
+            "count": 168,
             "isced_level": 5,
             "isced_label": "Short-cycle tertiary education"
           },
           {
             "label": "Bachelor's degree",
-            "count": 229,
+            "count": 242,
             "isced_level": 6,
             "isced_label": "Bachelor's or equivalent"
           },
           {
             "label": "Master's degree",
-            "count": 89,
+            "count": 91,
             "isced_level": 7,
             "isced_label": "Master's or equivalent"
           },
@@ -1110,76 +1918,153 @@
           }
         ]
       },
+      "education_specializations": {
+        "Certificate": {
+          "total": 28,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Diploma": {
+          "total": 168,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Bachelor's degree": {
+          "total": 242,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Master's degree": {
+          "total": 91,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "PhD": {
+          "total": 7,
+          "with_field_stated": 0,
+          "fields": []
+        }
+      },
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 675
+          "count": 733
         },
         {
           "label": "Financial and insurance activities",
-          "count": 232
+          "count": 251
         },
         {
           "label": "Education",
-          "count": 181
+          "count": 204
         },
         {
           "label": "Human health and social work activities",
-          "count": 164
+          "count": 174
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 125
-        },
-        {
-          "label": "Wholesale and retail trade",
-          "count": 101
+          "count": 135
         },
         {
           "label": "Transportation and storage",
-          "count": 98
+          "count": 116
         },
         {
-          "label": "Administrative and support service activities",
-          "count": 69
+          "label": "Wholesale and retail trade",
+          "count": 105
         },
         {
           "label": "Information and communication",
-          "count": 68
+          "count": 75
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 70
         },
         {
           "label": "Manufacturing",
           "count": 52
         }
       ],
+      "sector_subcategories": [
+        {
+          "label": "Business",
+          "count": 294
+        },
+        {
+          "label": "Engineering",
+          "count": 237
+        },
+        {
+          "label": "Accounting and Finance",
+          "count": 215
+        },
+        {
+          "label": "Social Sciences and Communications",
+          "count": 177
+        },
+        {
+          "label": "Finance",
+          "count": 171
+        },
+        {
+          "label": "Health Care",
+          "count": 149
+        },
+        {
+          "label": "Business and Administra",
+          "count": 125
+        },
+        {
+          "label": "Accounting",
+          "count": 123
+        },
+        {
+          "label": "Education",
+          "count": 119
+        },
+        {
+          "label": "Natural Sciences",
+          "count": 91
+        },
+        {
+          "label": "Sales and Marketing",
+          "count": 82
+        },
+        {
+          "label": "Teaching",
+          "count": 82
+        }
+      ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 624
+          "count": 678
         },
         {
           "label": "Managers",
-          "count": 251
+          "count": 276
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 143
+          "count": 149
         },
         {
           "label": "Service and sales workers",
-          "count": 93
+          "count": 100
         },
         {
           "label": "Clerical support workers",
-          "count": 61
+          "count": 67
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 26
+          "count": 29
         },
         {
           "label": "Craft and related trades workers",
-          "count": 21
+          "count": 23
         },
         {
           "label": "Elementary occupations",
@@ -1189,30 +2074,30 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1230
+          "count": 1343
         },
         {
           "label": "Oromia",
-          "count": 91
+          "count": 95
         },
         {
           "label": "Bule Hora",
-          "count": 49
+          "count": 54
         },
         {
           "label": "Hawassa",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Jimma",
+          "count": 17
+        },
+        {
+          "label": "Adama",
           "count": 15
         },
         {
           "label": "Somali",
-          "count": 14
-        },
-        {
-          "label": "Adama",
           "count": 14
         },
         {
@@ -1228,27 +2113,153 @@
           "count": 10
         }
       ],
+      "experience": {
+        "known_total": 1413,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "0-1 years",
+            "count": 318
+          },
+          {
+            "label": "1-3 years",
+            "count": 338
+          },
+          {
+            "label": "3-5 years",
+            "count": 328
+          },
+          {
+            "label": "5-8 years",
+            "count": 311
+          },
+          {
+            "label": "8+ years",
+            "count": 118
+          }
+        ]
+      },
+      "salary": {
+        "known_total": 57,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "Under 10,000 ETB",
+            "count": 7
+          },
+          {
+            "label": "10,000\u201320,000 ETB",
+            "count": 30
+          },
+          {
+            "label": "20,000\u201335,000 ETB",
+            "count": 9
+          },
+          {
+            "label": "35,000\u201360,000 ETB",
+            "count": 5
+          },
+          {
+            "label": "60,000+ ETB",
+            "count": 6
+          }
+        ]
+      },
+      "top_employers": [
+        {
+          "label": "Bule Hora University",
+          "count": 54
+        },
+        {
+          "label": "Talent Search - Ethiojobs",
+          "count": 19
+        },
+        {
+          "label": "Lesso Ethiopia Trading PLC",
+          "count": 17
+        },
+        {
+          "label": "Ethiopian Food and Drug Authority (Efda)",
+          "count": 16
+        },
+        {
+          "label": "Commercial Nominees PLC",
+          "count": 15
+        },
+        {
+          "label": "Amg Holdings",
+          "count": 15
+        },
+        {
+          "label": "Leofam Business Group",
+          "count": 15
+        },
+        {
+          "label": "Mercy Corps Ethiopia",
+          "count": 13
+        },
+        {
+          "label": "Radisson Blu",
+          "count": 13
+        },
+        {
+          "label": "Ethiopian Public Health Institute",
+          "count": 12
+        }
+      ],
+      "employer_type": {
+        "known_total": 994,
+        "total": 1817,
+        "types": [
+          {
+            "label": "Private",
+            "count": 775
+          },
+          {
+            "label": "Public",
+            "count": 132
+          },
+          {
+            "label": "NGO",
+            "count": 87
+          },
+          {
+            "label": "Unclassified",
+            "count": 823
+          }
+        ]
+      },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 819
+          "count": 946
         },
         {
           "label": "EthioJobs",
-          "count": 603
+          "count": 585
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 252
+          "count": 286
+        }
+      ],
+      "source_sites": [
+        {
+          "label": "HaHuJobs",
+          "count": 1232
+        },
+        {
+          "label": "EthioJobs",
+          "count": 871
         }
       ]
     },
     "all_time": {
-      "posting_count": 1674,
+      "posting_count": 1817,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 494
+          "count": 507
         },
         {
           "label": "Problem solving",
@@ -1260,11 +2271,11 @@
         },
         {
           "label": "Teamwork",
-          "count": 97
+          "count": 102
         },
         {
           "label": "Accounting",
-          "count": 93
+          "count": 94
         },
         {
           "label": "Decision-making",
@@ -1290,62 +2301,62 @@
       "skill_groups": [
         {
           "label": "Communication, collaboration and creativity",
-          "count": 697
+          "count": 715
         },
         {
           "label": "Information skills",
-          "count": 356
-        },
-        {
-          "label": "Management skills",
-          "count": 212
+          "count": 343
         },
         {
           "label": "Working with computers",
-          "count": 210
+          "count": 193
         },
         {
-          "label": "Constructing",
-          "count": 42
+          "label": "Management skills",
+          "count": 125
         },
         {
           "label": "Assisting and caring",
-          "count": 21
+          "count": 20
         },
         {
           "label": "Working with machinery and specialised equipment",
-          "count": 19
+          "count": 16
+        },
+        {
+          "label": "Constructing",
+          "count": 8
         },
         {
           "label": "Handling and moving",
-          "count": 7
+          "count": 6
         }
       ],
       "education": {
-        "known_total": 500,
-        "total": 1674,
+        "known_total": 536,
+        "total": 1817,
         "levels": [
           {
             "label": "Certificate",
-            "count": 27,
+            "count": 28,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 148,
+            "count": 168,
             "isced_level": 5,
             "isced_label": "Short-cycle tertiary education"
           },
           {
             "label": "Bachelor's degree",
-            "count": 229,
+            "count": 242,
             "isced_level": 6,
             "isced_label": "Bachelor's or equivalent"
           },
           {
             "label": "Master's degree",
-            "count": 89,
+            "count": 91,
             "isced_level": 7,
             "isced_label": "Master's or equivalent"
           },
@@ -1357,76 +2368,153 @@
           }
         ]
       },
+      "education_specializations": {
+        "Certificate": {
+          "total": 28,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Diploma": {
+          "total": 168,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Bachelor's degree": {
+          "total": 242,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "Master's degree": {
+          "total": 91,
+          "with_field_stated": 0,
+          "fields": []
+        },
+        "PhD": {
+          "total": 7,
+          "with_field_stated": 0,
+          "fields": []
+        }
+      },
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 675
+          "count": 733
         },
         {
           "label": "Financial and insurance activities",
-          "count": 232
+          "count": 251
         },
         {
           "label": "Education",
-          "count": 181
+          "count": 204
         },
         {
           "label": "Human health and social work activities",
-          "count": 164
+          "count": 174
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 125
-        },
-        {
-          "label": "Wholesale and retail trade",
-          "count": 101
+          "count": 135
         },
         {
           "label": "Transportation and storage",
-          "count": 98
+          "count": 116
         },
         {
-          "label": "Administrative and support service activities",
-          "count": 69
+          "label": "Wholesale and retail trade",
+          "count": 105
         },
         {
           "label": "Information and communication",
-          "count": 68
+          "count": 75
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 70
         },
         {
           "label": "Manufacturing",
           "count": 52
         }
       ],
+      "sector_subcategories": [
+        {
+          "label": "Business",
+          "count": 294
+        },
+        {
+          "label": "Engineering",
+          "count": 237
+        },
+        {
+          "label": "Accounting and Finance",
+          "count": 215
+        },
+        {
+          "label": "Social Sciences and Communications",
+          "count": 177
+        },
+        {
+          "label": "Finance",
+          "count": 171
+        },
+        {
+          "label": "Health Care",
+          "count": 149
+        },
+        {
+          "label": "Business and Administra",
+          "count": 125
+        },
+        {
+          "label": "Accounting",
+          "count": 123
+        },
+        {
+          "label": "Education",
+          "count": 119
+        },
+        {
+          "label": "Natural Sciences",
+          "count": 91
+        },
+        {
+          "label": "Sales and Marketing",
+          "count": 82
+        },
+        {
+          "label": "Teaching",
+          "count": 82
+        }
+      ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 624
+          "count": 678
         },
         {
           "label": "Managers",
-          "count": 251
+          "count": 276
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 143
+          "count": 149
         },
         {
           "label": "Service and sales workers",
-          "count": 93
+          "count": 100
         },
         {
           "label": "Clerical support workers",
-          "count": 61
+          "count": 67
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 26
+          "count": 29
         },
         {
           "label": "Craft and related trades workers",
-          "count": 21
+          "count": 23
         },
         {
           "label": "Elementary occupations",
@@ -1436,30 +2524,30 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1230
+          "count": 1343
         },
         {
           "label": "Oromia",
-          "count": 91
+          "count": 95
         },
         {
           "label": "Bule Hora",
-          "count": 49
+          "count": 54
         },
         {
           "label": "Hawassa",
-          "count": 15
+          "count": 17
         },
         {
           "label": "Jimma",
+          "count": 17
+        },
+        {
+          "label": "Adama",
           "count": 15
         },
         {
           "label": "Somali",
-          "count": 14
-        },
-        {
-          "label": "Adama",
           "count": 14
         },
         {
@@ -1475,20 +2563,174 @@
           "count": 10
         }
       ],
+      "experience": {
+        "known_total": 1413,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "0-1 years",
+            "count": 318
+          },
+          {
+            "label": "1-3 years",
+            "count": 338
+          },
+          {
+            "label": "3-5 years",
+            "count": 328
+          },
+          {
+            "label": "5-8 years",
+            "count": 311
+          },
+          {
+            "label": "8+ years",
+            "count": 118
+          }
+        ]
+      },
+      "salary": {
+        "known_total": 57,
+        "total": 1817,
+        "buckets": [
+          {
+            "label": "Under 10,000 ETB",
+            "count": 7
+          },
+          {
+            "label": "10,000\u201320,000 ETB",
+            "count": 30
+          },
+          {
+            "label": "20,000\u201335,000 ETB",
+            "count": 9
+          },
+          {
+            "label": "35,000\u201360,000 ETB",
+            "count": 5
+          },
+          {
+            "label": "60,000+ ETB",
+            "count": 6
+          }
+        ]
+      },
+      "top_employers": [
+        {
+          "label": "Bule Hora University",
+          "count": 54
+        },
+        {
+          "label": "Talent Search - Ethiojobs",
+          "count": 19
+        },
+        {
+          "label": "Lesso Ethiopia Trading PLC",
+          "count": 17
+        },
+        {
+          "label": "Ethiopian Food and Drug Authority (Efda)",
+          "count": 16
+        },
+        {
+          "label": "Commercial Nominees PLC",
+          "count": 15
+        },
+        {
+          "label": "Amg Holdings",
+          "count": 15
+        },
+        {
+          "label": "Leofam Business Group",
+          "count": 15
+        },
+        {
+          "label": "Mercy Corps Ethiopia",
+          "count": 13
+        },
+        {
+          "label": "Radisson Blu",
+          "count": 13
+        },
+        {
+          "label": "Ethiopian Public Health Institute",
+          "count": 12
+        }
+      ],
+      "employer_type": {
+        "known_total": 994,
+        "total": 1817,
+        "types": [
+          {
+            "label": "Private",
+            "count": 775
+          },
+          {
+            "label": "Public",
+            "count": 132
+          },
+          {
+            "label": "NGO",
+            "count": 87
+          },
+          {
+            "label": "Unclassified",
+            "count": 823
+          }
+        ]
+      },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 819
+          "count": 946
         },
         {
           "label": "EthioJobs",
-          "count": 603
+          "count": 585
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 252
+          "count": 286
+        }
+      ],
+      "source_sites": [
+        {
+          "label": "HaHuJobs",
+          "count": 1232
+        },
+        {
+          "label": "EthioJobs",
+          "count": 871
         }
       ]
     }
+  },
+  "trends": {
+    "weekly": [
+      {
+        "period": "2026-W39",
+        "count": 482
+      },
+      {
+        "period": "2026-W40",
+        "count": 1335
+      }
+    ],
+    "monthly": [
+      {
+        "period": "2026-09",
+        "count": 722
+      },
+      {
+        "period": "2026-10",
+        "count": 1095
+      }
+    ],
+    "yearly": [
+      {
+        "period": "2026",
+        "count": 1817
+      }
+    ]
   }
 }
