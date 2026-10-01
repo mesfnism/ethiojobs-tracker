@@ -1,10 +1,14 @@
-name: Daily Jobs Pipeline (EthioJobs + HaHuJobs + ReporterJobs)
+name: Daily Jobs Pipeline (EthioJobs + HaHuJobs + ReporterJobs + PalmJobs + DevNetJobs + HarmeeJobs)
 
 permissions:
   contents: write
 
-# One consolidated workflow covering all three job boards, run entirely
-# sequentially with a single commit at the end.
+# One consolidated workflow covering both job boards, run entirely
+# sequentially with a single commit at the end. This used to be two
+# separate offset workflows (one per site) — consolidated into one so the
+# combine/dedup step always runs after BOTH sites have finished scraping,
+# and so there is only ever one commit per day (two competing workflows
+# racing to push caused a real, one-off failed run previously).
 on:
   schedule:
     - cron: "0 6 * * *"
@@ -37,6 +41,15 @@ jobs:
       - name: Run Ethiopian Reporter Jobs pipeline
         run: python reporterjobs_pipeline.py
 
+      - name: Run PalmJobs pipeline
+        run: python palmjobs_pipeline.py
+
+      - name: Run DevNetJobs pipeline (Ethiopia-filtered)
+        run: python devnetjobs_pipeline.py
+
+      - name: Run HarmeeJobs pipeline
+        run: python harmeejobs_pipeline.py
+
       - name: Combine trackers and dedup cross-posted vacancies
         run: python combine_trackers.py
 
@@ -47,6 +60,6 @@ jobs:
         run: |
           git config user.name "jobs-pipeline-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json
+          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json
           git diff --quiet --cached || git commit -m "Daily jobs update $(date -u +%Y-%m-%d)"
           git push
