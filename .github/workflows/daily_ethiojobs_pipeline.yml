@@ -56,10 +56,13 @@ jobs:
       - name: Build dashboard data (daily / weekly / monthly / quarterly / yearly rollups)
         run: python rollup_ethiojobs.py
 
-      - name: Commit updated trackers and dashboard data back to the repo
+      - name: Build the Vacancy and Skill Intelligence Reports (weekly + monthly)
+        run: python generate_intelligence_report.py
+
+      - name: Commit updated trackers, dashboard data and reports back to the repo
         run: |
           git config user.name "jobs-pipeline-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json
+          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json docs/data/report_history.json docs/reports/weekly-intelligence-report.html docs/reports/monthly-intelligence-report.html
           git diff --quiet --cached || git commit -m "Daily jobs update $(date -u +%Y-%m-%d)"
           git push
