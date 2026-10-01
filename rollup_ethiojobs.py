@@ -10,19 +10,29 @@ pipeline first saw the posting) — not the site's own relative "posted X
 days ago" text, which isn't reliable for date math. So "daily" means
 "postings first seen in the last 24 hours," not "postings dated today."
 
-Run this AFTER ethiojobs_pipeline.py in the same workflow, so it always
-summarizes the freshly updated tracker.
+Skills, job titles, education levels and sectors are classified against
+standard international taxonomies (ESCO, ISCO-08, ISCED 2011, ISIC Rev.4)
+rather than raw site text, via taxonomy.py — see that file for what each
+scheme is and how the matching works.
+
+Reads from combined_tracker.xlsx (built by combine_trackers.py, which
+merges ethiojobs_tracker.xlsx and hahujobs_tracker.xlsx and dedups any
+vacancy cross-posted to both sites) rather than a single site's tracker,
+so every chart reflects vacancies from all sources at once. Run this
+AFTER both site pipelines and combine_trackers.py in the same workflow,
+so it always summarizes the freshly updated combined dataset.
 """
 
 import json
-import re
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import openpyxl
 
-INPUT_XLSX = "ethiojobs_tracker.xlsx"
+import taxonomy
+
+INPUT_XLSX = "combined_tracker.xlsx"
 OUTPUT_JSON = "docs/data/rollups.json"
 
 WINDOWS = {
@@ -33,20 +43,11 @@ WINDOWS = {
     "yearly": 365,
 }
 
-CLEAN_EDU_ORDER = ["Bachelor's degree", "Master's degree", "Diploma", "Certificate", "PhD"]
-DATE_RE = re.compile(r"\b(January|February|March|April|May|June|July|August|September|"
-                      r"October|November|December)\s+\d", re.I)
-BAD_SKILL_LABELS = {"desired skill", "required skill", "skills", "skill", "other"}
-SKILL_NORMALIZE = {
-    "problem solving skill": "Problem solving",
-    "problem solving": "Problem solving",
-    "analytical thinking and problem-solving skills": "Problem solving",
-    "decision-making skills": "Decision-making",
-    "decision making skills": "Decision-making",
-}
 CATEGORY_EXPANSIONS = {
     "Social Sciences and Com": "Social Sciences and Communications",
 }
+
+_BAD_LOCATION_LABELS = {"not specified", "n/a", "none", "tbd", "various"}
 
 
 def load_rows(path):
@@ -69,36 +70,57 @@ def parse_scraped(value):
 
 
 def top_skills(rows, n=10):
+    """Individual skills, ESCO-normalized (merges spacing/casing variants
+    like "Teamwork" / "Team work" into one count)."""
     counter = Counter()
-    display = {}
     for r in rows:
         if not r.get("skills_required"):
             continue
         for s in r["skills_required"].split(";"):
-            s = s.strip(" •-\t.")
-            if not s or len(s) < 3 or DATE_RE.search(s):
+            canon = taxonomy.normalize_skill(s)
+            if canon:
+                counter[canon] += 1
+    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+
+
+def skill_groups(rows, n=8):
+    """Skills rolled up to their ESCO top-level pillar (the "general skill"
+    each individual skill belongs to)."""
+    counter = Counter()
+    for r in rows:
+        if not r.get("skills_required"):
+            continue
+        for s in r["skills_required"].split(";"):
+            canon = taxonomy.normalize_skill(s)
+            if not canon:
                 continue
-            key = s.lower().strip(".")
-            if key in BAD_SKILL_LABELS:
-                continue
-            canon = SKILL_NORMALIZE.get(key, s)
-            canon_key = canon.lower()
-            counter[canon_key] += 1
-            display.setdefault(canon_key, canon)
-    return [{"label": display[k], "count": c} for k, c in counter.most_common(n)]
+            group = taxonomy.esco_group_for_skill(canon)
+            if group != "Not classified":
+                counter[group] += 1
+    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
 
 
 def education_breakdown(rows):
-    counter = Counter(r.get("education_required") for r in rows if r.get("education_required") in CLEAN_EDU_ORDER)
+    """Education requirements mapped onto ISCED 2011 levels."""
+    counter = Counter(
+        r.get("education_required")
+        for r in rows
+        if r.get("education_required") in taxonomy.ISCED_LEVELS
+    )
     known_total = sum(counter.values())
-    return {
-        "known_total": known_total,
-        "total": len(rows),
-        "levels": [{"label": lvl, "count": counter.get(lvl, 0)} for lvl in CLEAN_EDU_ORDER if counter.get(lvl, 0) > 0],
-    }
+    levels = []
+    for raw in taxonomy.ISCED_ORDER:
+        c = counter.get(raw, 0)
+        if c > 0:
+            level, label = taxonomy.ISCED_LEVELS[raw]
+            levels.append({"label": raw, "count": c, "isced_level": level, "isced_label": label})
+    return {"known_total": known_total, "total": len(rows), "levels": levels}
 
 
 def top_categories(rows, n=10):
+    """Sectors via ISIC Rev.4, classified from the posting's own category
+    tag text (falls back to nothing counted if no rule matches, rather
+    than showing the site's own truncated label)."""
     counter = Counter()
     for r in rows:
         if not r.get("category"):
@@ -108,16 +130,59 @@ def top_categories(rows, n=10):
             if not c:
                 continue
             c = CATEGORY_EXPANSIONS.get(c, c)
-            counter[c] += 1
-    return [{"label": c, "count": n_} for c, n_ in counter.most_common(n)]
+            sector = taxonomy.isic_section_for_text(c)
+            if sector:
+                counter[sector["label"]] += 1
+    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+
+
+def top_jobs(rows, n=10):
+    """Occupations via ISCO-08 major groups, classified from job_title."""
+    counter = Counter()
+    for r in rows:
+        title = r.get("job_title")
+        if not title:
+            continue
+        group = taxonomy.isco_group_for_title(title)
+        if group != "Not classified":
+            counter[group] += 1
+    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+
+
+def top_locations(rows, n=10):
+    """Postings by location. Location is a clean structured field on
+    EthioJobs already, so this only trims whitespace/casing — no external
+    taxonomy needed."""
+    counter = Counter()
+    for r in rows:
+        loc = r.get("location")
+        if not loc:
+            continue
+        loc = loc.strip()
+        if not loc or loc.lower() in _BAD_LOCATION_LABELS:
+            continue
+        counter[loc] += 1
+    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+
+
+def source_breakdown(rows):
+    """How many tracked vacancies came from each site (a cross-posted,
+    merged vacancy counts under its combined source label, e.g.
+    "EthioJobs, HaHuJobs", rather than being split between the two)."""
+    counter = Counter(r.get("source") for r in rows if r.get("source"))
+    return [{"label": label, "count": c} for label, c in counter.most_common()]
 
 
 def summarize(rows):
     return {
         "posting_count": len(rows),
         "top_skills": top_skills(rows),
+        "skill_groups": skill_groups(rows),
         "education": education_breakdown(rows),
         "top_categories": top_categories(rows),
+        "top_jobs": top_jobs(rows),
+        "top_locations": top_locations(rows),
+        "source_breakdown": source_breakdown(rows),
     }
 
 
@@ -138,7 +203,13 @@ def main():
 
     payload = {
         "generated_at": now.strftime("%Y-%m-%d %H:%M:%S UTC"),
-        "source": "EthioJobs",
+        "source": "EthioJobs + HaHuJobs",
+        "taxonomies": {
+            "skills": "ESCO (EU skills/competences taxonomy)",
+            "jobs": "ISCO-08 (ILO International Standard Classification of Occupations)",
+            "education": "ISCED 2011 (UNESCO International Standard Classification of Education)",
+            "sectors": "ISIC Rev.4 (UN International Standard Industrial Classification)",
+        },
         "windows": windows_out,
     }
 
