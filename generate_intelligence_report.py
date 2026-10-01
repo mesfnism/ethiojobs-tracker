@@ -46,10 +46,10 @@ AUTHOR_NAME = "Mesfin Abraham Ali"
 AUTHOR_CONTACT = "mesfnism@gmail.com"
 COLLABORATION_NOTE = (
     "This report is produced and maintained independently by " + AUTHOR_NAME + ". "
-    "Comments, corrections, data-sharing proposals and collaboration or funding "
+    "Comments, corrections, proposals to share data, and collaboration or funding "
     "inquiries are welcome at " + AUTHOR_CONTACT + ". The underlying pipeline is "
     "built to scale to additional vacancy sources, additional countries in the "
-    "Horn of Africa, and partnerships with official statistical and labour-market "
+    "Horn of Africa, and partnerships with official statistical and labour market "
     "information bodies."
 )
 
@@ -81,18 +81,18 @@ REFERENCES = [
     "Lessons on Labour Market Information Systems.” ILO News, 20 April 2026. "
     "https://www.ilo.org/resource/article/ethiopia-and-south-africa-share-lessons-labour-market-information-systems-0",
     "World Bank (2023). Ethiopia Education and Skills for Employability Project. "
-    "Project Appraisal Document, Component 3: System Strengthening.",
-    "European Commission. ESCO — European Skills, Competences, Qualifications and "
-    "Occupations (skills taxonomy). https://esco.ec.europa.eu",
-    "International Labour Organization. ISCO-08 — International Standard "
-    "Classification of Occupations. https://www.ilo.org/public/english/bureau/stat/isco/isco08/",
-    "UNESCO Institute for Statistics. ISCED 2011 — International Standard "
-    "Classification of Education.",
-    "United Nations Statistics Division. ISIC Rev.4 — International Standard "
-    "Industrial Classification of All Economic Activities.",
-    "Primary vacancy data: EthioJobs (ethiojobs.net), HaHuJobs (hahu.jobs), Ethiopian "
+    "Project Appraisal Document, Component 3, System Strengthening.",
+    "European Commission. ESCO (European Skills, Competences, Qualifications and "
+    "Occupations), a skills taxonomy. https://esco.ec.europa.eu",
+    "International Labour Organization. ISCO-08 (International Standard "
+    "Classification of Occupations). https://www.ilo.org/public/english/bureau/stat/isco/isco08/",
+    "UNESCO Institute for Statistics. ISCED 2011 (International Standard "
+    "Classification of Education).",
+    "United Nations Statistics Division. ISIC Rev.4 (International Standard "
+    "Industrial Classification of All Economic Activities).",
+    "Primary vacancy data. EthioJobs (ethiojobs.net), HaHuJobs (hahu.jobs), Ethiopian "
     "Reporter Jobs (ethiopianreporterjobs.com), PalmJobs (palmjobs.et), DevNetJobs "
-    "(devnetjobs.org, Ethiopia-filtered) and HarmeeJobs — scraped and standardized "
+    "(devnetjobs.org, filtered to Ethiopia) and HarmeeJobs, scraped and standardized "
     "daily by the author's own open pipeline (github.com, EthioJobs Tracker project).",
 ]
 
@@ -115,69 +115,76 @@ SOURCE_PROFILES = [
     },
     {
         "name": "HaHuJobs", "key": "HaHuJobs",
-        "scope": "A second major Ethiopian job board, covering a similar private-sector "
-                 "mix to EthioJobs with heavier representation from public institutions "
-                 "and universities.",
-        "strength": "free-text job descriptions that, unlike EthioJobs, often let the "
-                    "field-of-study and salary classifiers extract a specific value rather "
-                    "than only a coarse category.",
-        "weakness": "a meaningful share of its public-sector and university postings are "
-                    "written entirely in Amharic, which the current classifiers cannot "
-                    "read, so those postings count toward total volume but not toward the "
-                    "Skills, Education or Sector breakdowns.",
-        "fix": "the same Amharic-language extension as EthioJobs would recover this gap "
-               "directly, since the underlying postings already exist in the tracked data.",
+        "scope": "A second major Ethiopian job board, covering a mix of employers "
+                 "similar to EthioJobs in the private sector, with heavier "
+                 "representation from public institutions and universities.",
+        "strength": "job descriptions written as free text that, unlike EthioJobs, "
+                    "often let the field of study and salary classifiers extract a "
+                    "specific value rather than only a coarse category.",
+        "weakness": "a meaningful share of its postings from the public sector and "
+                    "universities are written entirely in Amharic, which the current "
+                    "classifiers cannot read. Those postings count toward total volume "
+                    "but not toward the Skills, Education or Sector breakdowns.",
+        "fix": "extending language coverage to Amharic, the same fix planned for "
+               "EthioJobs, would recover this gap directly, since the underlying "
+               "postings already exist in the tracked data.",
     },
     {
         "name": "Ethiopian Reporter Jobs", "key": "ReporterJobs",
-        "scope": "The vacancy section of a long-running Ethiopian weekly newspaper, "
-                 "which carries a distinct mix of postings (notably more public-sector and "
-                 "NGO notices) than the pure-play job boards.",
-        "strength": "a source independent of the online job-board ecosystem, so it "
-                    "surfaces vacancies — particularly public-institution notices — "
-                    "that may not be cross-posted anywhere else.",
-        "weakness": "the site sits behind bot-detection that can intermittently block an "
-                    "automated browser, and as of this report its tracked volume is "
-                    "noticeably thinner than the other sources — a known, acknowledged "
-                    "gap rather than a silent one (see Limitations).",
-        "fix": "a browser-fingerprint fix has already been applied; confirming it holds "
-               "across multiple scheduled runs, and adding alerting when a run returns "
-               "zero postings, are the next concrete steps.",
+        "scope": "The vacancy section of an Ethiopian weekly newspaper that has run "
+                 "for many years. It carries a distinct mix of postings, with a "
+                 "larger share of public sector and NGO notices than the job boards "
+                 "that operate purely online.",
+        "strength": "being independent of the online job boards, so it surfaces "
+                    "vacancies, particularly notices from public institutions, that "
+                    "may not be posted anywhere else.",
+        "weakness": "the site runs bot detection that can intermittently block an "
+                    "automated browser. As of this report its tracked volume is "
+                    "noticeably thinner than the other sources. This is a known and "
+                    "acknowledged gap rather than a silent one (see Limitations).",
+        "fix": "a fix to the browser's fingerprint has already been applied. "
+               "Confirming it holds across multiple scheduled runs, and adding an "
+               "alert when a run returns zero postings, are the next concrete steps.",
     },
     {
         "name": "PalmJobs", "key": "PalmJobs",
-        "scope": "A newer Ethiopian job board drawing on a modern web stack, covering "
-                 "a broadly similar private-sector mix to EthioJobs and HaHuJobs.",
+        "scope": "A newer Ethiopian job board drawing on a modern web stack, "
+                 "covering a mix of employers broadly similar to EthioJobs and "
+                 "HaHuJobs in the private sector.",
         "strength": "structured data read directly from the site's own API, giving "
-                    "clean fields with little free-text parsing required once the "
+                    "clean fields with little parsing of free text required once the "
                     "connection to that API is working.",
-        "weakness": "the site has changed its own technical architecture more than once "
-                    "since tracking began, each time silently breaking the pipeline's "
-                    "connection to it until corrected — its tracked volume is currently "
-                    "thinner than it should be as a result.",
-        "fix": "a fix that reads the site's own public API key directly from its code has "
-               "been applied; the next scheduled runs will show whether it restores full "
-               "coverage, and a lightweight daily check (did this source return zero "
-               "postings today?) is planned to catch the next such change quickly.",
+        "weakness": "the site has changed its own technical architecture more than "
+                    "once since tracking began, each time silently breaking the "
+                    "pipeline's connection to it until corrected. Its tracked volume "
+                    "is currently thinner than it should be as a result.",
+        "fix": "a fix that reads the site's own public API key directly from its "
+               "code has been applied. The next scheduled runs will show whether it "
+               "restores full coverage, and a lightweight daily check, asking "
+               "whether this source returned zero postings today, is planned to "
+               "catch the next such change quickly.",
     },
     {
         "name": "DevNetJobs", "key": "DevNetJobs",
-        "scope": "An international development-sector vacancy board; this pipeline "
-                 "filters it to Ethiopia-relevant postings only via a keyword search, so "
-                 "it is deliberately narrower than the general job boards.",
-        "strength": "a distinct, internationally-oriented slice of the market — donor, "
-                    "NGO and development-programme roles — that general job boards "
-                    "rarely carry.",
-        "weakness": "resolving a listing into its full detail page depends on replaying "
-                    "the site's own interactive behaviour, which is fragile by nature, and "
-                    "a share of its postings are member-only and are correctly skipped "
-                    "rather than guessed at — both factors currently keep its tracked "
-                    "volume very low (as of this report, effectively a single posting).",
-        "fix": "the pipeline now drives that interaction through a real browser page "
-               "rather than approximating it, which should recover most previously-missed "
-               "postings on the next run; if volume stays low after that, the keyword "
-               "search itself (currently scoped narrowly to avoid member-only noise) is the "
-               "next thing to widen.",
+        "scope": "An international vacancy board for the development sector. This "
+                 "pipeline filters it to postings relevant to Ethiopia only, using a "
+                 "keyword search, so it is deliberately narrower than the general "
+                 "job boards.",
+        "strength": "a distinct slice of the market oriented toward international "
+                    "work, donor roles, NGO roles and development programme roles, "
+                    "that general job boards rarely carry.",
+        "weakness": "resolving a listing into its full detail page depends on "
+                    "replaying the site's own interactive behaviour, which is fragile "
+                    "by nature, and a share of its postings are visible to members "
+                    "only and are correctly skipped rather than guessed at. Both "
+                    "factors currently keep its tracked volume very low. As of this "
+                    "report, it is effectively a single posting.",
+        "fix": "the pipeline now drives that interaction through a real browser "
+               "page rather than approximating it, which should recover most "
+               "postings that were previously missed, on the next run. If volume "
+               "stays low after that, the keyword search itself, currently scoped "
+               "narrowly to avoid noise from listings visible only to members, is "
+               "the next thing to widen.",
     },
     {
         "name": "HarmeeJobs", "key": "HarmeeJobs",
@@ -465,9 +472,9 @@ def build_cover(report_title, window_label, period_label, generated_at, other_re
 <h1>{esc(report_title)}</h1>
 <p class="period">{esc(period_label)}</p>
 <div class="meta-row">
-  <div><strong>Author &amp; Project Owner:</strong> {esc(AUTHOR_NAME)}</div>
-  <div><strong>Contact:</strong> {esc(AUTHOR_CONTACT)}</div>
-  <div><strong>Generated:</strong> {esc(generated_at)}</div>
+  <div><strong>Author and Project Owner</strong> {esc(AUTHOR_NAME)}</div>
+  <div><strong>Contact</strong> {esc(AUTHOR_CONTACT)}</div>
+  <div><strong>Generated</strong> {esc(generated_at)}</div>
   <div class="nav-links">
     <a href="{esc(dashboard_link)}">Live dashboard &rarr;</a>
     <a href="{esc(other_report_link)}">Companion report &rarr;</a>
@@ -529,10 +536,10 @@ def build_executive_summary(window_label, period_label, current, insights):
 postings across six Ethiopian job boards, standardized against international occupation, skills,
 education and industry taxonomies so that figures reported here are comparable across sources and
 over time. The purpose of this exercise is not to replace Ethiopia's official labour market
-information architecture, but to complement it: where the national E-LMIS and the Ethiopian
-Statistical Service's household and establishment surveys provide periodic, authoritative but
-infrequent measurement of the labour market [1][3], this report offers a continuously updated,
-narrower read of what employers are actually advertising for, in close to real time.</p>
+information architecture, but to complement it. The national E-LMIS and the Ethiopian Statistical
+Service's household and establishment surveys provide periodic, authoritative but infrequent
+measurement of the labour market [1][3]. This report offers a continuously updated, narrower read
+of what employers are actually advertising for, close to real time.</p>
 <p>The leading skill requested this period was <strong>{esc(top_skill)}</strong>, the most active
 sector was <strong>{esc(top_sector)}</strong>, and the single largest identifiable hiring employer
 was <strong>{esc(top_employer)}</strong>. {trend_sentence} The Analysis section below sets out these
@@ -549,32 +556,32 @@ def build_introduction(window_label, period_label):
 <p>Ethiopia's labour market is widely characterised, in both the academic and policy literature, by
 high youth unemployment, informality, and a persistent mismatch between the skills job seekers hold
 and the skills employers require [1][3]. A recurring theme in assessments of the country's labour
-market information architecture is fragmentation: multiple institutions &mdash; the Ministry of
+market information architecture is fragmentation. Multiple institutions, including the Ministry of
 Labour and Skills, the Ethiopian Statistical Service, the Ethiopian Investment Commission, and
-donor-funded programme offices &mdash; each hold partial, administratively-collected data, with
-limited interoperability or routine data-sharing between them [1][2]. Ethiopia's own E-LMIS
-initiative, evolving through systems including Ethioworks and JEDI, is a direct institutional
-response to this gap, but remains a work in progress [1][2].</p>
+programme offices funded by donors, each hold partial data collected administratively, with limited
+interoperability or routine sharing of data between them [1][2]. Ethiopia's own E-LMIS initiative,
+evolving through systems including Ethioworks and JEDI, is a direct institutional response to this
+gap, but remains a work in progress [1][2].</p>
 <p>{esc(PROJECT_NAME)} takes a narrower, complementary approach. Rather than attempting to measure
-the labour market as a whole, it tracks what is observable directly and continuously: vacancy
-postings advertised on Ethiopia's most-used online job boards. Each posting is read, structured, and
-classified against four international standards &mdash; ESCO for skills, ISCO-08 for occupations,
-ISCED 2011 for education levels, and ISIC Rev.4 for industry sectors [4][5][6][7] &mdash; so that a
-posting's requirements are comparable across sources and legible to anyone already familiar with
-those schemes, including statistical agencies and development partners.</p>
+the labour market as a whole, it tracks what is observable directly and continuously, namely vacancy
+postings advertised on Ethiopia's most used online job boards. Each posting is read, structured, and
+classified against four international standards. ESCO for skills, ISCO-08 for occupations, ISCED
+2011 for education levels, and ISIC Rev.4 for industry sectors [4][5][6][7]. This makes a posting's
+requirements comparable across sources and legible to anyone already familiar with those schemes,
+including statistical agencies and development partners.</p>
 <p>This {window_label} report covers {esc(period_label).lower()}. It is one of two companion editions
-produced on a rolling basis: a weekly edition capturing short-term movement, and a monthly edition
-capturing a steadier baseline. Both are generated automatically from the same underlying dataset and
+produced on a rolling basis. A weekly edition captures short-term movement, and a monthly edition
+captures a steadier baseline. Both are generated automatically from the same underlying dataset and
 published alongside a live, continuously updated dashboard.</p>
 <h2>Scope and methodology, briefly</h2>
-<p>Six sources are tracked: EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs
-(filtered to Ethiopia-relevant postings) and HarmeeJobs. A posting cross-posted to more than one
-source is identified and merged rather than double-counted, matched on employer, job title and
-location within a short posting-date window. Each of the four taxonomies above is applied
-independently per field; a posting that cannot be confidently classified against a given taxonomy is
-excluded from that specific breakdown rather than guessed at, and is still counted toward overall
-volume. The Data Sources section that follows sets out what each source does and does not capture
-well; the Limitations section sets out what this leaves unresolved.</p>
+<p>Six sources are tracked. EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs
+(filtered to postings relevant to Ethiopia) and HarmeeJobs. A posting that has been cross posted to
+more than one source is identified and merged rather than double counted, matched on employer, job
+title and location within a short window around the posting date. Each of the four taxonomies above
+is applied independently per field. A posting that cannot be confidently classified against a given
+taxonomy is excluded from that specific breakdown rather than guessed at, and is still counted
+toward overall volume. The Data Sources section that follows sets out what each source does and
+does not capture well. The Limitations section sets out what this leaves unresolved.</p>
 """
     return page(body)
 
@@ -594,18 +601,18 @@ def build_sources(insights):
     gap_note = ""
     if gap_keys:
         fields = ", ".join(COVERAGE_FIELDS[k] for k in gap_keys)
-        gap_note = (f"<p>Separately from source-level coverage, this period's data also shows thin "
-                    f"coverage on fields that depend on a posting stating them explicitly: fewer than "
-                    f"{COVERAGE_CONCERN_PCT} percent of postings report {esc(fields)}. This is a property "
-                    f"of what employers choose to disclose, not a parsing failure, and it is treated as "
-                    f"a stated limitation throughout rather than estimated or imputed.</p>")
+        gap_note = (f"<p>Separately from coverage at the source level, this period's data also shows "
+                    f"thin coverage on fields that depend on a posting stating them explicitly. Fewer "
+                    f"than {COVERAGE_CONCERN_PCT} percent of postings report {esc(fields)}. This is a "
+                    f"property of what employers choose to disclose, not a parsing failure, and it is "
+                    f"treated as a stated limitation throughout rather than estimated or imputed.</p>")
     body = f"""
 <h1 class="page-title" id="sources">Data Sources</h1>
 <p>Each source below is described in terms of what it covers, what it is reliably good for, where it
 currently falls short, and what a realistic next step to improve it looks like. None of the sources
-is treated as authoritative on its own; the value of combining them is in triangulating signal across
-otherwise-siloed boards, in the same spirit recommended for Ethiopia's wider labour-market information
-ecosystem [1].</p>
+is treated as authoritative on its own. The value of combining them is in triangulating signal across
+boards that would otherwise sit in isolation from each other, in the same spirit recommended for
+Ethiopia's wider system of labour market information [1].</p>
 {''.join(blocks)}
 {gap_note}
 """
@@ -638,7 +645,7 @@ def build_analysis(window_label, current, insights, window_data):
     for sec in window_data.get("top_categories", [])[:8]:
         label = sec["label"]
         entry = crit_by_sector.get(label)
-        top_skill = entry["skills"][0]["label"] if entry and entry.get("skills") else "— (not enough postings with stated skills)"
+        top_skill = entry["skills"][0]["label"] if entry and entry.get("skills") else "Not enough postings with stated skills"
         sector_rows.append(f"<tr><td>{esc(label)}</td><td>{sec['count']}</td><td>{esc(top_skill)}</td></tr>")
     sector_table = (
         f'<table class="data-table"><caption>Table 2. Most active sectors and each sector’s single most-requested skill, {esc(window_label)} window.</caption>'
@@ -669,7 +676,7 @@ def build_analysis(window_label, current, insights, window_data):
             if sentence_parts:
                 pattern_paras.append(f"<p>{' '.join(sentence_parts)}</p>")
         if not pattern_paras:
-            pattern_paras.append("<p>No notable rank movement was detected this period across skills, sectors, roles, locations or employers; the composition of demand held steady relative to the comparison snapshot.</p>")
+            pattern_paras.append("<p>No notable rank movement was detected this period across skills, sectors, roles, locations or employers. The composition of demand held steady relative to the comparison snapshot.</p>")
     else:
         pattern_paras.append(
             "<p>No prior snapshot is yet available far enough back to compare against, so this edition "
@@ -687,8 +694,8 @@ def build_analysis(window_label, current, insights, window_data):
         f"({round(100 * exp.get('known_total', 0) / exp['total'], 1) if exp.get('total') else 0}%) state years "
         f"of experience required, and only {sal.get('known_total', 0)} "
         f"({round(100 * sal.get('known_total', 0) / sal['total'], 1) if sal.get('total') else 0}%) state a clear "
-        f"monthly pay figure — consistent with the broader observation that Ethiopian employers disclose "
-        f"compensation far less often than qualifications."
+        f"monthly pay figure. This is consistent with the broader observation that Ethiopian employers "
+        f"disclose compensation far less often than qualifications."
     )
 
     body = f"""
@@ -696,19 +703,19 @@ def build_analysis(window_label, current, insights, window_data):
 <h2>Skills in demand</h2>
 <p>{skills_table}</p>
 {skills_figure}
-<h2>Where those skills matter: sectoral patterns</h2>
-<p>Skill demand is not uniform across the economy; the sector a posting sits in shapes which specific
+<h2>Where those skills matter, sectoral patterns</h2>
+<p>Skill demand is not uniform across the economy. The sector a posting sits in shapes which specific
 skill is most sought after within it. Table 2 reports, for each of the most active sectors this
-period, the single skill most frequently requested within postings tagged to that sector (subject to
-a minimum of three postings in that sector stating explicit skills, so a one-off posting is never
-reported as a sector's standard).</p>
+period, the single skill most frequently requested within postings tagged to that sector, subject to
+a minimum of three postings in that sector stating explicit skills, so that a one-off posting is
+never reported as a sector's standard.</p>
 {sector_table}
 <h2>Education, experience and pay profile</h2>
 <p>{coverage_sentence}</p>
 <h2>Persistent and emerging patterns</h2>
 <p>Comparing this period against the closest available prior snapshot distinguishes demand that is
-structurally embedded in the market from demand that is newly rising or fading — the distinction a
-one-off snapshot cannot make on its own.</p>
+structurally embedded in the market from demand that is newly rising or fading. A single snapshot on
+its own cannot make that distinction.</p>
 {''.join(pattern_paras)}
 """
     return page(body)
@@ -718,44 +725,44 @@ def build_limitations(insights):
     gaps = insights["coverage_gaps"]
     gap_sentence = ""
     if gaps:
-        items = "; ".join(f"{esc(g['label'])} ({g['pct']}% of postings)" for g in gaps)
-        gap_sentence = (f"<p>In this edition specifically, coverage is thin for: {items}. Three of the six "
-                         f"tracked sources — Ethiopian Reporter Jobs, PalmJobs and DevNetJobs — are also "
+        items = ", ".join(f"{esc(g['label'])} ({g['pct']}% of postings)" for g in gaps)
+        gap_sentence = (f"<p>In this edition specifically, coverage is thin for {items}. Three of the six "
+                         f"tracked sources, Ethiopian Reporter Jobs, PalmJobs and DevNetJobs, are also "
                          f"currently contributing fewer postings than their true listing volume, for the "
-                         f"source-specific technical reasons set out on the Data Sources page; fixes for each "
-                         f"have been applied and their effect is being confirmed over the next few scheduled "
-                         f"runs.</p>")
+                         f"technical reasons specific to each source set out on the Data Sources page. "
+                         f"Fixes for each have been applied and their effect is being confirmed over the "
+                         f"next few scheduled runs.</p>")
     body = f"""
 <h1 class="page-title" id="limitations">Advantages, Limitations and Planned Improvements</h1>
 <h2>Advantages of this approach</h2>
 <ul class="plain">
-  <li>Continuous, low-cost, automatically-refreshed measurement, in contrast to periodic survey-based
-  labour market information that updates on a multi-year cycle.</li>
+  <li>Continuous, low cost measurement that refreshes automatically, in contrast to periodic labour
+  market information based on surveys that updates on a multi-year cycle.</li>
   <li>Standardized against the same international taxonomies (ESCO, ISCO-08, ISCED 2011, ISIC Rev.4)
-  used in official labour-market reporting, so figures here are directly comparable to other work
+  used in official reporting on labour markets, so figures here are directly comparable to other work
   using the same schemes.</li>
-  <li>Full transparency on what is and is not captured: a field that cannot be classified confidently
+  <li>Full transparency on what is and is not captured. A field that cannot be classified confidently
   is excluded from that breakdown rather than estimated, and every honesty threshold used in this
-  report (e.g. a minimum posting count before a "most-requested skill" is reported for a group) is
-  stated rather than hidden.</li>
+  report (for example a minimum posting count before a most-requested skill is reported for a group)
+  is stated rather than hidden.</li>
 </ul>
 <h2>Limitations</h2>
 <ul class="plain">
-  <li>Coverage is restricted to vacancies advertised on the specific online boards tracked; informal,
-  word-of-mouth, and unadvertised hiring &mdash; a substantial share of actual hiring activity in
-  Ethiopia &mdash; is not observed at all.</li>
-  <li>Classification currently works on English-language text; a meaningful share of postings,
+  <li>Coverage is restricted to vacancies advertised on the specific online boards tracked. Informal,
+  word of mouth, and unadvertised hiring, a substantial share of actual hiring activity in Ethiopia,
+  is not observed at all.</li>
+  <li>Classification currently works on text written in English. A meaningful share of postings,
   particularly from public institutions, are written in Amharic and are not yet classified into the
   Skills, Education or Sector breakdowns, though they are still counted toward overall volume.</li>
   <li>Employer type (Private, Public or NGO) is inferred from a keyword heuristic on the employer's own
   name, not a verified registry lookup, and should be read as indicative.</li>
   <li>Tracked history is still short relative to the seasonal cycles a labour market can exhibit over a
-  full year; early trend comparisons should be read cautiously until more history accumulates.</li>
+  full year. Early trend comparisons should be read cautiously until more history accumulates.</li>
 </ul>
 {gap_sentence}
 <h2>Planned improvements</h2>
-<p>Near-term priorities are: extending the language coverage of the skills and sector classifiers to
-Amharic text; closing the volume gap on the three currently under-performing sources; and adding
+<p>Near-term priorities are extending the language coverage of the skills and sector classifiers to
+Amharic text, closing the volume gap on the three sources that currently fall short, and adding
 additional sources, including, subject to feasibility and permission, sources beyond Ethiopia's
 borders within the Horn of Africa. Readers who hold data, funding, or institutional mandate relevant
 to any of these priorities are invited to make contact (see the cover page for details).</p>
@@ -773,10 +780,10 @@ around a recognisable core of skill and sector demand, led by {esc(top_skill)} a
 requested skill and {esc(top_sector)} as the most active sector. This concentration, together with the
 persistence observed across reporting periods for a recurring set of top skills and sectors, is
 consistent with a labour market in which demand is structurally embedded in a small number of sectors
-and roles rather than shifting unpredictably period to period &mdash; a pattern that itself has
+and roles rather than shifting unpredictably from one period to the next. That pattern itself has
 implications for how training providers and jobseekers might prioritise their effort.</p>
-<p>At the same time, the gaps documented in this report &mdash; thin wage disclosure, uneven coverage
-across sources, and a language barrier on Amharic-only postings &mdash; mean that this report's picture
+<p>At the same time, the gaps documented in this report, thin wage disclosure, uneven coverage across
+sources, and a language barrier on postings written only in Amharic, mean that this report's picture
 of the market, while directionally useful, remains partial. It is offered as a complement to, not a
 substitute for, Ethiopia's official labour market information systems, and is intended to improve in
 coverage and depth with each future edition.</p>
@@ -793,21 +800,22 @@ section, since persistence across reporting periods is a stronger signal of dura
 single period's figures alone. Where a specific sector's leading skill (Table 2) differs from what a
 programme currently emphasises, that gap is worth investigating directly with employers in that
 sector.</p>
-<h2>For policymakers and labour-market information stakeholders</h2>
-<p>This report's sector- and skill-level granularity, refreshed continuously, is offered as a
-complementary input to the periodic survey-based measurement that Ethiopia's official labour-market
-information architecture already produces, and as a concrete example of the kind of administrative
-data integration recommended in prior assessments of that architecture [1]. Collaboration on data
-sharing, validation against official sources, or integration into E-LMIS reporting is welcomed.</p>
+<h2>For policymakers and labour market information stakeholders</h2>
+<p>This report's granularity at the sector and skill level, refreshed continuously, is offered as a
+complementary input to the periodic measurement based on surveys that Ethiopia's official labour
+market information architecture already produces, and as a concrete example of the kind of
+administrative data integration recommended in prior assessments of that architecture [1].
+Collaboration on sharing data, validation against official sources, or integration into E-LMIS
+reporting is welcomed.</p>
 <h2>For jobseekers</h2>
-<p>The Top Skills and sector-level leading-skill tables in this report (Analysis section) are a
-practical starting point for prioritising which skills to acquire or highlight, particularly where a
-skill appears as both persistent and sector-leading rather than a one-off spike.</p>
+<p>The Top Skills table and the tables of leading skill by sector in this report (Analysis section)
+are a practical starting point for prioritising which skills to acquire or present, particularly
+where a skill appears as both persistent and leading in its sector rather than a one-off spike.</p>
 <h2>Scaling and collaboration</h2>
 <p>The underlying pipeline is built to extend to further sources, further geographies within the Horn
-of Africa, and partnership with institutional or donor-funded labour-market information initiatives.
-Readers interested in collaboration, data-sharing, or funding this work are invited to make contact
-(see the cover page for details).</p>
+of Africa, and partnership with institutional initiatives in labour market information or ones
+funded by donors. Readers interested in collaboration, sharing data, or funding this work are
+invited to make contact (see the cover page for details).</p>
 """
     return page(body)
 
@@ -817,7 +825,7 @@ def build_references():
     body = f"""
 <h1 class="page-title" id="references">References</h1>
 <ol class="ref-list">{items}</ol>
-<p class="page-foot">&copy; {esc(AUTHOR_NAME)}. Prepared for {esc(PROJECT_NAME)}. Contact: {esc(AUTHOR_CONTACT)}.</p>
+<p class="page-foot">&copy; {esc(AUTHOR_NAME)}. Prepared for {esc(PROJECT_NAME)}. Reach the author at {esc(AUTHOR_CONTACT)}.</p>
 """
     return page(body)
 
@@ -873,10 +881,10 @@ def main():
     monthly_insights = build_insights(rollups["windows"]["monthly"], monthly_baseline, "monthly")
 
     reports = [
-        ("weekly", f"{PROJECT_NAME} — Vacancy and Skill Intelligence Report (Weekly)",
+        ("weekly", f"{PROJECT_NAME} Weekly Vacancy and Skill Report",
          f"Covers the 7 days up to {as_of_date}", "week", weekly_insights,
          rollups["windows"]["weekly"], "weekly-intelligence-report.html", "monthly-intelligence-report.html"),
-        ("monthly", f"{PROJECT_NAME} — Vacancy and Skill Intelligence Report (Monthly)",
+        ("monthly", f"{PROJECT_NAME} Monthly Vacancy and Skill Report",
          f"Covers the 30 days up to {as_of_date}", "month", monthly_insights,
          rollups["windows"]["monthly"], "monthly-intelligence-report.html", "weekly-intelligence-report.html"),
     ]
