@@ -36,18 +36,41 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 
-# A realistic desktop Chrome user agent and viewport. The site is
-# server-rendered WordPress behind Cloudflare (confirmed by inspecting the
-# live page directly: the job links are present in the plain HTML response,
-# before any client-side JS runs), so a default bare-headless Playwright
-# fingerprint is the most likely reason a run would come back with zero
-# cards on a site that actually has jobs — Cloudflare is known to challenge
-# or block traffic from data-center IPs (like GitHub Actions runners) more
-# readily when the browser's own fingerprint also looks automated.
+# A realistic desktop Chrome user agent and viewport.
+#
+# Update (2026-10-01): the previous version of this comment assumed a
+# Cloudflare JS-challenge was the failure mode, and the earlier fix (this
+# user agent + --disable-blink-features=AutomationControlled) was built on
+# that assumption. A real run's Action log instead showed a PLAIN
+# "403 - Forbidden" / "Access to this page is forbidden." page — that is a
+# different signature from a Cloudflare interstitial (which shows
+# "Just a moment..." / "Checking your browser" branding). A bare 403 like
+# this is much more commonly either (a) a WAF/security-plugin rule that
+# blocks requests missing ordinary browser headers (Accept, Accept-Language,
+# a same-site Referer, sec-fetch-*) or that have no prior session/cookie on
+# the site, or (b) an IP/ASN-level block on data-center ranges (GitHub
+# Actions runners all come from well-known cloud ASNs that many WAFs and
+# hosting-provider security plugins block outright, regardless of browser
+# fingerprint). This file now also does a "warm-up" homepage visit (to pick
+# up cookies and a referer chain, in case (a) is the cause) and sends a
+# fuller set of request headers, and it prints the real HTTP status code on
+# every navigation so a repeat failure is easy to tell apart: if the status
+# is still 403 even after these changes, that points at (b) — an IP-level
+# block GitHub Actions cannot work around by itself (see the note in
+# fetch_listing_page below for what to try next in that case).
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
 )
+
+EXTRA_HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Upgrade-Insecure-Requests": "1",
+    "sec-ch-ua": '"Chromium";v="129", "Google Chrome";v="129", "Not=A?Brand";v="99"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+}
 
 BASE_URL = "https://www.ethiopianreporterjobs.com"
 LIST_URL_TEMPLATE = BASE_URL + "/jobs-in-ethiopia/page/{page}/"
@@ -229,21 +252,33 @@ def structure_job(listing_fields, detail_fields):
 
 def fetch_listing_page(page, page_num):
     url = LIST_URL_FIRST_PAGE if page_num == 1 else LIST_URL_TEMPLATE.format(page=page_num)
-    page.goto(url, wait_until="domcontentloaded", timeout=45000)
+    prev_url = BASE_URL if page_num == 1 else (
+        LIST_URL_FIRST_PAGE if page_num == 2 else LIST_URL_TEMPLATE.format(page=page_num - 1)
+    )
+    response = page.goto(
+        url, wait_until="domcontentloaded", timeout=45000,
+        referer=prev_url,
+    )
+    status = response.status if response else None
     try:
         page.wait_for_selector('a[href*="/jobs/"]', timeout=20000)
     except Exception:
-        # The site is server-rendered and sits behind Cloudflare (confirmed
-        # by inspecting the live page), so an empty result here most likely
-        # means the request was challenged or blocked rather than the site
-        # genuinely having no listings. Print the page title and a short
-        # body snippet so a real failure is diagnosable from the Action log
-        # instead of a bare "no cards found".
+        # Print the HTTP status code plus the page title/body snippet so a
+        # real failure is diagnosable from the Action log instead of a bare
+        # "no cards found". A status of 403 here that PERSISTS even with
+        # the warm-up visit + fuller headers (see main()) most likely means
+        # an IP/ASN-level block on GitHub Actions' data-center IP ranges —
+        # fingerprint/header tweaks from the runner itself cannot work
+        # around that. If this keeps happening, the next thing to try is
+        # routing this one pipeline's requests through a proxy/VPN with a
+        # residential or non-data-center exit IP, or running just this
+        # script from a machine that isn't on a cloud ASN.
         try:
             title = page.title()
             snippet = page.inner_text("body")[:300].replace("\n", " ")
         except Exception:
             title, snippet = "(could not read page)", ""
+        print(f"    [diagnostic] HTTP status: {status!r}")
         print(f"    [diagnostic] page title: {title!r}")
         print(f"    [diagnostic] body snippet: {snippet!r}")
         return []
@@ -272,8 +307,11 @@ def fetch_listing_page(page, page_num):
     return raw_cards
 
 
-def fetch_detail_page(page, url):
-    page.goto(url, wait_until="domcontentloaded", timeout=45000)
+def fetch_detail_page(page, url, referer=None):
+    response = page.goto(url, wait_until="domcontentloaded", timeout=45000, referer=referer)
+    status = response.status if response else None
+    if status and status >= 400:
+        print(f"    [diagnostic] detail page HTTP status: {status!r} for {url}")
     page.wait_for_timeout(500)
     return page.inner_text("body")
 
@@ -368,8 +406,21 @@ def main():
             user_agent=USER_AGENT,
             viewport={"width": 1366, "height": 900},
             locale="en-US",
+            extra_http_headers=EXTRA_HEADERS,
         )
         list_page = context.new_page()
+
+        # Warm-up visit: load the homepage first, like a real visitor would,
+        # before going straight to a deep listing URL. This picks up any
+        # cookies/session the site's WordPress stack sets on first contact,
+        # in case the 403 is coming from a WAF rule keyed on "no prior
+        # session" rather than (or in addition to) an IP-level block.
+        try:
+            warm_response = list_page.goto(BASE_URL, wait_until="domcontentloaded", timeout=45000)
+            print(f"  Warm-up homepage visit: HTTP status {warm_response.status if warm_response else '(none)'}")
+            list_page.wait_for_timeout(800)
+        except Exception as e:
+            print(f"  Warm-up homepage visit failed ({e}) — continuing anyway.")
 
         for page_num in range(1, MAX_PAGES + 1):
             try:
@@ -414,7 +465,7 @@ def main():
         rows = []
         for fields in to_fetch:
             try:
-                raw = fetch_detail_page(detail_page, fields["source_url"])
+                raw = fetch_detail_page(detail_page, fields["source_url"], referer=LIST_URL_FIRST_PAGE)
                 detail_fields = parse_detail_text(raw)
             except Exception as e:
                 print(f"  Detail fetch failed for {fields['source_url']}: {e}")
