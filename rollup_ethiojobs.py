@@ -202,6 +202,43 @@ def _top_skills_for_rows(rows, top_n):
     return [{"label": label, "count": c} for label, c in counter.most_common(top_n)]
 
 
+def _group_rows_by(rows, group_fn):
+    """Shared grouping helper for every critical_skills_by_* function below.
+    `group_fn(row)` returns a single label, a list of labels (for a row
+    that belongs to more than one group, e.g. multi-tagged categories), or
+    something falsy to leave the row out entirely."""
+    groups = {}
+    for r in rows:
+        labels = group_fn(r)
+        if not labels:
+            continue
+        if isinstance(labels, str):
+            labels = [labels]
+        for label in labels:
+            if not label:
+                continue
+            groups.setdefault(label, []).append(r)
+    return groups
+
+
+def _critical_skills_result(groups, n, min_postings):
+    """Shared "gate + summarize" step for every critical_skills_by_*
+    function: a group is only included once at least `min_postings` of
+    its postings HAVE a skills_required value at all, so a one-off
+    posting's skill list never gets reported as "the" critical skills for
+    an entire group (honesty over coverage, same principle as every other
+    breakdown in this file)."""
+    result = {}
+    for label, group_rows in groups.items():
+        with_skills = [r for r in group_rows if r.get("skills_required")]
+        if len(with_skills) < min_postings:
+            continue
+        top = _top_skills_for_rows(with_skills, n)
+        if top:
+            result[label] = {"postings_considered": len(with_skills), "skills": top}
+    return result
+
+
 def critical_skills_by_subsector(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
     """For each sub-sector (same grouping as sector_subcategories), the
     1-3 skills most frequently requested in postings tagged with that
@@ -209,56 +246,104 @@ def critical_skills_by_subsector(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRI
     rather than just "how many Finance postings are there?". A posting
     tagged with more than one sub-sector (category is a ";"-joined list)
     contributes to each of its sub-sectors' tallies, same as
-    sector_subcategories itself. A sub-sector is only included once at
-    least `min_postings` of its postings HAVE a skills_required value at
-    all, so a one-off posting's skill list never gets reported as "the"
-    critical skills for an entire sub-sector (honesty over coverage, same
-    principle as every other breakdown in this file)."""
-    by_subsector = {}
-    for r in rows:
+    sector_subcategories itself."""
+    def group_fn(r):
         if not r.get("category"):
-            continue
-        labels = {taxonomy.normalize_category_label(c) for c in r["category"].split(";")}
-        for label in labels:
-            if not label:
-                continue
-            by_subsector.setdefault(label, []).append(r)
-
-    result = {}
-    for label, group_rows in by_subsector.items():
-        with_skills = [r for r in group_rows if r.get("skills_required")]
-        if len(with_skills) < min_postings:
-            continue
-        top = _top_skills_for_rows(with_skills, n)
-        if top:
-            result[label] = {"postings_considered": len(with_skills), "skills": top}
-    return result
+            return None
+        return list({taxonomy.normalize_category_label(c) for c in r["category"].split(";")})
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
 
 
 def critical_skills_by_role(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
     """Same idea as critical_skills_by_subsector, grouped by ISCO-08
     occupation group (same grouping as top_jobs, classified from
     job_title) instead of sector — answers "what does a posting for this
-    kind of role actually ask for?". Same min_postings honesty gate."""
-    by_role = {}
-    for r in rows:
+    kind of role actually ask for?"."""
+    def group_fn(r):
         title = r.get("job_title")
         if not title:
-            continue
+            return None
         group = taxonomy.isco_group_for_title(title)
-        if group == "Not classified":
-            continue
-        by_role.setdefault(group, []).append(r)
+        return group if group != "Not classified" else None
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
 
-    result = {}
-    for label, group_rows in by_role.items():
-        with_skills = [r for r in group_rows if r.get("skills_required")]
-        if len(with_skills) < min_postings:
-            continue
-        top = _top_skills_for_rows(with_skills, n)
-        if top:
-            result[label] = {"postings_considered": len(with_skills), "skills": top}
-    return result
+
+def critical_skills_by_employer(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by individual employer (same grouping as
+    top_employers) — "what does THIS employer ask for across its
+    postings?"."""
+    def group_fn(r):
+        employer = r.get("employer")
+        return taxonomy.title_case_label(employer.strip()) if employer else None
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
+
+
+def critical_skills_by_employer_type(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by employer type (Private / Public / NGO, same
+    classification as employer_type_breakdown)."""
+    def group_fn(r):
+        employer = r.get("employer")
+        return taxonomy.employer_type(employer) if employer else None
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
+
+
+def critical_skills_by_location(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by location (same grouping as top_locations)."""
+    def group_fn(r):
+        loc = r.get("location")
+        if not loc:
+            return None
+        loc = loc.strip()
+        if not loc or loc.lower() in _BAD_LOCATION_LABELS:
+            return None
+        return taxonomy.title_case_label(loc)
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
+
+
+def critical_skills_by_salary_bucket(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by salary bucket (same buckets as
+    salary_breakdown) — "what do higher-paying postings actually ask
+    for, versus lower-paying ones?"."""
+    def group_fn(r):
+        return taxonomy.salary_bucket(r.get("salary_hint"))
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
+
+
+def critical_skills_by_sector(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by top-level ISIC sector (same grouping as
+    top_categories) — distinct from critical_skills_by_subsector's
+    finer-grained category tags."""
+    def group_fn(r):
+        if not r.get("category"):
+            return None
+        labels = []
+        for c in r["category"].split(";"):
+            c = c.strip().rstrip(".")
+            if not c:
+                continue
+            c = CATEGORY_EXPANSIONS.get(c, c)
+            sector = taxonomy.isic_section_for_text(c)
+            if sector:
+                labels.append(sector["label"])
+        return labels
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
+
+
+def critical_skills_by_experience(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by years-of-experience bucket (same buckets as
+    experience_breakdown)."""
+    def group_fn(r):
+        return taxonomy.experience_bucket(r.get("years_experience_required"))
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
+
+
+def critical_skills_by_education(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea, grouped by ISCED education level (same grouping as
+    education_breakdown)."""
+    def group_fn(r):
+        level = r.get("education_required")
+        return level if level in taxonomy.ISCED_LEVELS else None
+    return _critical_skills_result(_group_rows_by(rows, group_fn), n, min_postings)
 
 
 def experience_breakdown(rows):
@@ -437,6 +522,13 @@ def summarize(rows):
         "source_sites": source_site_breakdown(rows),
         "critical_skills_by_subsector": critical_skills_by_subsector(rows),
         "critical_skills_by_role": critical_skills_by_role(rows),
+        "critical_skills_by_employer": critical_skills_by_employer(rows),
+        "critical_skills_by_employer_type": critical_skills_by_employer_type(rows),
+        "critical_skills_by_location": critical_skills_by_location(rows),
+        "critical_skills_by_salary_bucket": critical_skills_by_salary_bucket(rows),
+        "critical_skills_by_sector": critical_skills_by_sector(rows),
+        "critical_skills_by_experience": critical_skills_by_experience(rows),
+        "critical_skills_by_education": critical_skills_by_education(rows),
     }
 
 
