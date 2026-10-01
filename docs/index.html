@@ -129,6 +129,66 @@
     color: var(--ink-soft);
     font-size: 13.5px;
   }
+  .method-note {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 4px 2px 0;
+  }
+  .panel-sub.clickable-hint {
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .drilldown {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .drilldown-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13.5px;
+    color: var(--navy);
+  }
+  .drilldown-close {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+  .drilldown-close:hover { color: var(--ink); }
+  .spec-list {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .spec-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 8px;
+    background: var(--paper);
+    border-radius: 6px;
+  }
+  .spec-count {
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  @media (min-width: 640px) {
+    .two-col { grid-template-columns: 1fr 1fr; }
+  }
   footer.page-foot {
     margin-top: 26px;
     padding-top: 14px;
@@ -150,11 +210,18 @@
 <div class="wrap">
   <header class="page-head">
     <h1>Ethiopia Labour Market Dashboard</h1>
-    <p class="sub">Skills, education levels, and sectors in demand — tracked automatically from live job postings.</p>
+    <p class="sub">Skills, education levels, sectors, job roles, and locations in demand — tracked automatically from live job postings.</p>
   </header>
 
   <div class="tabs" id="tabs"></div>
   <div class="stat-row" id="statRow"></div>
+
+  <div class="panel wide" style="margin-bottom:20px;">
+    <h2>Posting Trends Over Time</h2>
+    <p class="panel-sub" id="trendsSub">How many new postings were first tracked per period, across the whole history so far.</p>
+    <div class="tabs" id="trendTabs" style="margin:0 0 14px; border-bottom:none; padding-bottom:0;"></div>
+    <div class="chart-holder"><canvas id="trendsChart" height="220"></canvas></div>
+  </div>
 
   <div class="grid">
     <div class="panel wide">
@@ -166,17 +233,64 @@
       <h2>Education Level Required</h2>
       <p class="panel-sub" id="eduSub"></p>
       <div class="chart-holder"><canvas id="eduChart" height="220"></canvas></div>
+      <div class="drilldown" id="eduSpecialization"></div>
+    </div>
+    <div class="panel">
+      <h2>Experience Required</h2>
+      <p class="panel-sub" id="expSub"></p>
+      <div class="chart-holder"><canvas id="expChart" height="220"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Salary / Pay (Monthly ETB)</h2>
+      <p class="panel-sub" id="salarySub"></p>
+      <div class="chart-holder"><canvas id="salaryChart" height="220"></canvas></div>
     </div>
     <div class="panel">
       <h2>Most Active Sectors</h2>
       <p class="panel-sub" id="catSub"></p>
       <div class="chart-holder"><canvas id="catChart" height="220"></canvas></div>
     </div>
+    <div class="panel">
+      <h2>Sector Sub-categories</h2>
+      <p class="panel-sub" id="subCatSub"></p>
+      <div class="chart-holder"><canvas id="subCatChart" height="220"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Job Roles</h2>
+      <p class="panel-sub" id="jobsSub"></p>
+      <div class="chart-holder"><canvas id="jobsChart" height="220"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Locations</h2>
+      <p class="panel-sub" id="locSub"></p>
+      <div class="chart-holder"><canvas id="locChart" height="220"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Job Sources</h2>
+      <p class="panel-sub" id="sourcesSub"></p>
+      <div class="chart-holder"><canvas id="sourcesChart" height="220"></canvas></div>
+    </div>
+    <div class="panel wide">
+      <h2>Top Hirers</h2>
+      <p class="panel-sub" id="hirersSub"></p>
+      <div class="two-col">
+        <div>
+          <p class="panel-sub" style="font-weight:600; color:var(--ink);">By individual employer</p>
+          <div class="chart-holder"><canvas id="employersChart" height="220"></canvas></div>
+        </div>
+        <div>
+          <p class="panel-sub" style="font-weight:600; color:var(--ink);">By type — Private / Public / NGO</p>
+          <div class="chart-holder"><canvas id="employerTypeChart" height="220"></canvas></div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <p class="method-note">Skills classified with ESCO · job roles with ISCO-08 · education with ISCED 2011 · sectors with ISIC Rev.4 — postings that don't match a category are left out of that chart rather than guessed at. Employer type (Private / Public / NGO) is a keyword heuristic on the employer's own name, not a verified registry lookup. Education specialization ("level in what?") relies on free-text descriptions, which mainly exist for HaHuJobs postings. Salary is only counted when a posting itself states a clear monthly Birr/ETB figure — "Negotiable" or "As per company scale" are left out rather than guessed at.</p>
 
   <footer class="page-foot">
     <span id="generatedAt">Loading…</span>
-    <span>Source: EthioJobs postings, tracked daily</span>
+    <span id="sourceBreakdown">Sources: EthioJobs + HaHuJobs, tracked daily</span>
   </footer>
 </div>
 
@@ -193,8 +307,95 @@ const WINDOW_LABELS = {
 const WINDOW_ORDER = ["daily", "weekly", "monthly", "quarterly", "yearly", "all_time"];
 
 let payload = null;
-let charts = { skills: null, edu: null, cat: null };
+let charts = {
+  skills: null, edu: null, cat: null, jobs: null, loc: null,
+  exp: null, subCat: null, employers: null, employerType: null, salary: null,
+  sources: null, trends: null,
+};
 let currentWindow = "monthly";
+let currentTrend = "monthly";
+
+const TREND_LABELS = { weekly: "Week", monthly: "Month", yearly: "Year" };
+const TREND_ORDER = ["weekly", "monthly", "yearly"];
+
+function drawLine(canvasId, key, series) {
+  const ctx = document.getElementById(canvasId);
+  const holder = ctx.parentElement;
+  if (charts[key]) { charts[key].destroy(); charts[key] = null; }
+
+  if (!series || series.length === 0) {
+    ctx.style.display = "none";
+    let empty = holder.querySelector(".empty-state");
+    if (!empty) {
+      empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "Not enough tracked history yet to show a trend.";
+      holder.appendChild(empty);
+    }
+    return;
+  }
+  const existingEmpty = holder.querySelector(".empty-state");
+  if (existingEmpty) existingEmpty.remove();
+  ctx.style.display = "block";
+
+  const labels = series.map(d => d.period);
+  const values = series.map(d => d.count);
+
+  charts[key] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: NAVY,
+        backgroundColor: "rgba(31,59,87,0.08)",
+        fill: true,
+        tension: 0.25,
+        pointRadius: 3,
+        pointBackgroundColor: NAVY,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#20242B",
+          padding: 10,
+          titleFont: { family: "Source Sans 3" },
+          bodyFont: { family: "Source Sans 3" }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, border: { display: false }, ticks: { color: INK_SOFT, font: { family: "Source Sans 3", size: 11.5 } } },
+        y: { beginAtZero: true, grid: { color: LINE }, border: { display: false }, ticks: { color: INK, font: { family: "Source Sans 3", size: 11.5 } } }
+      }
+    }
+  });
+}
+
+function renderTrends(granularity) {
+  currentTrend = granularity;
+  document.querySelectorAll("#trendTabs .tab-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.trend === granularity);
+  });
+  const series = payload.trends ? payload.trends[granularity] : null;
+  drawLine("trendsChart", "trends", series);
+}
+
+function buildTrendTabs() {
+  const el = document.getElementById("trendTabs");
+  el.innerHTML = "";
+  TREND_ORDER.forEach(g => {
+    const btn = document.createElement("button");
+    btn.className = "tab-btn";
+    btn.dataset.trend = g;
+    btn.textContent = "By " + TREND_LABELS[g];
+    btn.onclick = () => renderTrends(g);
+    el.appendChild(btn);
+  });
+}
 
 function commonOpts(maxVal) {
   return {
@@ -227,7 +428,7 @@ function commonOpts(maxVal) {
   };
 }
 
-function drawBar(canvasId, key, items, labelKey, countKey) {
+function drawBar(canvasId, key, items, labelKey, countKey, onBarClick) {
   const ctx = document.getElementById(canvasId);
   const holder = ctx.parentElement;
   if (charts[key]) { charts[key].destroy(); charts[key] = null; }
@@ -251,6 +452,17 @@ function drawBar(canvasId, key, items, labelKey, countKey) {
   const values = items.map(d => d[countKey]).reverse();
   const maxVal = Math.max(...values);
 
+  const options = commonOpts(maxVal * 1.15);
+  if (onBarClick) {
+    options.onClick = (evt, elements) => {
+      if (!elements.length) return;
+      onBarClick(labels[elements[0].index]);
+    };
+    options.onHover = (evt, elements) => {
+      evt.native.target.style.cursor = elements.length ? "pointer" : "default";
+    };
+  }
+
   charts[key] = new Chart(ctx, {
     type: "bar",
     data: {
@@ -262,7 +474,7 @@ function drawBar(canvasId, key, items, labelKey, countKey) {
         barThickness: 18,
       }]
     },
-    options: commonOpts(maxVal * 1.15),
+    options,
     plugins: [{
       id: "valueLabels",
       afterDatasetsDraw(chart) {
@@ -281,6 +493,48 @@ function drawBar(canvasId, key, items, labelKey, countKey) {
       }
     }]
   });
+}
+
+function showEduSpecialization(level) {
+  const data = payload.windows[currentWindow];
+  const specs = data.education_specializations && data.education_specializations[level];
+  const panel = document.getElementById("eduSpecialization");
+
+  if (!specs || !specs.fields.length) {
+    const total = specs ? specs.total : 0;
+    const withField = specs ? specs.with_field_stated : 0;
+    panel.innerHTML = `
+      <div class="drilldown-head">
+        <strong>${level} — in what field?</strong>
+        <button class="drilldown-close" onclick="hideEduSpecialization()">&times;</button>
+      </div>
+      <p class="panel-sub" style="margin:4px 0 0;">
+        ${withField} of ${total} postings at this level state a specific field of study clearly enough to classify —
+        not enough yet to break this level down further.
+      </p>`;
+    panel.style.display = "block";
+    return;
+  }
+
+  const rows = specs.fields
+    .map(f => `<li><span>${f.label}</span><span class="spec-count">${f.count}</span></li>`)
+    .join("");
+  panel.innerHTML = `
+    <div class="drilldown-head">
+      <strong>${level} — in what field?</strong>
+      <button class="drilldown-close" onclick="hideEduSpecialization()">&times;</button>
+    </div>
+    <p class="panel-sub" style="margin:4px 0 8px;">
+      ${specs.with_field_stated} of ${specs.total} postings requiring a ${level} name a specific field of study
+    </p>
+    <ul class="spec-list">${rows}</ul>`;
+  panel.style.display = "block";
+}
+
+function hideEduSpecialization() {
+  const panel = document.getElementById("eduSpecialization");
+  panel.style.display = "none";
+  panel.innerHTML = "";
 }
 
 function renderStatRow(windowData, windowKey) {
@@ -310,16 +564,46 @@ function renderWindow(windowKey) {
 
   renderStatRow(data, windowKey);
 
+  const srcEl = document.getElementById("sourceBreakdown");
+  if (srcEl && data.source_breakdown && data.source_breakdown.length) {
+    srcEl.textContent = "Sources: " + data.source_breakdown
+      .map(s => `${s.label} (${s.count})`).join(", ");
+  }
+
+  hideEduSpecialization();
+
   document.getElementById("skillsSub").textContent =
-    `Top skills explicitly required — ${WINDOW_LABELS[windowKey]} view`;
+    `Top skills explicitly required, ESCO-classified — ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("eduSub").textContent =
-    `${data.education.known_total} of ${data.education.total} postings state a level`;
+    `${data.education.known_total} of ${data.education.total} postings state an ISCED level — click a bar to see what field`;
+  document.getElementById("expSub").textContent =
+    `${data.experience.known_total} of ${data.experience.total} postings state years of experience — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("salarySub").textContent =
+    `${data.salary.known_total} of ${data.salary.total} postings state a clear monthly figure — ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("catSub").textContent =
-    `Top sectors by postings tracked — ${WINDOW_LABELS[windowKey]} view`;
+    `Top sectors (ISIC Rev.4) — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("subCatSub").textContent =
+    `Finer-grained categories beneath each sector, as tagged by the posting itself — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("jobsSub").textContent =
+    `Top job roles (ISCO-08 major groups) — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("locSub").textContent =
+    `Top locations by postings tracked — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("hirersSub").textContent =
+    `Who is hiring the most — ${WINDOW_LABELS[windowKey]} view`;
+  document.getElementById("sourcesSub").textContent =
+    `Postings contributed per site — a vacancy cross-posted to more than one site counts toward each`;
 
   drawBar("skillsChart", "skills", data.top_skills, "label", "count");
-  drawBar("eduChart", "edu", data.education.levels, "label", "count");
+  drawBar("eduChart", "edu", data.education.levels, "label", "count", showEduSpecialization);
+  drawBar("expChart", "exp", data.experience.buckets, "label", "count");
+  drawBar("salaryChart", "salary", data.salary.buckets, "label", "count");
   drawBar("catChart", "cat", data.top_categories, "label", "count");
+  drawBar("subCatChart", "subCat", data.sector_subcategories, "label", "count");
+  drawBar("jobsChart", "jobs", data.top_jobs, "label", "count");
+  drawBar("locChart", "loc", data.top_locations, "label", "count");
+  drawBar("employersChart", "employers", data.top_employers, "label", "count");
+  drawBar("employerTypeChart", "employerType", data.employer_type.types, "label", "count");
+  drawBar("sourcesChart", "sources", data.source_sites, "label", "count");
 }
 
 function buildTabs() {
@@ -346,6 +630,8 @@ fetch("./data/rollups.json", { cache: "no-store" })
     document.getElementById("generatedAt").textContent =
       `Last updated: ${payload.generated_at}`;
     buildTabs();
+    buildTrendTabs();
+    renderTrends(currentTrend);
     // Prefer the first window that actually has data, default monthly
     const preferred = payload.windows.monthly && payload.windows.monthly.posting_count > 0
       ? "monthly" : WINDOW_ORDER.find(w => payload.windows[w] && payload.windows[w].posting_count > 0) || "all_time";

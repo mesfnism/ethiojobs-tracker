@@ -36,7 +36,7 @@ from datetime import datetime, timezone
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 
-INPUT_FILES = ["ethiojobs_tracker.xlsx", "hahujobs_tracker.xlsx"]
+INPUT_FILES = ["ethiojobs_tracker.xlsx", "hahujobs_tracker.xlsx", "reporterjobs_tracker.xlsx"]
 OUTPUT_XLSX = "combined_tracker.xlsx"
 DEDUP_WINDOW_DAYS = 14
 
@@ -46,7 +46,7 @@ COLUMNS = [
     "education_required", "years_experience_required", "skills_required",
     "special_skill_training", "salary_hint", "application_deadline",
     "how_to_apply", "source_url", "source", "date_posted_relative",
-    "date_scraped", "extraction_method", "other_source_url",
+    "date_scraped", "extraction_method", "other_source_url", "description",
 ]
 
 _LEGAL_SUFFIXES = re.compile(

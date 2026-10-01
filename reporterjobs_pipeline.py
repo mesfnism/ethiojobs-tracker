@@ -1,0 +1,403 @@
+"""
+Ethiopian Reporter Jobs Pipeline — third job board, alongside EthioJobs and
+HaHuJobs (www.ethiopianreporterjobs.com), a WP Job Manager–style WordPress
+job board with roughly 1,000+ active postings across ~14-per-page listing
+pages.
+
+Unlike HaHuJobs, this site's LISTING cards do not reliably carry every
+field (salary and deadline, for example, only show up on the posting's own
+detail page), so this pipeline follows the EthioJobs pattern instead:
+listing pages are used only to discover which postings exist (job id, a
+provisional title, and the URL) and to paginate newest-first; the detail
+page is then fetched for each NEW posting and is the authoritative source
+for every other field (employer, location, category, employment type,
+career level, education, experience, salary, deadline, how to apply).
+
+Honesty about this file's own test coverage: unlike ethiojobs_pipeline.py
+and hahujobs_pipeline.py, this one was built from inspecting the site's
+rendered text rather than from a captured live DOM fixture, because this
+sandbox has no live network access to the site itself. The label-based
+detail-page parser (see parse_detail_text) does not depend on field order,
+so it should be fairly robust; the listing-card parser is positional, best
+-effort, and the most likely thing to need a small fix after the first
+real run — if a run fails or looks wrong, send the Action log and this
+gets corrected quickly, the same way the HaHuJobs pipeline's few early
+rough edges were.
+"""
+
+import os
+import re
+import sys
+import time
+from pathlib import Path
+from datetime import datetime, timezone
+
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
+
+BASE_URL = "https://www.ethiopianreporterjobs.com"
+LIST_URL_TEMPLATE = BASE_URL + "/jobs-in-ethiopia/page/{page}/"
+LIST_URL_FIRST_PAGE = BASE_URL + "/jobs-in-ethiopia/"
+
+MAX_PAGES = int(os.environ.get("REPORTERJOBS_MAX_PAGES", "120"))
+STOP_AFTER_CONSECUTIVE_SEEN = int(os.environ.get("REPORTERJOBS_STOP_AFTER_SEEN", "15"))
+LIST_REQUEST_DELAY_SECONDS = float(os.environ.get("REPORTERJOBS_LIST_DELAY", "1.5"))
+DETAIL_REQUEST_DELAY_SECONDS = float(os.environ.get("REPORTERJOBS_DETAIL_DELAY", "1.5"))
+MAX_NEW_DETAIL_FETCHES_PER_RUN = int(os.environ.get("REPORTERJOBS_MAX_NEW_PER_RUN", "300"))
+
+OUTPUT_XLSX = os.environ.get("REPORTERJOBS_OUTPUT_XLSX", "reporterjobs_tracker.xlsx")
+
+COLUMNS = [
+    "job_id", "job_title", "employer", "category", "location", "work_type",
+    "career_level", "employment_type", "number_required",
+    "education_required", "years_experience_required", "skills_required",
+    "special_skill_training", "salary_hint", "application_deadline",
+    "how_to_apply", "source_url", "source", "date_posted_relative",
+    "date_scraped", "extraction_method", "description",
+]
+
+NAVY = "1F3B57"
+
+EDUCATION_PATTERNS = [
+    (re.compile(r"\bph\.?d\b|\bdoctorate\b", re.I), "PhD"),
+    (re.compile(r"\bmaster'?s?\b|\bm\.?a\.?\b|\bm\.?sc\.?\b|\bmba\b", re.I), "Master's degree"),
+    (re.compile(r"\bbachelor'?s?\b|\bb\.?a\.?\b|\bb\.?sc\.?\b|\bfirst degree\b", re.I), "Bachelor's degree"),
+    (re.compile(r"\bdiploma\b", re.I), "Diploma"),
+    (re.compile(r"\bcertificate\b", re.I), "Certificate"),
+]
+
+
+def _job_id_from_href(href):
+    m = re.search(r"/jobs/(\d+)", href)
+    return m.group(1) if m else href.rstrip("/").split("/")[-1]
+
+
+# --------------------------------------------------------------------------
+# Listing page — discovery only (job id, provisional title, URL)
+# --------------------------------------------------------------------------
+
+def parse_listing_card(href, raw_text):
+    """Best-effort positional parse of one listing card's inner text.
+    "Published ... ago" is the one fixed anchor observed on this site's
+    cards; everything else is inferred relative to it. Falls back to
+    listing_only with just the title when the shape doesn't match —
+    the detail-page fetch (parse_detail_text) is what actually supplies
+    every other field, so a rough listing parse here is not fatal."""
+    lines = [ln.strip() for ln in raw_text.split("\n") if ln.strip()]
+    job_id = _job_id_from_href(href)
+
+    ago_idx = next((i for i, ln in enumerate(lines) if re.search(r"\bago\b", ln, re.I)), None)
+    if ago_idx is None or ago_idx == 0:
+        return {
+            "job_id": job_id,
+            "job_title": lines[0] if lines else None,
+            "source_url": href if href.startswith("http") else BASE_URL + href,
+            "_parse_warning": "unexpected_card_shape",
+        }
+
+    title = lines[ago_idx - 1]
+    pre_title = lines[:ago_idx - 1]
+    category = "; ".join(pre_title) if pre_title else None
+    tail = lines[ago_idx + 1:]
+    employer = tail[0] if len(tail) > 0 else None
+    location = tail[1] if len(tail) > 1 else None
+
+    return {
+        "job_id": job_id,
+        "job_title": title,
+        "employer": employer,
+        "category": category,
+        "location": location,
+        "source_url": href if href.startswith("http") else BASE_URL + href,
+    }
+
+
+# --------------------------------------------------------------------------
+# Detail page — authoritative, label-based (order-independent)
+# --------------------------------------------------------------------------
+
+def parse_detail_text(raw_text):
+    """Label-based extraction, so it doesn't depend on the exact visual
+    order these fields render in (unlike the listing-card parser above).
+    Labels observed: Employment Type, Career Level, Industry, Education
+    Required, Experience Required, Monthly Salary, Posted Date,
+    Application Deadline, How to Apply, Job ID."""
+    text = raw_text
+
+    def field(label, stop_at_newline=True):
+        pattern = rf"{re.escape(label)}\s*:?\s*(.+)"
+        m = re.search(pattern, text, re.I)
+        if not m:
+            return None
+        val = m.group(1)
+        if stop_at_newline:
+            val = val.split("\n")[0]
+        return val.strip() or None
+
+    employment_type = field("Employment Type")
+    career_level = field("Career Level")
+    industry = field("Industry")
+    education_raw = field("Education Required")
+    experience_raw = field("Experience Required")
+    salary_hint = field("Monthly Salary")
+    posted_date = field("Posted Date")
+    deadline = field("Application Deadline")
+    job_id_field = field("Job ID")
+    location = field("Location")
+
+    how_to_apply = None
+    m = re.search(r"How\s*to\s*Apply\s*:?\s*(.+?)(?:Job ID|$)", text, re.I | re.S)
+    if m:
+        how_to_apply = m.group(1).strip()[:500] or None
+
+    if salary_hint and salary_hint.lower().strip(". ") in {"as per company scale", "negotiable", "n/a"}:
+        salary_hint = salary_hint.strip()  # kept as-is; taxonomy.salary_bucket treats it as unclassified
+
+    education_required = None
+    if education_raw:
+        for pattern, label in EDUCATION_PATTERNS:
+            if pattern.search(education_raw):
+                education_required = label
+                break
+
+    years_experience_required = None
+    if experience_raw:
+        m = re.search(r"(\d+\s*(?:-|to)\s*\d+|\d+\+?)\s*years?", experience_raw, re.I)
+        years_experience_required = m.group(0) if m else experience_raw[:60]
+
+    return {
+        "employment_type": employment_type,
+        "career_level": career_level,
+        "category": industry,
+        "education_required": education_required,
+        "years_experience_required": years_experience_required,
+        "salary_hint": salary_hint,
+        "date_posted_relative": posted_date,
+        "application_deadline": deadline,
+        "how_to_apply": how_to_apply,
+        "job_id_confirmed": job_id_field,
+        "location": location,
+        "description": education_raw,  # the requirement text itself, kept for specialization extraction
+    }
+
+
+def structure_job(listing_fields, detail_fields):
+    detail_fields = detail_fields or {}
+    return {
+        "job_id": listing_fields.get("job_id"),
+        "job_title": listing_fields.get("job_title"),
+        "employer": listing_fields.get("employer"),
+        "category": detail_fields.get("category") or listing_fields.get("category"),
+        "location": detail_fields.get("location") or listing_fields.get("location"),
+        "work_type": None,
+        "career_level": detail_fields.get("career_level"),
+        "employment_type": detail_fields.get("employment_type"),
+        "number_required": None,
+        "education_required": detail_fields.get("education_required"),
+        "years_experience_required": detail_fields.get("years_experience_required"),
+        "skills_required": None,
+        "special_skill_training": None,
+        "salary_hint": detail_fields.get("salary_hint"),
+        "application_deadline": detail_fields.get("application_deadline"),
+        "how_to_apply": detail_fields.get("how_to_apply"),
+        "source_url": listing_fields.get("source_url"),
+        "source": "ReporterJobs",
+        "date_posted_relative": detail_fields.get("date_posted_relative"),
+        "date_scraped": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "extraction_method": "dom_render" if detail_fields else "listing_only",
+        "description": detail_fields.get("description"),
+    }
+
+
+# --------------------------------------------------------------------------
+# Browser-driven fetch (Playwright — requires real internet access)
+# --------------------------------------------------------------------------
+
+def fetch_listing_page(page, page_num):
+    url = LIST_URL_FIRST_PAGE if page_num == 1 else LIST_URL_TEMPLATE.format(page=page_num)
+    page.goto(url, wait_until="domcontentloaded", timeout=45000)
+    try:
+        page.wait_for_selector('a[href*="/jobs/"]', timeout=20000)
+    except Exception:
+        return []
+    page.wait_for_timeout(600)
+
+    raw_cards = page.evaluate(
+        """
+        () => {
+          const anchors = Array.from(document.querySelectorAll('a')).filter(a => {
+            const h = a.getAttribute('href') || '';
+            return /\\/jobs\\/\\d+\\/?$/.test(h);
+          });
+          const seen = new Set();
+          const cards = [];
+          for (const a of anchors) {
+            const href = a.href;
+            if (seen.has(href)) continue;
+            seen.add(href);
+            const container = a.closest('li, article, div') || a.parentElement;
+            cards.push({href, text: container ? container.innerText : a.innerText});
+          }
+          return cards;
+        }
+        """
+    )
+    return raw_cards
+
+
+def fetch_detail_page(page, url):
+    page.goto(url, wait_until="domcontentloaded", timeout=45000)
+    page.wait_for_timeout(500)
+    return page.inner_text("body")
+
+
+# --------------------------------------------------------------------------
+# Excel read/write — identical pattern to the other two pipelines
+# --------------------------------------------------------------------------
+
+def load_existing_ids(path: Path):
+    if not path.exists():
+        return set()
+    wb = openpyxl.load_workbook(path, read_only=True)
+    if "Jobs" not in wb.sheetnames:
+        return set()
+    ws = wb["Jobs"]
+    header = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
+    id_col = header.index("job_id")
+    ids = set()
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row[id_col]:
+            ids.add(str(row[id_col]))
+    wb.close()
+    return ids
+
+
+def _style_header(ws, ncols):
+    for col_idx in range(1, ncols + 1):
+        cell = ws.cell(row=1, column=col_idx)
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill("solid", fgColor=NAVY)
+        cell.alignment = Alignment(vertical="center", wrap_text=True)
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = f"A1:{get_column_letter(ncols)}1"
+
+
+def append_rows(path: Path, rows):
+    if path.exists():
+        wb = openpyxl.load_workbook(path)
+    else:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+
+    if "Jobs" not in wb.sheetnames:
+        ws = wb.create_sheet("Jobs")
+        ws.append(COLUMNS)
+        _style_header(ws, len(COLUMNS))
+    else:
+        ws = wb["Jobs"]
+
+    for row in rows:
+        ws.append([row.get(c) for c in COLUMNS])
+
+    if "Run Log" not in wb.sheetnames:
+        log = wb.create_sheet("Run Log")
+        log.append(["run_timestamp_utc", "new_rows_added", "total_rows_after"])
+        _style_header(log, 3)
+    else:
+        log = wb["Run Log"]
+
+    total_rows_after = ws.max_row - 1
+    log.append([
+        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        len(rows),
+        total_rows_after,
+    ])
+    wb.save(path)
+
+
+# --------------------------------------------------------------------------
+# Orchestration
+# --------------------------------------------------------------------------
+
+def main():
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("Playwright is not installed. Run: pip install -r requirements.txt && playwright install chromium")
+        sys.exit(1)
+
+    output_path = Path(OUTPUT_XLSX)
+    existing_ids = load_existing_ids(output_path)
+    print(f"Loaded {len(existing_ids)} existing job IDs from {output_path}")
+
+    new_listing_fields = []
+    consecutive_seen = 0
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        list_page = browser.new_page()
+
+        for page_num in range(1, MAX_PAGES + 1):
+            try:
+                cards = fetch_listing_page(list_page, page_num)
+            except Exception as e:
+                print(f"  Page {page_num}: failed to load ({e}) — stopping pagination.")
+                break
+
+            if not cards:
+                print(f"  Page {page_num}: no cards found — reached the end.")
+                break
+
+            page_new = 0
+            for c in cards:
+                fields = parse_listing_card(c["href"], c["text"])
+                if fields["job_id"] in existing_ids:
+                    consecutive_seen += 1
+                else:
+                    consecutive_seen = 0
+                    new_listing_fields.append(fields)
+                    page_new += 1
+
+            print(f"  Page {page_num}: {len(cards)} cards, {page_new} new, "
+                  f"{consecutive_seen} consecutive already-seen.")
+
+            if consecutive_seen >= STOP_AFTER_CONSECUTIVE_SEEN:
+                print(f"  Hit {STOP_AFTER_CONSECUTIVE_SEEN} consecutive already-seen postings — "
+                      f"caught up, stopping pagination.")
+                break
+            time.sleep(LIST_REQUEST_DELAY_SECONDS)
+
+        list_page.close()
+
+        if len(new_listing_fields) > MAX_NEW_DETAIL_FETCHES_PER_RUN:
+            print(f"  {len(new_listing_fields)} new postings found, capping detail fetches at "
+                  f"{MAX_NEW_DETAIL_FETCHES_PER_RUN} for this run.")
+            to_fetch = new_listing_fields[:MAX_NEW_DETAIL_FETCHES_PER_RUN]
+        else:
+            to_fetch = new_listing_fields
+
+        detail_page = browser.new_page()
+        rows = []
+        for fields in to_fetch:
+            try:
+                raw = fetch_detail_page(detail_page, fields["source_url"])
+                detail_fields = parse_detail_text(raw)
+            except Exception as e:
+                print(f"  Detail fetch failed for {fields['source_url']}: {e}")
+                detail_fields = None
+            rows.append(structure_job(fields, detail_fields))
+            time.sleep(DETAIL_REQUEST_DELAY_SECONDS)
+
+        browser.close()
+
+    if rows:
+        append_rows(output_path, rows)
+        print(f"Added {len(rows)} new postings. Workbook: {output_path}")
+    else:
+        append_rows(output_path, [])
+        print("No new postings this run.")
+
+
+if __name__ == "__main__":
+    main()

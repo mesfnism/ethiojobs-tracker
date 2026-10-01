@@ -46,7 +46,7 @@ COLUMNS = [
     "education_required", "years_experience_required", "skills_required",
     "special_skill_training", "salary_hint", "application_deadline",
     "how_to_apply", "source_url", "source", "date_posted_relative",
-    "date_scraped", "extraction_method",
+    "date_scraped", "extraction_method", "description",
 ]
 
 _EXPERIENCE_RE = re.compile(r"^\d+\s*years?(\s*-\s*\d+\s*years?)?$", re.I)
@@ -167,6 +167,11 @@ def parse_card(href, text):
         "date_posted_relative": None,
         "date_scraped": None,  # filled in by caller
         "extraction_method": "listing_only" if ok else "partial",
+        # Kept (not just used transiently for extract_education above) so
+        # the dashboard can extract education SPECIALIZATION (field of
+        # study) from it later — EthioJobs has no equivalent field, so
+        # that drill-down will only ever have data for HaHuJobs postings.
+        "description": description,
     }
     return fields, ok
 

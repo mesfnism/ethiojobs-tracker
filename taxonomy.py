@@ -78,6 +78,38 @@ _SKILL_DATE_RE = re.compile(
     re.I,
 )
 
+# A "skill" is a short noun phrase ("Teamwork", "Attention to detail"), not
+# a sentence fragment that bled in from a free-text description (e.g. "a
+# genuine passion for education and student development") and not a
+# comma-joined list of fields/categories mistakenly tagged as a skill (e.g.
+# "Education, Social Work, Project Management"). Reject anything shaped
+# like either of those rather than counting it as a skill.
+_MAX_SKILL_WORDS = 6
+_SENTENCE_LIKE_SKILL_RE = re.compile(
+    r"\b(a genuine|passion for|ability to|in order to|responsible for|"
+    r"responsible to|work(ing)? with others|and other duties|such as|"
+    r"including but not limited|is required|are required|will be|"
+    r"must be able)\b",
+    re.I,
+)
+
+
+def _looks_like_skill_noise(s):
+    if _SENTENCE_LIKE_SKILL_RE.search(s):
+        return True
+    if len(s.split()) > _MAX_SKILL_WORDS:
+        return True
+    if "," in s:
+        parts = [p.strip() for p in s.split(",") if p.strip()]
+        # A comma list where every item starts with a capital letter reads
+        # as a list of fields/categories ("Education, Social Work, Project
+        # Management"), not a single skill.
+        if len(parts) >= 2 and all(p[:1].isupper() for p in parts):
+            return True
+        if len(parts) >= 3:
+            return True
+    return False
+
 # Keyword -> ESCO top-level group, checked against the (already normalized)
 # skill label. Order matters: first match wins.
 _ESCO_GROUP_RULES = [
@@ -108,7 +140,9 @@ def normalize_skill(raw):
     for pattern, canon in _SKILL_NORMALIZE_RULES:
         if pattern.fullmatch(s.strip(".")) or pattern.search(s):
             return canon
-    return s.strip(". ")
+    if _looks_like_skill_noise(s):
+        return None
+    return title_case_label(s.strip(". "))
 
 
 def esco_group_for_skill(skill_label):
@@ -116,6 +150,57 @@ def esco_group_for_skill(skill_label):
         if pattern.search(skill_label):
             return group
     return "Not classified"
+
+
+# ---------------------------------------------------------------------------
+# Display label casing
+# ---------------------------------------------------------------------------
+# Site text arrives in a mix of ALL CAPS, all lowercase, and Title Case.
+# This normalizes any label shown on the dashboard to one consistent style,
+# without mangling acronyms (NGO, IT, HR, ICT) that happen to be short and
+# fully capitalized already.
+
+_SMALL_WORDS = {"and", "or", "of", "the", "in", "on", "for", "to", "a", "an", "with", "&"}
+_KNOWN_ACRONYMS = {
+    "ngo", "ngos", "it", "hr", "ict", "erp", "crm", "hiv", "aids", "un",
+    "eu", "usa", "uk", "phd", "ceo", "cfo", "coo", "cto", "gis", "gps",
+    "plc", "sc", "llc", "ltd",
+}
+
+
+def title_case_label(label):
+    """Title-cases a display label, preserving short acronyms and leaving
+    an already mixed-case word (e.g. an acronym embedded mid-phrase) as
+    written rather than re-lowercasing it."""
+    if not label:
+        return label
+    tokens = re.split(r"(\s+)", label.strip())
+    out = []
+    word_i = 0
+    for tok in tokens:
+        if not tok.strip():
+            out.append(tok)
+            continue
+        core = tok.strip(".,;:()")
+        lead = tok[: len(tok) - len(tok.lstrip(".,;:()"))]
+        trail = tok[len(lead) + len(core):]
+        if not core:
+            out.append(tok)
+            word_i += 1
+            continue
+        lower_core = core.lower()
+        if lower_core in _KNOWN_ACRONYMS:
+            new_core = core.upper()
+        elif any(c.isupper() for c in core[1:]) and not core.isupper():
+            # already mixed-case (e.g. "McKinsey", "eLearning") -> leave as-is
+            new_core = core
+        elif word_i > 0 and lower_core in _SMALL_WORDS:
+            new_core = lower_core
+        else:
+            new_core = lower_core[:1].upper() + lower_core[1:]
+        out.append(lead + new_core + trail)
+        word_i += 1
+    return "".join(out)
 
 
 # ---------------------------------------------------------------------------
@@ -258,3 +343,249 @@ def isic_section_for_text(text):
         if pattern.search(text):
             return {"code": code, "label": ISIC_SECTIONS[code]}
     return None
+
+
+CATEGORY_EXPANSIONS = {
+    "Social Sciences and Com": "Social Sciences and Communications",
+}
+
+_BAD_CATEGORY_LABELS = {"other", "others", "n/a", "none", "general"}
+
+
+def normalize_category_label(raw):
+    """Cleans up a posting's own raw category/sub-sector tag for display as
+    a second, finer-grained hierarchy level beneath the ISIC section (e.g.
+    the ISIC section might be "Professional, scientific and technical
+    activities" while this sub-category is "Economics" or "Project
+    Management"). This does not map onto any external scheme — it is the
+    site's own tag, just cleaned and cased consistently."""
+    if not raw:
+        return None
+    s = raw.strip().rstrip(".")
+    if not s:
+        return None
+    s = CATEGORY_EXPANSIONS.get(s, s)
+    if s.lower() in _BAD_CATEGORY_LABELS:
+        return None
+    return title_case_label(s)
+
+
+# ---------------------------------------------------------------------------
+# Experience required — bucketed into standard ranges
+# ---------------------------------------------------------------------------
+# Postings state years-of-experience in free text ("2 years", "3-5 years",
+# "minimum 5 years", "fresh graduate"). This buckets that text into a small
+# number of standard ranges for a chart, rather than one bar per distinct
+# phrasing.
+
+EXPERIENCE_BUCKET_ORDER = ["0-1 years", "1-3 years", "3-5 years", "5-8 years", "8+ years"]
+_EXPERIENCE_BUCKETS = [
+    ("0-1 years", 0, 1),
+    ("1-3 years", 1, 3),
+    ("3-5 years", 3, 5),
+    ("5-8 years", 5, 8),
+    ("8+ years", 8, None),
+]
+_EXP_FRESH_RE = re.compile(r"fresh|no experience|\b0\s*years?\b|entry[\s\-]?level", re.I)
+_EXP_RANGE_RE = re.compile(r"(\d+)\s*(?:-|to|–)\s*(\d+)")
+_EXP_PLUS_RE = re.compile(r"(\d+)\s*\+")
+_EXP_NUM_RE = re.compile(r"(\d+)")
+
+
+def experience_bucket(raw):
+    """Returns one of EXPERIENCE_BUCKET_ORDER, or None if the text doesn't
+    state a number of years at all (e.g. blank, or non-numeric text our
+    rules don't recognize — left out of the chart rather than guessed)."""
+    if not raw:
+        return None
+    s = raw.strip()
+    if _EXP_FRESH_RE.search(s):
+        return "0-1 years"
+    m = _EXP_RANGE_RE.search(s)
+    if m:
+        lo = int(m.group(1))
+    else:
+        m = _EXP_PLUS_RE.search(s)
+        if m:
+            lo = int(m.group(1))
+        else:
+            m = _EXP_NUM_RE.search(s)
+            if not m:
+                return None
+            lo = int(m.group(1))
+    for label, start, end in _EXPERIENCE_BUCKETS:
+        if end is None:
+            if lo >= start:
+                return label
+        elif start <= lo < end:
+            return label
+    return "8+ years"
+
+
+# ---------------------------------------------------------------------------
+# Education specialization — "<level> in what?"
+# ---------------------------------------------------------------------------
+# ISCED (above) only captures the level (Bachelor's, Master's, PhD...).
+# This extracts the FIELD of study mentioned in a posting's free-text
+# description, where available, so the dashboard can show "PhD in what?"
+# when a user drills into a level. Coverage is necessarily partial: only
+# postings with free-text descriptions (mainly HaHuJobs) carry this; a
+# site that only stores the structured level (EthioJobs) will show as
+# "specialization not stated" rather than being guessed at.
+
+SPECIALIZATION_FIELDS = [
+    "Business Administration", "Accounting", "Economics", "Management",
+    "Civil Engineering", "Electrical Engineering", "Mechanical Engineering",
+    "Engineering", "Computer Science", "Information Technology",
+    "Information Systems", "Statistics", "Social Work", "Sociology",
+    "Public Health", "Nursing", "Medicine", "Law", "Agriculture",
+    "Agricultural Economics", "Project Management", "Finance", "Marketing",
+    "Human Resource Management", "Education", "Development Studies",
+    "Gender Studies", "Environmental Science", "Supply Chain Management",
+    "Logistics", "International Relations", "Political Science",
+    "Psychology", "Architecture", "Pharmacy", "Veterinary Medicine",
+    "Public Administration", "Banking and Finance", "Procurement",
+    "Journalism", "Communications",
+]
+
+# Longer/more specific phrases first, so "Agricultural Economics" matches
+# before the more generic "Economics" inside the same text.
+_SPECIALIZATION_FIELDS_SORTED = sorted(SPECIALIZATION_FIELDS, key=len, reverse=True)
+_FIELD_PATTERNS = [
+    (re.compile(r"\b" + re.escape(f) + r"\b", re.I), f) for f in _SPECIALIZATION_FIELDS_SORTED
+]
+
+
+def extract_specializations(text):
+    """Returns the list of recognized fields of study mentioned in free
+    text (e.g. a job description), without double-counting a more
+    specific field that's a substring of a more general one."""
+    if not text:
+        return []
+    found = []
+    consumed_spans = []
+    for pattern, field in _FIELD_PATTERNS:
+        m = pattern.search(text)
+        if not m:
+            continue
+        span = m.span()
+        if any(span[0] >= a and span[1] <= b for a, b in consumed_spans):
+            continue
+        found.append(field)
+        consumed_spans.append(span)
+    return found
+
+
+# ---------------------------------------------------------------------------
+# Employer type — Private / Public / NGO
+# ---------------------------------------------------------------------------
+# A keyword heuristic on the employer's own name, not a verified registry
+# lookup. Ethiopian employer names are fairly consistent about signaling
+# their own type (legal suffixes for private companies, "Ministry"/
+# "Authority"/"University" for public bodies, "Foundation"/"International"/
+# relief-agency names for NGOs) so this catches most cases, but an
+# unmatched name is reported as "Unclassified" rather than guessed at.
+
+_PUBLIC_EMPLOYER_RE = re.compile(
+    r"\b(ministry|minister|bureau|authority|commission|federal|"
+    r"regional government|city administration|public service|"
+    r"government|agency|kebele|woreda|university|regional state)\b",
+    re.I,
+)
+_NGO_EMPLOYER_RE = re.compile(
+    r"\b(ngo|non[\s\-]?governmental|foundation|relief|charity|"
+    r"humanitarian|cooperative|association|save the children|"
+    r"plan international|care international|unicef|undp|unhcr|unfpa|"
+    r"usaid|world food programme|\bwfp\b|red cross|world vision|"
+    r"international rescue committee|catholic relief|action aid)\b",
+    re.I,
+)
+_PRIVATE_EMPLOYER_RE = re.compile(
+    r"\b(plc|p\.l\.c\.?|s\.c\.?|share company|ltd|l\.l\.c\.?|"
+    r"pvt\.?\s*ltd|trading|manufacturing|industries|private limited|"
+    r"enterprise|business group|industrial)\b",
+    re.I,
+)
+
+
+# ---------------------------------------------------------------------------
+# Salary / remuneration — bucketed, where a posting states one
+# ---------------------------------------------------------------------------
+# Postings state pay in free text ("Birr 20000/Mon", "ETB 87,975.00",
+# "Negotiable", "As per company scale"). This only extracts a figure when
+# the text itself marks it as a monthly Birr/ETB amount — a bare number
+# with no currency or "/month" marker is left unclassified rather than
+# guessed at, since it's just as likely to be a typo, a reference number,
+# or something that isn't pay at all.
+
+SALARY_BUCKET_ORDER = [
+    "Under 10,000 ETB", "10,000–20,000 ETB", "20,000–35,000 ETB",
+    "35,000–60,000 ETB", "60,000+ ETB",
+]
+_SALARY_BUCKETS = [
+    ("Under 10,000 ETB", 0, 10000),
+    ("10,000–20,000 ETB", 10000, 20000),
+    ("20,000–35,000 ETB", 20000, 35000),
+    ("35,000–60,000 ETB", 35000, 60000),
+    ("60,000+ ETB", 60000, None),
+]
+_SALARY_CURRENCY_RE = re.compile(r"\b(birr|etb)\b", re.I)
+_SALARY_PER_MONTH_RE = re.compile(r"/\s*mon\b|per\s*month|/\s*month|monthly", re.I)
+_SALARY_RANGE_RE = re.compile(r"([\d,]+(?:\.\d+)?)\s*(?:-|to|–)\s*([\d,]+(?:\.\d+)?)")
+_SALARY_NUM_RE = re.compile(r"([\d,]+(?:\.\d+)?)")
+
+
+def _salary_to_number(s):
+    try:
+        return float(s.replace(",", ""))
+    except ValueError:
+        return None
+
+
+def parse_monthly_salary_etb(raw):
+    """Returns a single monthly-ETB figure (the midpoint, for a stated
+    range) only when the text itself marks the number as a Birr/ETB
+    amount or a monthly figure — otherwise None."""
+    if not raw:
+        return None
+    s = raw.strip()
+    if not (_SALARY_CURRENCY_RE.search(s) or _SALARY_PER_MONTH_RE.search(s)):
+        return None
+    m = _SALARY_RANGE_RE.search(s)
+    if m:
+        lo, hi = _salary_to_number(m.group(1)), _salary_to_number(m.group(2))
+        if lo is None or hi is None:
+            return None
+        return (lo + hi) / 2
+    m = _SALARY_NUM_RE.search(s)
+    if not m:
+        return None
+    return _salary_to_number(m.group(1))
+
+
+def salary_bucket(raw):
+    amount = parse_monthly_salary_etb(raw)
+    if amount is None:
+        return None
+    for label, start, end in _SALARY_BUCKETS:
+        if end is None:
+            if amount >= start:
+                return label
+        elif start <= amount < end:
+            return label
+    return SALARY_BUCKET_ORDER[-1]
+
+
+def employer_type(name):
+    """Returns "Public", "NGO", "Private", or "Unclassified". Checked in
+    this order because a public body (e.g. a university) occasionally
+    also carries words that could otherwise look NGO-like."""
+    if not name:
+        return None
+    if _PUBLIC_EMPLOYER_RE.search(name):
+        return "Public"
+    if _NGO_EMPLOYER_RE.search(name):
+        return "NGO"
+    if _PRIVATE_EMPLOYER_RE.search(name):
+        return "Private"
+    return "Unclassified"
