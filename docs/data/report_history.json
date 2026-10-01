@@ -2,23 +2,23 @@
   {
     "date": "2026-10-01",
     "weekly": {
-      "posting_count": 1598,
+      "posting_count": 1603,
       "coverage": {
         "education": {
-          "known": 461,
-          "total": 1598
+          "known": 462,
+          "total": 1603
         },
         "experience": {
-          "known": 1319,
-          "total": 1598
+          "known": 1323,
+          "total": 1603
         },
         "salary": {
           "known": 55,
-          "total": 1598
+          "total": 1603
         },
         "employer_type": {
-          "known": 867,
-          "total": 1598
+          "known": 868,
+          "total": 1603
         }
       },
       "top_skills": [
@@ -66,7 +66,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 658
+          "count": 660
         },
         {
           "label": "Education",
@@ -112,11 +112,11 @@
         },
         {
           "label": "Managers",
-          "count": 226
+          "count": 228
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 132
+          "count": 133
         },
         {
           "label": "Service and sales workers",
@@ -142,7 +142,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1173
+          "count": 1176
         },
         {
           "label": "Oromia",
@@ -225,23 +225,23 @@
       ]
     },
     "monthly": {
-      "posting_count": 1900,
+      "posting_count": 1905,
       "coverage": {
         "education": {
-          "known": 593,
-          "total": 1900
+          "known": 594,
+          "total": 1905
         },
         "experience": {
-          "known": 1483,
-          "total": 1900
+          "known": 1489,
+          "total": 1905
         },
         "salary": {
           "known": 61,
-          "total": 1900
+          "total": 1905
         },
         "employer_type": {
-          "known": 1035,
-          "total": 1900
+          "known": 1036,
+          "total": 1905
         }
       },
       "top_skills": [
@@ -289,7 +289,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 763
+          "count": 765
         },
         {
           "label": "Financial and insurance activities",
@@ -335,11 +335,11 @@
         },
         {
           "label": "Managers",
-          "count": 285
+          "count": 287
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 158
+          "count": 159
         },
         {
           "label": "Service and sales workers",
@@ -365,7 +365,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1407
+          "count": 1410
         },
         {
           "label": "Oromia",

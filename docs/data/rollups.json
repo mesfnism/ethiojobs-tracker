@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01 15:23:35 UTC",
+  "generated_at": "2026-10-01 15:39:05 UTC",
   "source": "EthioJobs + HaHuJobs",
   "taxonomies": {
     "skills": "ESCO (EU skills/competences taxonomy)",
@@ -14,7 +14,7 @@
   },
   "windows": {
     "daily": {
-      "posting_count": 1178,
+      "posting_count": 1183,
       "top_skills": [
         {
           "label": "Communication",
@@ -92,12 +92,12 @@
         }
       ],
       "education": {
-        "known_total": 317,
-        "total": 1178,
+        "known_total": 318,
+        "total": 1183,
         "levels": [
           {
             "label": "Certificate",
-            "count": 16,
+            "count": 17,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
@@ -129,7 +129,7 @@
       },
       "education_specializations": {
         "Certificate": {
-          "total": 16,
+          "total": 17,
           "with_field_stated": 1,
           "fields": [
             {
@@ -245,7 +245,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 480
+          "count": 482
         },
         {
           "label": "Education",
@@ -287,7 +287,7 @@
       "sector_subcategories": [
         {
           "label": "Business",
-          "count": 307
+          "count": 309
         },
         {
           "label": "Finance",
@@ -315,7 +315,7 @@
         },
         {
           "label": "Marketing Management",
-          "count": 79
+          "count": 80
         },
         {
           "label": "Accounting and Finance",
@@ -327,7 +327,7 @@
         },
         {
           "label": "Business Administration",
-          "count": 51
+          "count": 52
         },
         {
           "label": "Human Resource Management",
@@ -341,11 +341,11 @@
         },
         {
           "label": "Managers",
-          "count": 179
+          "count": 181
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 95
+          "count": 96
         },
         {
           "label": "Service and sales workers",
@@ -371,7 +371,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 866
+          "count": 869
         },
         {
           "label": "Bule Hora",
@@ -411,8 +411,8 @@
         }
       ],
       "experience": {
-        "known_total": 1077,
-        "total": 1178,
+        "known_total": 1081,
+        "total": 1183,
         "buckets": [
           {
             "label": "0-1 years",
@@ -420,7 +420,7 @@
           },
           {
             "label": "1-3 years",
-            "count": 245
+            "count": 247
           },
           {
             "label": "3-5 years",
@@ -428,7 +428,7 @@
           },
           {
             "label": "5-8 years",
-            "count": 229
+            "count": 231
           },
           {
             "label": "8+ years",
@@ -438,7 +438,7 @@
       },
       "salary": {
         "known_total": 53,
-        "total": 1178,
+        "total": 1183,
         "buckets": [
           {
             "label": "Under 10,000 ETB",
@@ -496,17 +496,17 @@
           "count": 11
         },
         {
-          "label": "Arba Minch Conference Resort By Ethiopian Skylight Hospitality Group",
+          "label": "Dodai Manufacturing",
           "count": 11
         }
       ],
       "employer_type": {
-        "known_total": 650,
-        "total": 1178,
+        "known_total": 651,
+        "total": 1183,
         "types": [
           {
             "label": "Private",
-            "count": 469
+            "count": 470
           },
           {
             "label": "Public",
@@ -518,14 +518,14 @@
           },
           {
             "label": "Unclassified",
-            "count": 528
+            "count": 532
           }
         ]
       },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 977
+          "count": 981
         },
         {
           "label": "EthioJobs",
@@ -542,12 +542,16 @@
         {
           "label": "HarmeeJobs",
           "count": 18
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "source_sites": [
         {
           "label": "HaHuJobs",
-          "count": 1032
+          "count": 1036
         },
         {
           "label": "EthioJobs",
@@ -556,6 +560,10 @@
         {
           "label": "HarmeeJobs",
           "count": 36
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "critical_skills_by_subsector": {
@@ -661,6 +669,23 @@
             }
           ]
         },
+        "Development and Project": {
+          "postings_considered": 8,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 5
+            },
+            {
+              "label": "Data Analysis",
+              "count": 1
+            },
+            {
+              "label": "Dashboard Design and Data Visualization",
+              "count": 1
+            }
+          ]
+        },
         "Management": {
           "postings_considered": 14,
           "skills": [
@@ -692,23 +717,6 @@
             {
               "label": "Teamwork",
               "count": 3
-            }
-          ]
-        },
-        "Development and Project": {
-          "postings_considered": 8,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 5
-            },
-            {
-              "label": "Data Analysis",
-              "count": 1
-            },
-            {
-              "label": "Dashboard Design and Data Visualization",
-              "count": 1
             }
           ]
         },
@@ -1031,7 +1039,7 @@
             }
           ]
         },
-        "ICT": {
+        "Computer Science and Information Technology": {
           "postings_considered": 4,
           "skills": [
             {
@@ -1048,7 +1056,7 @@
             }
           ]
         },
-        "Computer Science and Information Technology": {
+        "ICT": {
           "postings_considered": 4,
           "skills": [
             {
@@ -1937,7 +1945,7 @@
       }
     },
     "weekly": {
-      "posting_count": 1598,
+      "posting_count": 1603,
       "top_skills": [
         {
           "label": "Communication",
@@ -2015,12 +2023,12 @@
         }
       ],
       "education": {
-        "known_total": 461,
-        "total": 1598,
+        "known_total": 462,
+        "total": 1603,
         "levels": [
           {
             "label": "Certificate",
-            "count": 23,
+            "count": 24,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
@@ -2052,7 +2060,7 @@
       },
       "education_specializations": {
         "Certificate": {
-          "total": 23,
+          "total": 24,
           "with_field_stated": 1,
           "fields": [
             {
@@ -2168,7 +2176,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 658
+          "count": 660
         },
         {
           "label": "Education",
@@ -2210,7 +2218,7 @@
       "sector_subcategories": [
         {
           "label": "Business",
-          "count": 307
+          "count": 309
         },
         {
           "label": "Engineering",
@@ -2246,7 +2254,7 @@
         },
         {
           "label": "Marketing Management",
-          "count": 79
+          "count": 80
         },
         {
           "label": "Business and Administra",
@@ -2264,11 +2272,11 @@
         },
         {
           "label": "Managers",
-          "count": 226
+          "count": 228
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 132
+          "count": 133
         },
         {
           "label": "Service and sales workers",
@@ -2294,7 +2302,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1173
+          "count": 1176
         },
         {
           "label": "Oromia",
@@ -2334,8 +2342,8 @@
         }
       ],
       "experience": {
-        "known_total": 1319,
-        "total": 1598,
+        "known_total": 1323,
+        "total": 1603,
         "buckets": [
           {
             "label": "0-1 years",
@@ -2343,7 +2351,7 @@
           },
           {
             "label": "1-3 years",
-            "count": 316
+            "count": 318
           },
           {
             "label": "3-5 years",
@@ -2351,7 +2359,7 @@
           },
           {
             "label": "5-8 years",
-            "count": 283
+            "count": 285
           },
           {
             "label": "8+ years",
@@ -2361,7 +2369,7 @@
       },
       "salary": {
         "known_total": 55,
-        "total": 1598,
+        "total": 1603,
         "buckets": [
           {
             "label": "Under 10,000 ETB",
@@ -2424,12 +2432,12 @@
         }
       ],
       "employer_type": {
-        "known_total": 867,
-        "total": 1598,
+        "known_total": 868,
+        "total": 1603,
         "types": [
           {
             "label": "Private",
-            "count": 666
+            "count": 667
           },
           {
             "label": "Public",
@@ -2441,14 +2449,14 @@
           },
           {
             "label": "Unclassified",
-            "count": 731
+            "count": 735
           }
         ]
       },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 977
+          "count": 981
         },
         {
           "label": "EthioJobs",
@@ -2469,12 +2477,16 @@
         {
           "label": "EthioJobs, HarmeeJobs",
           "count": 1
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "source_sites": [
         {
           "label": "HaHuJobs",
-          "count": 1204
+          "count": 1208
         },
         {
           "label": "EthioJobs",
@@ -2483,43 +2495,13 @@
         {
           "label": "HarmeeJobs",
           "count": 37
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "critical_skills_by_subsector": {
-        "Sales and Marketing": {
-          "postings_considered": 45,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 36
-            },
-            {
-              "label": "Problem solving",
-              "count": 8
-            },
-            {
-              "label": "Decision-making",
-              "count": 7
-            }
-          ]
-        },
-        "Social Sciences and Communications": {
-          "postings_considered": 109,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 103
-            },
-            {
-              "label": "Attention to detail",
-              "count": 35
-            },
-            {
-              "label": "Problem solving",
-              "count": 34
-            }
-          ]
-        },
         "Hotel and Hospitality": {
           "postings_considered": 36,
           "skills": [
@@ -2534,6 +2516,23 @@
             {
               "label": "Teamwork",
               "count": 10
+            }
+          ]
+        },
+        "Sales and Marketing": {
+          "postings_considered": 45,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 36
+            },
+            {
+              "label": "Problem solving",
+              "count": 8
+            },
+            {
+              "label": "Decision-making",
+              "count": 7
             }
           ]
         },
@@ -2554,6 +2553,23 @@
             }
           ]
         },
+        "Social Sciences and Communications": {
+          "postings_considered": 109,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 103
+            },
+            {
+              "label": "Attention to detail",
+              "count": 35
+            },
+            {
+              "label": "Problem solving",
+              "count": 34
+            }
+          ]
+        },
         "Fmcg and Manufacturing": {
           "postings_considered": 29,
           "skills": [
@@ -2571,23 +2587,6 @@
             }
           ]
         },
-        "Quality Assurance": {
-          "postings_considered": 9,
-          "skills": [
-            {
-              "label": "Problem solving",
-              "count": 7
-            },
-            {
-              "label": "Microsoft Office",
-              "count": 2
-            },
-            {
-              "label": "Requirement Skill",
-              "count": 2
-            }
-          ]
-        },
         "Development and Project": {
           "postings_considered": 20,
           "skills": [
@@ -2602,6 +2601,23 @@
             {
               "label": "Computer literacy",
               "count": 4
+            }
+          ]
+        },
+        "Quality Assurance": {
+          "postings_considered": 9,
+          "skills": [
+            {
+              "label": "Problem solving",
+              "count": 7
+            },
+            {
+              "label": "Microsoft Office",
+              "count": 2
+            },
+            {
+              "label": "Requirement Skill",
+              "count": 2
             }
           ]
         },
@@ -2741,23 +2757,6 @@
             }
           ]
         },
-        "Human Resource and Recr": {
-          "postings_considered": 29,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 15
-            },
-            {
-              "label": "Problem solving",
-              "count": 9
-            },
-            {
-              "label": "Attention to detail",
-              "count": 7
-            }
-          ]
-        },
         "Legal": {
           "postings_considered": 9,
           "skills": [
@@ -2772,6 +2771,23 @@
             {
               "label": "Compliace Knowledge",
               "count": 2
+            }
+          ]
+        },
+        "Human Resource and Recr": {
+          "postings_considered": 29,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 15
+            },
+            {
+              "label": "Problem solving",
+              "count": 9
+            },
+            {
+              "label": "Attention to detail",
+              "count": 7
             }
           ]
         },
@@ -3132,7 +3148,7 @@
             }
           ]
         },
-        "ICT": {
+        "Computer Science and Information Technology": {
           "postings_considered": 4,
           "skills": [
             {
@@ -3149,7 +3165,7 @@
             }
           ]
         },
-        "Computer Science and Information Technology": {
+        "ICT": {
           "postings_considered": 4,
           "skills": [
             {
@@ -4933,7 +4949,7 @@
       }
     },
     "monthly": {
-      "posting_count": 1900,
+      "posting_count": 1905,
       "top_skills": [
         {
           "label": "Communication",
@@ -5011,12 +5027,12 @@
         }
       ],
       "education": {
-        "known_total": 593,
-        "total": 1900,
+        "known_total": 594,
+        "total": 1905,
         "levels": [
           {
             "label": "Certificate",
-            "count": 28,
+            "count": 29,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
@@ -5048,7 +5064,7 @@
       },
       "education_specializations": {
         "Certificate": {
-          "total": 28,
+          "total": 29,
           "with_field_stated": 1,
           "fields": [
             {
@@ -5189,7 +5205,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 763
+          "count": 765
         },
         {
           "label": "Financial and insurance activities",
@@ -5231,7 +5247,7 @@
       "sector_subcategories": [
         {
           "label": "Business",
-          "count": 307
+          "count": 309
         },
         {
           "label": "Engineering",
@@ -5285,11 +5301,11 @@
         },
         {
           "label": "Managers",
-          "count": 285
+          "count": 287
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 158
+          "count": 159
         },
         {
           "label": "Service and sales workers",
@@ -5315,7 +5331,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1407
+          "count": 1410
         },
         {
           "label": "Oromia",
@@ -5355,8 +5371,8 @@
         }
       ],
       "experience": {
-        "known_total": 1483,
-        "total": 1900,
+        "known_total": 1489,
+        "total": 1905,
         "buckets": [
           {
             "label": "0-1 years",
@@ -5364,15 +5380,15 @@
           },
           {
             "label": "1-3 years",
-            "count": 360
+            "count": 362
           },
           {
             "label": "3-5 years",
-            "count": 345
+            "count": 346
           },
           {
             "label": "5-8 years",
-            "count": 326
+            "count": 329
           },
           {
             "label": "8+ years",
@@ -5382,7 +5398,7 @@
       },
       "salary": {
         "known_total": 61,
-        "total": 1900,
+        "total": 1905,
         "buckets": [
           {
             "label": "Under 10,000 ETB",
@@ -5449,12 +5465,12 @@
         }
       ],
       "employer_type": {
-        "known_total": 1035,
-        "total": 1900,
+        "known_total": 1036,
+        "total": 1905,
         "types": [
           {
             "label": "Private",
-            "count": 802
+            "count": 803
           },
           {
             "label": "Public",
@@ -5466,22 +5482,22 @@
           },
           {
             "label": "Unclassified",
-            "count": 865
+            "count": 869
           }
         ]
       },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 977
+          "count": 981
         },
         {
           "label": "EthioJobs",
-          "count": 581
+          "count": 579
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 303
+          "count": 305
         },
         {
           "label": "HaHuJobs, HarmeeJobs",
@@ -5494,12 +5510,16 @@
         {
           "label": "EthioJobs, HarmeeJobs",
           "count": 3
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "source_sites": [
         {
           "label": "HaHuJobs",
-          "count": 1298
+          "count": 1304
         },
         {
           "label": "EthioJobs",
@@ -5508,6 +5528,10 @@
         {
           "label": "HarmeeJobs",
           "count": 39
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "critical_skills_by_subsector": {
@@ -5545,20 +5569,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
+              "count": 30
             },
             {
-              "label": "Accounting",
-              "count": 86
+              "label": "Problem solving",
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 40
+              "count": 14
             }
           ]
         },
@@ -5579,37 +5603,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
-            },
-            {
-              "label": "Attention to detail",
-              "count": 14
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
-            },
-            {
-              "label": "Problem solving",
-              "count": 17
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 40
             }
           ]
         },
@@ -5623,6 +5630,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -5681,23 +5705,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -5712,6 +5719,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -5970,23 +5994,6 @@
             }
           ]
         },
-        "Warehouse, Supply Chain": {
-          "postings_considered": 13,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 6
-            },
-            {
-              "label": "Problem solving",
-              "count": 2
-            },
-            {
-              "label": "Accounting",
-              "count": 2
-            }
-          ]
-        },
         "Purchasing and Procurem": {
           "postings_considered": 14,
           "skills": [
@@ -6000,6 +6007,23 @@
             },
             {
               "label": "Quality Control",
+              "count": 2
+            }
+          ]
+        },
+        "Warehouse, Supply Chain": {
+          "postings_considered": 13,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 6
+            },
+            {
+              "label": "Problem solving",
+              "count": 2
+            },
+            {
+              "label": "Accounting",
               "count": 2
             }
           ]
@@ -6191,7 +6215,7 @@
             }
           ]
         },
-        "ICT": {
+        "Computer Science and Information Technology": {
           "postings_considered": 4,
           "skills": [
             {
@@ -6208,7 +6232,7 @@
             }
           ]
         },
-        "Computer Science and Information Technology": {
+        "ICT": {
           "postings_considered": 4,
           "skills": [
             {
@@ -8397,7 +8421,7 @@
           ]
         },
         "3-5 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -8405,7 +8429,7 @@
             },
             {
               "label": "Problem solving",
-              "count": 27
+              "count": 28
             },
             {
               "label": "Attention to detail",
@@ -8431,7 +8455,7 @@
           ]
         },
         "5-8 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -8554,7 +8578,7 @@
       }
     },
     "quarterly": {
-      "posting_count": 1900,
+      "posting_count": 1905,
       "top_skills": [
         {
           "label": "Communication",
@@ -8632,12 +8656,12 @@
         }
       ],
       "education": {
-        "known_total": 593,
-        "total": 1900,
+        "known_total": 594,
+        "total": 1905,
         "levels": [
           {
             "label": "Certificate",
-            "count": 28,
+            "count": 29,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
@@ -8669,7 +8693,7 @@
       },
       "education_specializations": {
         "Certificate": {
-          "total": 28,
+          "total": 29,
           "with_field_stated": 1,
           "fields": [
             {
@@ -8810,7 +8834,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 763
+          "count": 765
         },
         {
           "label": "Financial and insurance activities",
@@ -8852,7 +8876,7 @@
       "sector_subcategories": [
         {
           "label": "Business",
-          "count": 307
+          "count": 309
         },
         {
           "label": "Engineering",
@@ -8906,11 +8930,11 @@
         },
         {
           "label": "Managers",
-          "count": 285
+          "count": 287
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 158
+          "count": 159
         },
         {
           "label": "Service and sales workers",
@@ -8936,7 +8960,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1407
+          "count": 1410
         },
         {
           "label": "Oromia",
@@ -8976,8 +9000,8 @@
         }
       ],
       "experience": {
-        "known_total": 1483,
-        "total": 1900,
+        "known_total": 1489,
+        "total": 1905,
         "buckets": [
           {
             "label": "0-1 years",
@@ -8985,15 +9009,15 @@
           },
           {
             "label": "1-3 years",
-            "count": 360
+            "count": 362
           },
           {
             "label": "3-5 years",
-            "count": 345
+            "count": 346
           },
           {
             "label": "5-8 years",
-            "count": 326
+            "count": 329
           },
           {
             "label": "8+ years",
@@ -9003,7 +9027,7 @@
       },
       "salary": {
         "known_total": 61,
-        "total": 1900,
+        "total": 1905,
         "buckets": [
           {
             "label": "Under 10,000 ETB",
@@ -9070,12 +9094,12 @@
         }
       ],
       "employer_type": {
-        "known_total": 1035,
-        "total": 1900,
+        "known_total": 1036,
+        "total": 1905,
         "types": [
           {
             "label": "Private",
-            "count": 802
+            "count": 803
           },
           {
             "label": "Public",
@@ -9087,22 +9111,22 @@
           },
           {
             "label": "Unclassified",
-            "count": 865
+            "count": 869
           }
         ]
       },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 977
+          "count": 981
         },
         {
           "label": "EthioJobs",
-          "count": 581
+          "count": 579
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 303
+          "count": 305
         },
         {
           "label": "HaHuJobs, HarmeeJobs",
@@ -9115,12 +9139,16 @@
         {
           "label": "EthioJobs, HarmeeJobs",
           "count": 3
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "source_sites": [
         {
           "label": "HaHuJobs",
-          "count": 1298
+          "count": 1304
         },
         {
           "label": "EthioJobs",
@@ -9129,6 +9157,10 @@
         {
           "label": "HarmeeJobs",
           "count": 39
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "critical_skills_by_subsector": {
@@ -9166,20 +9198,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
+              "count": 30
             },
             {
-              "label": "Accounting",
-              "count": 86
+              "label": "Problem solving",
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 40
+              "count": 14
             }
           ]
         },
@@ -9200,37 +9232,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
-            },
-            {
-              "label": "Attention to detail",
-              "count": 14
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
-            },
-            {
-              "label": "Problem solving",
-              "count": 17
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 40
             }
           ]
         },
@@ -9244,6 +9259,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -9302,23 +9334,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -9333,6 +9348,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -9591,23 +9623,6 @@
             }
           ]
         },
-        "Warehouse, Supply Chain": {
-          "postings_considered": 13,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 6
-            },
-            {
-              "label": "Problem solving",
-              "count": 2
-            },
-            {
-              "label": "Accounting",
-              "count": 2
-            }
-          ]
-        },
         "Purchasing and Procurem": {
           "postings_considered": 14,
           "skills": [
@@ -9621,6 +9636,23 @@
             },
             {
               "label": "Quality Control",
+              "count": 2
+            }
+          ]
+        },
+        "Warehouse, Supply Chain": {
+          "postings_considered": 13,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 6
+            },
+            {
+              "label": "Problem solving",
+              "count": 2
+            },
+            {
+              "label": "Accounting",
               "count": 2
             }
           ]
@@ -9812,7 +9844,7 @@
             }
           ]
         },
-        "ICT": {
+        "Computer Science and Information Technology": {
           "postings_considered": 4,
           "skills": [
             {
@@ -9829,7 +9861,7 @@
             }
           ]
         },
-        "Computer Science and Information Technology": {
+        "ICT": {
           "postings_considered": 4,
           "skills": [
             {
@@ -12018,7 +12050,7 @@
           ]
         },
         "3-5 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -12026,7 +12058,7 @@
             },
             {
               "label": "Problem solving",
-              "count": 27
+              "count": 28
             },
             {
               "label": "Attention to detail",
@@ -12052,7 +12084,7 @@
           ]
         },
         "5-8 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -12175,7 +12207,7 @@
       }
     },
     "yearly": {
-      "posting_count": 1900,
+      "posting_count": 1905,
       "top_skills": [
         {
           "label": "Communication",
@@ -12253,12 +12285,12 @@
         }
       ],
       "education": {
-        "known_total": 593,
-        "total": 1900,
+        "known_total": 594,
+        "total": 1905,
         "levels": [
           {
             "label": "Certificate",
-            "count": 28,
+            "count": 29,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
@@ -12290,7 +12322,7 @@
       },
       "education_specializations": {
         "Certificate": {
-          "total": 28,
+          "total": 29,
           "with_field_stated": 1,
           "fields": [
             {
@@ -12431,7 +12463,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 763
+          "count": 765
         },
         {
           "label": "Financial and insurance activities",
@@ -12473,7 +12505,7 @@
       "sector_subcategories": [
         {
           "label": "Business",
-          "count": 307
+          "count": 309
         },
         {
           "label": "Engineering",
@@ -12527,11 +12559,11 @@
         },
         {
           "label": "Managers",
-          "count": 285
+          "count": 287
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 158
+          "count": 159
         },
         {
           "label": "Service and sales workers",
@@ -12557,7 +12589,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1407
+          "count": 1410
         },
         {
           "label": "Oromia",
@@ -12597,8 +12629,8 @@
         }
       ],
       "experience": {
-        "known_total": 1483,
-        "total": 1900,
+        "known_total": 1489,
+        "total": 1905,
         "buckets": [
           {
             "label": "0-1 years",
@@ -12606,15 +12638,15 @@
           },
           {
             "label": "1-3 years",
-            "count": 360
+            "count": 362
           },
           {
             "label": "3-5 years",
-            "count": 345
+            "count": 346
           },
           {
             "label": "5-8 years",
-            "count": 326
+            "count": 329
           },
           {
             "label": "8+ years",
@@ -12624,7 +12656,7 @@
       },
       "salary": {
         "known_total": 61,
-        "total": 1900,
+        "total": 1905,
         "buckets": [
           {
             "label": "Under 10,000 ETB",
@@ -12691,12 +12723,12 @@
         }
       ],
       "employer_type": {
-        "known_total": 1035,
-        "total": 1900,
+        "known_total": 1036,
+        "total": 1905,
         "types": [
           {
             "label": "Private",
-            "count": 802
+            "count": 803
           },
           {
             "label": "Public",
@@ -12708,22 +12740,22 @@
           },
           {
             "label": "Unclassified",
-            "count": 865
+            "count": 869
           }
         ]
       },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 977
+          "count": 981
         },
         {
           "label": "EthioJobs",
-          "count": 581
+          "count": 579
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 303
+          "count": 305
         },
         {
           "label": "HaHuJobs, HarmeeJobs",
@@ -12736,12 +12768,16 @@
         {
           "label": "EthioJobs, HarmeeJobs",
           "count": 3
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "source_sites": [
         {
           "label": "HaHuJobs",
-          "count": 1298
+          "count": 1304
         },
         {
           "label": "EthioJobs",
@@ -12750,6 +12786,10 @@
         {
           "label": "HarmeeJobs",
           "count": 39
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "critical_skills_by_subsector": {
@@ -12787,20 +12827,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
+              "count": 30
             },
             {
-              "label": "Accounting",
-              "count": 86
+              "label": "Problem solving",
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 40
+              "count": 14
             }
           ]
         },
@@ -12821,37 +12861,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
-            },
-            {
-              "label": "Attention to detail",
-              "count": 14
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
-            },
-            {
-              "label": "Problem solving",
-              "count": 17
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 40
             }
           ]
         },
@@ -12865,6 +12888,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -12923,23 +12963,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -12954,6 +12977,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -13212,23 +13252,6 @@
             }
           ]
         },
-        "Warehouse, Supply Chain": {
-          "postings_considered": 13,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 6
-            },
-            {
-              "label": "Problem solving",
-              "count": 2
-            },
-            {
-              "label": "Accounting",
-              "count": 2
-            }
-          ]
-        },
         "Purchasing and Procurem": {
           "postings_considered": 14,
           "skills": [
@@ -13242,6 +13265,23 @@
             },
             {
               "label": "Quality Control",
+              "count": 2
+            }
+          ]
+        },
+        "Warehouse, Supply Chain": {
+          "postings_considered": 13,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 6
+            },
+            {
+              "label": "Problem solving",
+              "count": 2
+            },
+            {
+              "label": "Accounting",
               "count": 2
             }
           ]
@@ -13433,7 +13473,7 @@
             }
           ]
         },
-        "ICT": {
+        "Computer Science and Information Technology": {
           "postings_considered": 4,
           "skills": [
             {
@@ -13450,7 +13490,7 @@
             }
           ]
         },
-        "Computer Science and Information Technology": {
+        "ICT": {
           "postings_considered": 4,
           "skills": [
             {
@@ -15639,7 +15679,7 @@
           ]
         },
         "3-5 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -15647,7 +15687,7 @@
             },
             {
               "label": "Problem solving",
-              "count": 27
+              "count": 28
             },
             {
               "label": "Attention to detail",
@@ -15673,7 +15713,7 @@
           ]
         },
         "5-8 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -15796,7 +15836,7 @@
       }
     },
     "all_time": {
-      "posting_count": 1900,
+      "posting_count": 1905,
       "top_skills": [
         {
           "label": "Communication",
@@ -15874,12 +15914,12 @@
         }
       ],
       "education": {
-        "known_total": 593,
-        "total": 1900,
+        "known_total": 594,
+        "total": 1905,
         "levels": [
           {
             "label": "Certificate",
-            "count": 28,
+            "count": 29,
             "isced_level": 4,
             "isced_label": "Post-secondary non-tertiary education"
           },
@@ -15911,7 +15951,7 @@
       },
       "education_specializations": {
         "Certificate": {
-          "total": 28,
+          "total": 29,
           "with_field_stated": 1,
           "fields": [
             {
@@ -16052,7 +16092,7 @@
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 763
+          "count": 765
         },
         {
           "label": "Financial and insurance activities",
@@ -16094,7 +16134,7 @@
       "sector_subcategories": [
         {
           "label": "Business",
-          "count": 307
+          "count": 309
         },
         {
           "label": "Engineering",
@@ -16148,11 +16188,11 @@
         },
         {
           "label": "Managers",
-          "count": 285
+          "count": 287
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 158
+          "count": 159
         },
         {
           "label": "Service and sales workers",
@@ -16178,7 +16218,7 @@
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1407
+          "count": 1410
         },
         {
           "label": "Oromia",
@@ -16218,8 +16258,8 @@
         }
       ],
       "experience": {
-        "known_total": 1483,
-        "total": 1900,
+        "known_total": 1489,
+        "total": 1905,
         "buckets": [
           {
             "label": "0-1 years",
@@ -16227,15 +16267,15 @@
           },
           {
             "label": "1-3 years",
-            "count": 360
+            "count": 362
           },
           {
             "label": "3-5 years",
-            "count": 345
+            "count": 346
           },
           {
             "label": "5-8 years",
-            "count": 326
+            "count": 329
           },
           {
             "label": "8+ years",
@@ -16245,7 +16285,7 @@
       },
       "salary": {
         "known_total": 61,
-        "total": 1900,
+        "total": 1905,
         "buckets": [
           {
             "label": "Under 10,000 ETB",
@@ -16312,12 +16352,12 @@
         }
       ],
       "employer_type": {
-        "known_total": 1035,
-        "total": 1900,
+        "known_total": 1036,
+        "total": 1905,
         "types": [
           {
             "label": "Private",
-            "count": 802
+            "count": 803
           },
           {
             "label": "Public",
@@ -16329,22 +16369,22 @@
           },
           {
             "label": "Unclassified",
-            "count": 865
+            "count": 869
           }
         ]
       },
       "source_breakdown": [
         {
           "label": "HaHuJobs",
-          "count": 977
+          "count": 981
         },
         {
           "label": "EthioJobs",
-          "count": 581
+          "count": 579
         },
         {
           "label": "EthioJobs, HaHuJobs",
-          "count": 303
+          "count": 305
         },
         {
           "label": "HaHuJobs, HarmeeJobs",
@@ -16357,12 +16397,16 @@
         {
           "label": "EthioJobs, HarmeeJobs",
           "count": 3
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "source_sites": [
         {
           "label": "HaHuJobs",
-          "count": 1298
+          "count": 1304
         },
         {
           "label": "EthioJobs",
@@ -16371,6 +16415,10 @@
         {
           "label": "HarmeeJobs",
           "count": 39
+        },
+        {
+          "label": "DevNetJobs",
+          "count": 1
         }
       ],
       "critical_skills_by_subsector": {
@@ -16408,20 +16456,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
+              "count": 30
             },
             {
-              "label": "Accounting",
-              "count": 86
+              "label": "Problem solving",
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 40
+              "count": 14
             }
           ]
         },
@@ -16442,37 +16490,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
-            },
-            {
-              "label": "Attention to detail",
-              "count": 14
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
-            },
-            {
-              "label": "Problem solving",
-              "count": 17
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 40
             }
           ]
         },
@@ -16486,6 +16517,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -16544,23 +16592,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -16575,6 +16606,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -16833,23 +16881,6 @@
             }
           ]
         },
-        "Warehouse, Supply Chain": {
-          "postings_considered": 13,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 6
-            },
-            {
-              "label": "Problem solving",
-              "count": 2
-            },
-            {
-              "label": "Accounting",
-              "count": 2
-            }
-          ]
-        },
         "Purchasing and Procurem": {
           "postings_considered": 14,
           "skills": [
@@ -16863,6 +16894,23 @@
             },
             {
               "label": "Quality Control",
+              "count": 2
+            }
+          ]
+        },
+        "Warehouse, Supply Chain": {
+          "postings_considered": 13,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 6
+            },
+            {
+              "label": "Problem solving",
+              "count": 2
+            },
+            {
+              "label": "Accounting",
               "count": 2
             }
           ]
@@ -17054,7 +17102,7 @@
             }
           ]
         },
-        "ICT": {
+        "Computer Science and Information Technology": {
           "postings_considered": 4,
           "skills": [
             {
@@ -17071,7 +17119,7 @@
             }
           ]
         },
-        "Computer Science and Information Technology": {
+        "ICT": {
           "postings_considered": 4,
           "skills": [
             {
@@ -19260,7 +19308,7 @@
           ]
         },
         "3-5 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -19268,7 +19316,7 @@
             },
             {
               "label": "Problem solving",
-              "count": 27
+              "count": 28
             },
             {
               "label": "Attention to detail",
@@ -19294,7 +19342,7 @@
           ]
         },
         "5-8 years": {
-          "postings_considered": 122,
+          "postings_considered": 123,
           "skills": [
             {
               "label": "Communication",
@@ -19449,7 +19497,7 @@
       },
       {
         "period": "2026-10-01",
-        "count": 1178
+        "count": 1183
       }
     ],
     "weekly": [
@@ -19459,7 +19507,7 @@
       },
       {
         "period": "2026-W40",
-        "count": 1418
+        "count": 1423
       }
     ],
     "monthly": [
@@ -19469,13 +19517,13 @@
       },
       {
         "period": "2026-10",
-        "count": 1178
+        "count": 1183
       }
     ],
     "yearly": [
       {
         "period": "2026",
-        "count": 1900
+        "count": 1905
       }
     ]
   }
