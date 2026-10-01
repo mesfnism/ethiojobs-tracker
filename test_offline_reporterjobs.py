@@ -1,11 +1,13 @@
 """
-Offline tests for reporterjobs_pipeline.py's parsers, against text
-constructed from the site's actual field labels and values (observed by
-inspecting the live site's rendered text — not a captured Playwright DOM
-fixture, since this sandbox has no live network access to the site
-itself). The label-based detail parser is the one that matters most here
-(it doesn't depend on exact field order); the listing-card parser is
-best-effort and documented as such.
+Offline tests for reporterjobs_pipeline.py's parsers. The listing-card
+fixture below is copied verbatim from a real card's extracted text,
+captured live on 2026-10-01 by running this pipeline's own
+href-filter-plus-closest('li, article, div') extraction in a real browser
+against www.ethiopianreporterjobs.com, so it reflects the site's actual
+field order (title, "@ Employer", location, "Published ... ago", one or
+more category lines, a job-type badge) rather than an assumption about
+it. The label-based detail parser doesn't depend on field order and was
+already covered by a fixture built from the site's real field labels.
 """
 
 from reporterjobs_pipeline import parse_listing_card, parse_detail_text, structure_job
@@ -20,13 +22,37 @@ def check(name, condition):
 def main():
     all_ok = True
 
-    # Listing card — positional, around the "... ago" anchor
-    card_text = "Banking and Insurance\nIT and Telecommunication\nIT and Digital Risk Officer (Re – advertized)\nPublished 1 day ago\nBunna Bank\nAddis Ababa, Ethiopia"
+    # Listing card — real field order verified live: title, "@ Employer",
+    # location, "Published ... ago", category (possibly several, joined
+    # by a lone "," line), then a job-type badge as the last line.
+    card_text = (
+        "IT and Digital Risk Officer (Re – advertized)\n"
+        "@ Bunna Bank\n"
+        "Addis Ababa, Ethiopia\n"
+        "Published 1 day ago\n"
+        "Banking and Insurance\n"
+        ",\n"
+        "IT and Telecommunication\n"
+        "FULL-TIME"
+    )
     listing = parse_listing_card("/jobs/129328/", card_text)
     all_ok &= check("listing: job_id from href", listing["job_id"] == "129328")
     all_ok &= check("listing: title", listing["job_title"] == "IT and Digital Risk Officer (Re – advertized)")
     all_ok &= check("listing: employer", listing["employer"] == "Bunna Bank")
     all_ok &= check("listing: location", listing["location"] == "Addis Ababa, Ethiopia")
+    all_ok &= check("listing: category joins multiple values",
+                     listing["category"] == "Banking and Insurance, IT and Telecommunication")
+    all_ok &= check("listing: job-type badge captured", listing["work_type"] == "FULL-TIME")
+
+    # A single-category card (no lone "," line) should also parse cleanly.
+    single_cat_text = (
+        "Accountant\n@ S.Sara Coffee Export Enterprise\nAddis Ababa, Ethiopia\n"
+        "Published 2 days ago\nAccounting, Auditing and Finance\nFULL-TIME"
+    )
+    single = parse_listing_card("/jobs/129076/", single_cat_text)
+    all_ok &= check("listing: single category, no stray comma line",
+                     single["category"] == "Accounting, Auditing and Finance")
+    all_ok &= check("listing: single-category job-type badge", single["work_type"] == "FULL-TIME")
 
     # Detail page — label-based, order independent
     detail_text = (

@@ -73,7 +73,16 @@ EXTRA_HEADERS = {
 }
 
 BASE_URL = "https://www.ethiopianreporterjobs.com"
-LIST_URL_TEMPLATE = BASE_URL + "/jobs-in-ethiopia/page/{page}/"
+# Verified live (2026-10-01) by loading the site in a real browser and
+# clicking through pagination: the listing is served by a client-side
+# AJAX filter, and the "page/2/", "page/3/" style URL this file used
+# before does NOT change the result (it silently re-serves page 1's own
+# 14 postings every time, which would make pagination look like it always
+# "reaches the end" after one page even when the request itself succeeds).
+# The real pagination URL, confirmed to return distinct results on a plain
+# page load (not just a client-side click), is a query string on the same
+# listing page:
+LIST_URL_TEMPLATE = BASE_URL + "/jobs-in-ethiopia/?ajax_filter=true&job_page={page}"
 LIST_URL_FIRST_PAGE = BASE_URL + "/jobs-in-ethiopia/"
 
 MAX_PAGES = int(os.environ.get("REPORTERJOBS_MAX_PAGES", "120"))
@@ -114,30 +123,57 @@ def _job_id_from_href(href):
 # --------------------------------------------------------------------------
 
 def parse_listing_card(href, raw_text):
-    """Best-effort positional parse of one listing card's inner text.
-    "Published ... ago" is the one fixed anchor observed on this site's
-    cards; everything else is inferred relative to it. Falls back to
-    listing_only with just the title when the shape doesn't match —
-    the detail-page fetch (parse_detail_text) is what actually supplies
-    every other field, so a rough listing parse here is not fatal."""
+    """Parses one listing card's inner text.
+
+    Verified live (2026-10-01) against the site's real cards (class
+    jobsearch-joblisting-classic-wrap), by running the exact same
+    href-filter-plus-closest('li, article, div') extraction this pipeline
+    uses, in a real browser: the line order is title, then "@ Employer",
+    then location, then a "Published ... ago" line, then one or more
+    category lines (with a lone "," token on its own line when a posting
+    has more than one category), then a job-type badge (FULL-TIME,
+    CONTRACT, ...) as the last line. The previous version of this parser
+    had this backwards — it treated the lines BEFORE "ago" as category
+    and the lines AFTER it as employer/location, when it's the other way
+    around — so every field it filled in was being assigned from the
+    wrong line. This version matches the real layout directly."""
     lines = [ln.strip() for ln in raw_text.split("\n") if ln.strip()]
     job_id = _job_id_from_href(href)
+    source_url = href if href.startswith("http") else BASE_URL + href
 
-    ago_idx = next((i for i, ln in enumerate(lines) if re.search(r"\bago\b", ln, re.I)), None)
-    if ago_idx is None or ago_idx == 0:
+    if len(lines) < 3:
         return {
             "job_id": job_id,
             "job_title": lines[0] if lines else None,
-            "source_url": href if href.startswith("http") else BASE_URL + href,
+            "source_url": source_url,
             "_parse_warning": "unexpected_card_shape",
         }
 
-    title = lines[ago_idx - 1]
-    pre_title = lines[:ago_idx - 1]
-    category = "; ".join(pre_title) if pre_title else None
-    tail = lines[ago_idx + 1:]
-    employer = tail[0] if len(tail) > 0 else None
-    location = tail[1] if len(tail) > 1 else None
+    title = lines[0]
+    employer = lines[1][1:].strip() if lines[1].startswith("@") else lines[1]
+    location = lines[2]
+
+    ago_idx = next((i for i, ln in enumerate(lines) if re.search(r"\bago\b", ln, re.I)), None)
+    if ago_idx is None:
+        return {
+            "job_id": job_id,
+            "job_title": title,
+            "employer": employer,
+            "location": location,
+            "source_url": source_url,
+            "_parse_warning": "no_ago_line",
+        }
+
+    # Everything after the "ago" line is one or more category names
+    # (dropping the lone "," separator token the site's markup produces
+    # between them) followed by a single all-caps job-type badge as the
+    # last line, if present.
+    tail = [ln for ln in lines[ago_idx + 1:] if ln != ","]
+    work_type = None
+    if tail and re.fullmatch(r"[A-Z][A-Z\-/ ]*", tail[-1]):
+        work_type = tail[-1]
+        tail = tail[:-1]
+    category = ", ".join(tail) if tail else None
 
     return {
         "job_id": job_id,
@@ -145,7 +181,8 @@ def parse_listing_card(href, raw_text):
         "employer": employer,
         "category": category,
         "location": location,
-        "source_url": href if href.startswith("http") else BASE_URL + href,
+        "work_type": work_type,
+        "source_url": source_url,
     }
 
 
@@ -226,7 +263,7 @@ def structure_job(listing_fields, detail_fields):
         "employer": listing_fields.get("employer"),
         "category": detail_fields.get("category") or listing_fields.get("category"),
         "location": detail_fields.get("location") or listing_fields.get("location"),
-        "work_type": None,
+        "work_type": listing_fields.get("work_type"),
         "career_level": detail_fields.get("career_level"),
         "employment_type": detail_fields.get("employment_type"),
         "number_required": None,
