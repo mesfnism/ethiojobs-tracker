@@ -147,8 +147,15 @@ def capture_api_headers(page):
     """Loads the /jobs page and captures the headers the site's own code
     sends on its first call to the public jobs table — the same headers
     any anonymous visitor's browser would send. Returns None if no such
-    call is seen within the timeout (e.g. the page's own behavior
-    changed), so the caller can fail loudly rather than guess at auth."""
+    call is seen within the timeout.
+
+    As of this update, the site renders the first page of jobs server-side
+    (confirmed live: its __NEXT_DATA__ payload already carries the first 20
+    jobs, and the listing page no longer makes a client-side call to
+    /rest/v1/jobs on load at all), so this request is never seen anymore —
+    this function now always returns (None, None), and discover_api_credentials
+    below is the real credential source. Kept only as a cheap first attempt
+    in case the site's behavior changes back."""
     captured = {}
 
     def on_request(request):
@@ -161,6 +168,59 @@ def capture_api_headers(page):
     page.wait_for_timeout(4000)
     page.remove_listener("request", on_request)
     return captured.get("headers"), captured.get("base_url")
+
+
+_ANON_KEY_PATTERN = r"eyJ[a-zA-Z0-9_\-\.]{60,}"
+_SUPABASE_URL_PATTERN = r"https://[a-z0-9]+\.supabase\.co"
+
+
+def discover_api_credentials(page):
+    """Finds the site's own public Supabase anon key and project URL by
+    reading its already-loaded JS bundle — the same public key and URL
+    every visitor's browser already downloads just to render the page,
+    not a different or bypassed credential. The site stopped calling
+    /rest/v1/jobs directly from the browser (see capture_api_headers), so
+    this reads the same information a live network capture used to get,
+    straight from the client code instead.
+
+    The chunk file that happens to hold them is content-hashed and
+    changes on every deployment, so this doesn't guess a filename: it
+    fetches every loaded /_next/static/chunks/ script in parallel, from
+    inside the page, and keeps the first key and URL pattern it finds."""
+    result = page.evaluate(
+        """
+        async () => {
+          const urls = Array.from(document.querySelectorAll('script[src]'))
+            .map(s => s.src)
+            .filter(s => s.includes('/_next/static/chunks/'));
+          const texts = await Promise.all(urls.map(async (u) => {
+            try {
+              const r = await fetch(u);
+              return await r.text();
+            } catch (e) { return ''; }
+          }));
+          let anonKey = null, supaUrl = null;
+          for (const t of texts) {
+            if (!anonKey) {
+              const m = t.match(/eyJ[a-zA-Z0-9_\\-\\.]{60,}/);
+              if (m) anonKey = m[0];
+            }
+            if (!supaUrl) {
+              const m2 = t.match(/https:\\/\\/[a-z0-9]+\\.supabase\\.co/);
+              if (m2) supaUrl = m2[0];
+            }
+            if (anonKey && supaUrl) break;
+          }
+          return {anonKey, supaUrl};
+        }
+        """
+    )
+    anon_key, supa_url = result.get("anonKey"), result.get("supaUrl")
+    if not anon_key or not supa_url:
+        return None, None
+    headers = {"apikey": anon_key, "Authorization": f"Bearer {anon_key}"}
+    base_url = f"{supa_url}/rest/v1/jobs"
+    return headers, base_url
 
 
 def fetch_jobs_page(request_context, base_url, headers, offset):
@@ -262,13 +322,19 @@ def main():
 
         headers, base_url = capture_api_headers(page)
         if not headers or not base_url:
-            print("  Could not capture API request headers from the live page — "
-                  "the site's behavior may have changed. Stopping without writing "
+            print("  No live /rest/v1/jobs request seen on page load (the site now "
+                  "renders its first page server-side) — falling back to reading "
+                  "the public anon key straight out of its own JS bundle.")
+            headers, base_url = discover_api_credentials(page)
+        if not headers or not base_url:
+            print("  Could not find API credentials by either method — the site's "
+                  "behavior may have changed further. Stopping without writing "
                   "anything, rather than guessing at credentials.")
             page.close()
             browser.close()
             append_rows(output_path, [])
             return
+        print(f"  Using API base URL: {base_url}")
 
         request_context = page.context.request
         page.close()

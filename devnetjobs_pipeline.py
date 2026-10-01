@@ -11,21 +11,27 @@ narrows ~800 global postings down to the much smaller set that actually
 mention Ethiopia (confirmed live: 29 matches across 2 result pages on the
 day this was built).
 
-Why a full postback replay, not just following links: result rows are
+Why a real browser page, not a raw POST/GET replay: result rows are
 rendered as ASP.NET __doPostBack() links, not plain <a href> URLs — the
 job_id is never present in the listing HTML, only resolved server-side
 when that specific row's postback is submitted (confirmed by inspecting
-the live DOM: no job_id in any attribute of a result row). So for each
-non-locked row this pipeline replays that exact postback (same
-__VIEWSTATE/__VIEWSTATEGENERATOR the row's own page rendered, same
-__EVENTTARGET naming convention observed live:
-"ctl00$ContentPlaceHolder1$SearchView1$grdJobs$ctl0N$lnkJobTitle") and
-follows the resulting redirect to jobdescription.aspx?job_id=N, which is
-also where the full posting text (sectors, description, how to apply,
-closing date) lives. Both the search form and the results grid were
-confirmed live to omit __EVENTVALIDATION entirely (event validation is
-disabled server-side for this app), which is what makes a replay like
-this practical without a full browser.
+the live DOM: no job_id in any attribute of a result row). This
+pipeline originally hand-built that postback's form body with a
+lightweight HTTP request context (no browser). That stopped working
+without any visible site redesign: a hand-built POST carrying the exact
+same fields a real browser sends still gets an HTTP 200 back but never
+the redirect to jobdescription.aspx, while calling the site's own
+__doPostBack() from inside a real page, with the same arguments,
+redirects correctly every time (confirmed live, side by side). The page
+loads ASP.NET AJAX's Sys.WebForms framework, so there is apparently
+something its client code adds before a postback that a hand-built
+request doesn't reproduce. Rather than keep reverse-engineering the
+wire format, this pipeline now drives the whole search-and-resolve flow
+through a real page, the same way reporterjobs_pipeline.py and
+palmjobs_pipeline.py already do for their own JS-dependent sites, and
+lets the site's own JS do the postback. The __EVENTTARGET naming
+convention is still exactly what was observed live:
+"ctl00$ContentPlaceHolder1$SearchView1$grdJobs$ctl0N$lnkJobTitle".
 
 Paywalled postings: a portion of results are labelled "(Value Members
 only)" in the listing itself (that text is literally what the site puts
@@ -212,91 +218,38 @@ def structure_job(row, job_id, detail):
 
 
 # --------------------------------------------------------------------------
-# Browser-driven fetch — a pure POST/GET replay, no JS rendering needed, so
-# this uses Playwright's request context directly rather than a real page
-# (lighter and faster than every other pipeline in this project, which all
-# need a rendered page for JS-driven sites).
+# Browser-driven fetch — a real page, not a raw POST/GET replay.
+#
+# This pipeline originally used Playwright's lightweight request context
+# (no browser) for the whole flow, hand-building the __doPostBack form
+# body for each row's postback. That stopped working: confirmed live, a
+# hand-built POST carrying the exact same fields a real browser sends
+# (checked by reading the live form's own field list) returns HTTP 200
+# but never redirects to jobdescription.aspx — while calling the site's
+# own __doPostBack() function from inside a real page, with the same
+# arguments, redirects correctly every time. Whatever the server expects
+# beyond the posted fields (likely something ASP.NET's AJAX framework
+# adds client-side before submitting, since Sys.WebForms is loaded on
+# this page), it's something only the page's own JS produces — so this
+# now drives the whole search-and-resolve flow through a real page,
+# letting the site's own client code do the postback, the same way
+# reporterjobs_pipeline.py and palmjobs_pipeline.py already do for their
+# own JS-dependent sites.
 # --------------------------------------------------------------------------
 
-def run_keyword_search(request_context):
-    """Submits the keyword search exactly as the site's own form would,
-    then pages through every results page, returning a flat list of
-    (row, viewstate, viewstategenerator) — each row keeps the viewstate of
-    the SPECIFIC page it was rendered on, since that's what its own
-    postback replay later needs (not whatever page is current by the time
-    all rows are processed)."""
-    resp = request_context.get(SEARCH_FORM_URL, timeout=30000)
-    vs, vg = extract_viewstate(resp.text())
-
-    resp = request_context.post(
-        SEARCH_FORM_URL,
-        form={
-            "__EVENTTARGET": "",
-            "__EVENTARGUMENT": "",
-            "__VIEWSTATE": vs,
-            "__VIEWSTATEGENERATOR": vg,
-            "ctl00$ContentPlaceHolder1$txtKeywords": SEARCH_KEYWORD,
-            "ctl00$ContentPlaceHolder1$ddlCountry": "",
-            "ctl00$ContentPlaceHolder1$txtLocation": "",
-            "ctl00$ContentPlaceHolder1$txtOrg": "",
-            "ctl00$ContentPlaceHolder1$ddlSector": "",
-            "ctl00$ContentPlaceHolder1$btnSearchJob": "Search",
-        },
-        timeout=30000,
-    )
-    page_html = resp.text()
-
-    all_rows = []
-    page_num = 1
-    while True:
-        vs, vg = extract_viewstate(page_html)
-        rows = parse_results_rows(page_html)
-        if not rows:
-            break
-        for row in rows:
-            all_rows.append((row, vs, vg))
-
-        if page_num >= MAX_RESULT_PAGES:
-            break
-        page_num += 1
-        resp = request_context.post(
-            RESULTS_URL,
-            form={
-                "__EVENTTARGET": GRID_EVENT_TARGET,
-                "__EVENTARGUMENT": f"Page${page_num}",
-                "__VIEWSTATE": vs,
-                "__VIEWSTATEGENERATOR": vg,
-            },
-            timeout=30000,
-        )
-        next_html = resp.text()
-        next_rows = parse_results_rows(next_html)
-        if not next_rows or next_rows == rows:
-            break
-        page_html = next_html
-
-    return all_rows
-
-
-def resolve_job(request_context, row, vs, vg):
-    """Replays one result row's own postback (same __VIEWSTATE the row's
-    page rendered) and follows the resulting redirect straight to its
+def resolve_job(page, row):
+    """Navigates back to the results listing (if needed), then calls the
+    site's own __doPostBack() for this one row from inside the live page
+    and follows the resulting navigation straight to its
     jobdescription.aspx?job_id=N page, returning (job_id, detail_text)."""
     event_target = f"{GRID_EVENT_TARGET}${row['ctl_id']}$lnkJobTitle"
-    resp = request_context.post(
-        RESULTS_URL,
-        form={
-            "__EVENTTARGET": event_target,
-            "__EVENTARGUMENT": "",
-            "__VIEWSTATE": vs,
-            "__VIEWSTATEGENERATOR": vg,
-        },
-        timeout=30000,
-    )
-    m = JOB_ID_IN_URL_RE.search(resp.url)
+    with page.expect_navigation(timeout=30000):
+        page.evaluate(f"__doPostBack('{event_target}', '')")
+    m = JOB_ID_IN_URL_RE.search(page.url)
     if not m:
         return None, None
-    return m.group(1), strip_tags_to_text(resp.text())
+    detail_text = page.inner_text("body")
+    return m.group(1), detail_text
 
 
 # --------------------------------------------------------------------------
@@ -379,44 +332,95 @@ def main():
     print(f"Loaded {len(existing_ids)} existing job IDs from {output_path}")
 
     new_rows = []
+    total_found = 0
+    total_locked = 0
 
     with sync_playwright() as p:
-        # No browser needed — this site's search/results/detail flow is a
-        # plain form POST/GET, so a lightweight request context is enough.
-        request_context = p.request.new_context()
+        browser = p.chromium.launch()
+        page = browser.new_page()
 
         try:
-            all_rows = run_keyword_search(request_context)
+            page.goto(SEARCH_FORM_URL, wait_until="domcontentloaded", timeout=45000)
+            page.fill('[name="ctl00$ContentPlaceHolder1$txtKeywords"]', SEARCH_KEYWORD)
+            page.click('[name="ctl00$ContentPlaceHolder1$btnSearchJob"]')
+            page.wait_for_load_state("domcontentloaded", timeout=45000)
+            page.wait_for_timeout(800)
         except Exception as e:
             print(f"  Keyword search failed ({e}) — stopping without writing anything.")
+            browser.close()
             append_rows(output_path, [])
             return
 
-        locked_count = sum(1 for row, _, _ in all_rows if row["locked"])
-        print(f"Found {len(all_rows)} result(s) for keyword '{SEARCH_KEYWORD}' "
-              f"({locked_count} paywalled 'Value Members only' — skipped).")
-
-        for row, vs, vg in all_rows:
-            if row["locked"]:
-                continue
+        # Resolved page by page, rather than collecting every row first —
+        # a row's ctl_id (e.g. "ctl03") is only unique within the results
+        # page it was rendered on, so every row on a page must be resolved
+        # (navigated to, read, navigated back from) before paginating away
+        # from that page, not after.
+        page_num = 1
+        while True:
             try:
-                job_id, detail_text = resolve_job(request_context, row, vs, vg)
+                html = page.content()
             except Exception as e:
-                print(f"  '{row['job_title']}': failed to resolve ({e}) — skipping.")
-                continue
+                print(f"  Page {page_num}: could not read results ({e}) — stopping.")
+                break
+            rows = parse_results_rows(html)
+            if not rows:
+                break
 
-            if not job_id:
-                print(f"  '{row['job_title']}': could not resolve a job_id — skipping.")
-                continue
-            if job_id in existing_ids:
-                continue
+            locked_count = sum(1 for r in rows if r["locked"])
+            total_found += len(rows)
+            total_locked += locked_count
+            print(f"  Page {page_num}: {len(rows)} result(s), {locked_count} paywalled "
+                  f"'Value Members only' — skipped.")
 
-            detail_fields = parse_detail_text(detail_text) if detail_text else {}
-            new_rows.append(structure_job(row, job_id, detail_fields))
-            existing_ids.add(job_id)
-            time.sleep(ROW_REQUEST_DELAY_SECONDS)
+            for row in rows:
+                if row["locked"]:
+                    continue
+                try:
+                    job_id, detail_text = resolve_job(page, row)
+                except Exception as e:
+                    print(f"  '{row['job_title']}': failed to resolve ({e}) — skipping.")
+                    job_id, detail_text = None, None
 
-        request_context.dispose()
+                if job_id and job_id not in existing_ids:
+                    detail_fields = parse_detail_text(detail_text) if detail_text else {}
+                    new_rows.append(structure_job(row, job_id, detail_fields))
+                    existing_ids.add(job_id)
+                elif not job_id:
+                    print(f"  '{row['job_title']}': could not resolve a job_id — skipping.")
+
+                # Back to the results listing (same page) for the next row,
+                # whether this one succeeded, was already seen, or failed.
+                try:
+                    page.go_back(wait_until="domcontentloaded", timeout=30000)
+                    page.wait_for_timeout(500)
+                except Exception as e:
+                    print(f"  Could not return to the results listing ({e}) — "
+                          f"stopping pagination early.")
+                    rows = []  # forces the outer while loop to stop below
+                    break
+                time.sleep(ROW_REQUEST_DELAY_SECONDS)
+
+            if not rows or page_num >= MAX_RESULT_PAGES:
+                break
+            next_page_num = page_num + 1
+            try:
+                page.evaluate(
+                    f"__doPostBack('{GRID_EVENT_TARGET}', 'Page${next_page_num}')"
+                )
+            except Exception:
+                break
+            page.wait_for_timeout(1200)
+            next_html = page.content()
+            next_rows = parse_results_rows(next_html)
+            if not next_rows or next_rows == rows:
+                break
+            page_num = next_page_num
+
+        browser.close()
+
+    print(f"Found {total_found} result(s) for keyword '{SEARCH_KEYWORD}' total "
+          f"({total_locked} paywalled, {len(new_rows)} new).")
 
     if new_rows:
         append_rows(output_path, new_rows)
