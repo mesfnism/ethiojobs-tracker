@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01 16:00:29 UTC",
+  "generated_at": "2026-10-01 16:31:54 UTC",
   "source": "EthioJobs + HaHuJobs",
   "taxonomies": {
     "skills": "ESCO (EU skills/competences taxonomy)",
@@ -669,23 +669,6 @@
             }
           ]
         },
-        "Management": {
-          "postings_considered": 14,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 9
-            },
-            {
-              "label": "Negotiation",
-              "count": 2
-            },
-            {
-              "label": "Compliace Knowledge",
-              "count": 2
-            }
-          ]
-        },
         "Health Care": {
           "postings_considered": 14,
           "skills": [
@@ -700,6 +683,23 @@
             {
               "label": "Teamwork",
               "count": 3
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 14,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 9
+            },
+            {
+              "label": "Negotiation",
+              "count": 2
+            },
+            {
+              "label": "Compliace Knowledge",
+              "count": 2
             }
           ]
         },
@@ -2502,20 +2502,20 @@
         }
       ],
       "critical_skills_by_subsector": {
-        "Hotel and Hospitality": {
-          "postings_considered": 36,
+        "Business and Administra": {
+          "postings_considered": 75,
           "skills": [
             {
               "label": "Communication",
-              "count": 27
+              "count": 50
+            },
+            {
+              "label": "Problem solving",
+              "count": 22
             },
             {
               "label": "Attention to detail",
-              "count": 15
-            },
-            {
-              "label": "Teamwork",
-              "count": 10
+              "count": 20
             }
           ]
         },
@@ -2553,20 +2553,20 @@
             }
           ]
         },
-        "Business and Administra": {
-          "postings_considered": 75,
+        "Hotel and Hospitality": {
+          "postings_considered": 36,
           "skills": [
             {
               "label": "Communication",
-              "count": 50
-            },
-            {
-              "label": "Problem solving",
-              "count": 22
+              "count": 27
             },
             {
               "label": "Attention to detail",
-              "count": 20
+              "count": 15
+            },
+            {
+              "label": "Teamwork",
+              "count": 10
             }
           ]
         },
@@ -2621,23 +2621,6 @@
             }
           ]
         },
-        "Natural Sciences": {
-          "postings_considered": 65,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 61
-            },
-            {
-              "label": "Problem solving",
-              "count": 22
-            },
-            {
-              "label": "Attention to detail",
-              "count": 18
-            }
-          ]
-        },
         "Health Care": {
           "postings_considered": 39,
           "skills": [
@@ -2652,6 +2635,23 @@
             {
               "label": "Problem solving",
               "count": 4
+            }
+          ]
+        },
+        "Natural Sciences": {
+          "postings_considered": 65,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 61
+            },
+            {
+              "label": "Problem solving",
+              "count": 22
+            },
+            {
+              "label": "Attention to detail",
+              "count": 18
             }
           ]
         },
@@ -2757,23 +2757,6 @@
             }
           ]
         },
-        "Human Resource and Recr": {
-          "postings_considered": 29,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 15
-            },
-            {
-              "label": "Problem solving",
-              "count": 9
-            },
-            {
-              "label": "Attention to detail",
-              "count": 7
-            }
-          ]
-        },
         "Legal": {
           "postings_considered": 9,
           "skills": [
@@ -2788,6 +2771,23 @@
             {
               "label": "Compliace Knowledge",
               "count": 2
+            }
+          ]
+        },
+        "Human Resource and Recr": {
+          "postings_considered": 29,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 15
+            },
+            {
+              "label": "Problem solving",
+              "count": 9
+            },
+            {
+              "label": "Attention to detail",
+              "count": 7
             }
           ]
         },
@@ -2808,23 +2808,6 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 24,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Problem solving",
-              "count": 10
-            },
-            {
-              "label": "Attention to detail",
-              "count": 10
-            }
-          ]
-        },
         "Agriculture": {
           "postings_considered": 19,
           "skills": [
@@ -2839,6 +2822,23 @@
             {
               "label": "Leadership",
               "count": 3
+            }
+          ]
+        },
+        "Logistics, Transport an": {
+          "postings_considered": 24,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Problem solving",
+              "count": 10
+            },
+            {
+              "label": "Attention to detail",
+              "count": 10
             }
           ]
         },
@@ -5569,20 +5569,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 14
+              "count": 40
             }
           ]
         },
@@ -5603,37 +5603,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
-            },
-            {
-              "label": "Accounting",
-              "count": 86
-            },
-            {
-              "label": "Attention to detail",
-              "count": 40
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
+              "count": 30
             },
             {
               "label": "Problem solving",
-              "count": 17
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 14
             }
           ]
         },
@@ -5647,6 +5630,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -5705,23 +5705,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -5736,6 +5719,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -9198,20 +9198,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 14
+              "count": 40
             }
           ]
         },
@@ -9232,37 +9232,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
-            },
-            {
-              "label": "Accounting",
-              "count": 86
-            },
-            {
-              "label": "Attention to detail",
-              "count": 40
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
+              "count": 30
             },
             {
               "label": "Problem solving",
-              "count": 17
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 14
             }
           ]
         },
@@ -9276,6 +9259,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -9334,23 +9334,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -9365,6 +9348,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -12827,20 +12827,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 14
+              "count": 40
             }
           ]
         },
@@ -12861,37 +12861,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
-            },
-            {
-              "label": "Accounting",
-              "count": 86
-            },
-            {
-              "label": "Attention to detail",
-              "count": 40
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
+              "count": 30
             },
             {
               "label": "Problem solving",
-              "count": 17
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 14
             }
           ]
         },
@@ -12905,6 +12888,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -12963,23 +12963,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -12994,6 +12977,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
@@ -16456,20 +16456,20 @@
             }
           ]
         },
-        "Logistics, Transport an": {
-          "postings_considered": 41,
+        "Accounting and Finance": {
+          "postings_considered": 187,
           "skills": [
             {
               "label": "Communication",
-              "count": 30
+              "count": 106
             },
             {
-              "label": "Problem solving",
-              "count": 16
+              "label": "Accounting",
+              "count": 86
             },
             {
               "label": "Attention to detail",
-              "count": 14
+              "count": 40
             }
           ]
         },
@@ -16490,37 +16490,20 @@
             }
           ]
         },
-        "Accounting and Finance": {
-          "postings_considered": 187,
+        "Logistics, Transport an": {
+          "postings_considered": 41,
           "skills": [
             {
               "label": "Communication",
-              "count": 106
-            },
-            {
-              "label": "Accounting",
-              "count": 86
-            },
-            {
-              "label": "Attention to detail",
-              "count": 40
-            }
-          ]
-        },
-        "Management": {
-          "postings_considered": 78,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 58
+              "count": 30
             },
             {
               "label": "Problem solving",
-              "count": 17
+              "count": 16
             },
             {
               "label": "Attention to detail",
-              "count": 12
+              "count": 14
             }
           ]
         },
@@ -16534,6 +16517,23 @@
             {
               "label": "Problem solving",
               "count": 14
+            },
+            {
+              "label": "Attention to detail",
+              "count": 12
+            }
+          ]
+        },
+        "Management": {
+          "postings_considered": 78,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 58
+            },
+            {
+              "label": "Problem solving",
+              "count": 17
             },
             {
               "label": "Attention to detail",
@@ -16592,23 +16592,6 @@
             }
           ]
         },
-        "Development and Project": {
-          "postings_considered": 39,
-          "skills": [
-            {
-              "label": "Communication",
-              "count": 18
-            },
-            {
-              "label": "Leadership",
-              "count": 5
-            },
-            {
-              "label": "Coordination",
-              "count": 4
-            }
-          ]
-        },
         "Business and Administra": {
           "postings_considered": 126,
           "skills": [
@@ -16623,6 +16606,23 @@
             {
               "label": "Attention to detail",
               "count": 31
+            }
+          ]
+        },
+        "Development and Project": {
+          "postings_considered": 39,
+          "skills": [
+            {
+              "label": "Communication",
+              "count": 18
+            },
+            {
+              "label": "Leadership",
+              "count": 5
+            },
+            {
+              "label": "Coordination",
+              "count": 4
             }
           ]
         },
