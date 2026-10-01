@@ -36,6 +36,19 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 
+# A realistic desktop Chrome user agent and viewport. The site is
+# server-rendered WordPress behind Cloudflare (confirmed by inspecting the
+# live page directly: the job links are present in the plain HTML response,
+# before any client-side JS runs), so a default bare-headless Playwright
+# fingerprint is the most likely reason a run would come back with zero
+# cards on a site that actually has jobs — Cloudflare is known to challenge
+# or block traffic from data-center IPs (like GitHub Actions runners) more
+# readily when the browser's own fingerprint also looks automated.
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+)
+
 BASE_URL = "https://www.ethiopianreporterjobs.com"
 LIST_URL_TEMPLATE = BASE_URL + "/jobs-in-ethiopia/page/{page}/"
 LIST_URL_FIRST_PAGE = BASE_URL + "/jobs-in-ethiopia/"
@@ -220,6 +233,19 @@ def fetch_listing_page(page, page_num):
     try:
         page.wait_for_selector('a[href*="/jobs/"]', timeout=20000)
     except Exception:
+        # The site is server-rendered and sits behind Cloudflare (confirmed
+        # by inspecting the live page), so an empty result here most likely
+        # means the request was challenged or blocked rather than the site
+        # genuinely having no listings. Print the page title and a short
+        # body snippet so a real failure is diagnosable from the Action log
+        # instead of a bare "no cards found".
+        try:
+            title = page.title()
+            snippet = page.inner_text("body")[:300].replace("\n", " ")
+        except Exception:
+            title, snippet = "(could not read page)", ""
+        print(f"    [diagnostic] page title: {title!r}")
+        print(f"    [diagnostic] body snippet: {snippet!r}")
         return []
     page.wait_for_timeout(600)
 
@@ -335,8 +361,15 @@ def main():
     consecutive_seen = 0
 
     with sync_playwright() as p:
-        browser = p.chromium.launch()
-        list_page = browser.new_page()
+        browser = p.chromium.launch(
+            args=["--disable-blink-features=AutomationControlled"],
+        )
+        context = browser.new_context(
+            user_agent=USER_AGENT,
+            viewport={"width": 1366, "height": 900},
+            locale="en-US",
+        )
+        list_page = context.new_page()
 
         for page_num in range(1, MAX_PAGES + 1):
             try:
@@ -377,7 +410,7 @@ def main():
         else:
             to_fetch = new_listing_fields
 
-        detail_page = browser.new_page()
+        detail_page = context.new_page()
         rows = []
         for fields in to_fetch:
             try:

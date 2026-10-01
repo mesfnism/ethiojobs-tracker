@@ -186,6 +186,81 @@ def sector_subcategories(rows, n=12):
     return [{"label": label, "count": c} for label, c in counter.most_common(n)]
 
 
+CRITICAL_SKILLS_TOP_N = 3
+CRITICAL_SKILLS_MIN_POSTINGS = 3
+
+
+def _top_skills_for_rows(rows, top_n):
+    counter = Counter()
+    for r in rows:
+        if not r.get("skills_required"):
+            continue
+        for s in r["skills_required"].split(";"):
+            canon = taxonomy.normalize_skill(s)
+            if canon:
+                counter[canon] += 1
+    return [{"label": label, "count": c} for label, c in counter.most_common(top_n)]
+
+
+def critical_skills_by_subsector(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """For each sub-sector (same grouping as sector_subcategories), the
+    1-3 skills most frequently requested in postings tagged with that
+    sub-sector — answers "what does a Finance posting actually ask for?"
+    rather than just "how many Finance postings are there?". A posting
+    tagged with more than one sub-sector (category is a ";"-joined list)
+    contributes to each of its sub-sectors' tallies, same as
+    sector_subcategories itself. A sub-sector is only included once at
+    least `min_postings` of its postings HAVE a skills_required value at
+    all, so a one-off posting's skill list never gets reported as "the"
+    critical skills for an entire sub-sector (honesty over coverage, same
+    principle as every other breakdown in this file)."""
+    by_subsector = {}
+    for r in rows:
+        if not r.get("category"):
+            continue
+        labels = {taxonomy.normalize_category_label(c) for c in r["category"].split(";")}
+        for label in labels:
+            if not label:
+                continue
+            by_subsector.setdefault(label, []).append(r)
+
+    result = {}
+    for label, group_rows in by_subsector.items():
+        with_skills = [r for r in group_rows if r.get("skills_required")]
+        if len(with_skills) < min_postings:
+            continue
+        top = _top_skills_for_rows(with_skills, n)
+        if top:
+            result[label] = {"postings_considered": len(with_skills), "skills": top}
+    return result
+
+
+def critical_skills_by_role(rows, n=CRITICAL_SKILLS_TOP_N, min_postings=CRITICAL_SKILLS_MIN_POSTINGS):
+    """Same idea as critical_skills_by_subsector, grouped by ISCO-08
+    occupation group (same grouping as top_jobs, classified from
+    job_title) instead of sector — answers "what does a posting for this
+    kind of role actually ask for?". Same min_postings honesty gate."""
+    by_role = {}
+    for r in rows:
+        title = r.get("job_title")
+        if not title:
+            continue
+        group = taxonomy.isco_group_for_title(title)
+        if group == "Not classified":
+            continue
+        by_role.setdefault(group, []).append(r)
+
+    result = {}
+    for label, group_rows in by_role.items():
+        with_skills = [r for r in group_rows if r.get("skills_required")]
+        if len(with_skills) < min_postings:
+            continue
+        top = _top_skills_for_rows(with_skills, n)
+        if top:
+            result[label] = {"postings_considered": len(with_skills), "skills": top}
+    return result
+
+
 def experience_breakdown(rows):
     """Years-of-experience required, bucketed into standard ranges."""
     counter = Counter()
@@ -321,12 +396,13 @@ def posting_trends(rows):
     accumulating across the whole history tracked so far, however long
     that is. Sorted oldest to newest; empty buckets between the first
     and last aren't invented (a gap in the data stays a gap)."""
-    weekly, monthly, yearly = Counter(), Counter(), Counter()
+    daily, weekly, monthly, yearly = Counter(), Counter(), Counter(), Counter()
     for r in rows:
         dt = r.get("_scraped_dt")
         if not dt:
             continue
         iso_year, iso_week, _ = dt.isocalendar()
+        daily[dt.strftime("%Y-%m-%d")] += 1
         weekly[f"{iso_year}-W{iso_week:02d}"] += 1
         monthly[dt.strftime("%Y-%m")] += 1
         yearly[dt.strftime("%Y")] += 1
@@ -335,6 +411,7 @@ def posting_trends(rows):
         return [{"period": k, "count": v} for k, v in sorted(counter.items())]
 
     return {
+        "daily": to_series(daily),
         "weekly": to_series(weekly),
         "monthly": to_series(monthly),
         "yearly": to_series(yearly),
@@ -358,6 +435,8 @@ def summarize(rows):
         "employer_type": employer_type_breakdown(rows),
         "source_breakdown": source_breakdown(rows),
         "source_sites": source_site_breakdown(rows),
+        "critical_skills_by_subsector": critical_skills_by_subsector(rows),
+        "critical_skills_by_role": critical_skills_by_role(rows),
     }
 
 
@@ -392,6 +471,9 @@ def main():
                 "contribute to each level's total but rarely to a specific field.",
             "employer_type": "Private / Public / NGO is a keyword heuristic on the "
                 "employer's own name, not a verified registry lookup.",
+            "critical_skills": f"A sub-sector or role only appears here once at least "
+                f"{CRITICAL_SKILLS_MIN_POSTINGS} of its postings state a skills_required "
+                f"value, so a top-{CRITICAL_SKILLS_TOP_N} list is never built from a single posting.",
         },
         "windows": windows_out,
         "trends": trends,

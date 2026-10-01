@@ -210,7 +210,7 @@
 <div class="wrap">
   <header class="page-head">
     <h1>Ethiopia Labour Market Dashboard</h1>
-    <p class="sub">Skills, education levels, sectors, job roles, and locations in demand — tracked automatically from live job postings.</p>
+    <p class="sub">Skills, education levels, sectors, job roles and locations in demand. Tracked automatically from live job postings.</p>
   </header>
 
   <div class="tabs" id="tabs"></div>
@@ -225,7 +225,7 @@
 
   <div class="grid">
     <div class="panel wide">
-      <h2>Most In-Demand Skills</h2>
+      <h2>Most Requested Skills</h2>
       <p class="panel-sub" id="skillsSub"></p>
       <div class="chart-holder"><canvas id="skillsChart" height="260"></canvas></div>
     </div>
@@ -251,14 +251,16 @@
       <div class="chart-holder"><canvas id="catChart" height="220"></canvas></div>
     </div>
     <div class="panel">
-      <h2>Sector Sub-categories</h2>
+      <h2>Sector Subcategories</h2>
       <p class="panel-sub" id="subCatSub"></p>
       <div class="chart-holder"><canvas id="subCatChart" height="220"></canvas></div>
+      <div class="drilldown" id="subCatSkills"></div>
     </div>
     <div class="panel">
       <h2>Job Roles</h2>
       <p class="panel-sub" id="jobsSub"></p>
       <div class="chart-holder"><canvas id="jobsChart" height="220"></canvas></div>
+      <div class="drilldown" id="jobsSkills"></div>
     </div>
     <div class="panel">
       <h2>Locations</h2>
@@ -279,18 +281,18 @@
           <div class="chart-holder"><canvas id="employersChart" height="220"></canvas></div>
         </div>
         <div>
-          <p class="panel-sub" style="font-weight:600; color:var(--ink);">By type — Private / Public / NGO</p>
+          <p class="panel-sub" style="font-weight:600; color:var(--ink);">By type (Private, Public or NGO)</p>
           <div class="chart-holder"><canvas id="employerTypeChart" height="220"></canvas></div>
         </div>
       </div>
     </div>
   </div>
 
-  <p class="method-note">Skills classified with ESCO · job roles with ISCO-08 · education with ISCED 2011 · sectors with ISIC Rev.4 — postings that don't match a category are left out of that chart rather than guessed at. Employer type (Private / Public / NGO) is a keyword heuristic on the employer's own name, not a verified registry lookup. Education specialization ("level in what?") relies on free-text descriptions, which mainly exist for HaHuJobs postings. Salary is only counted when a posting itself states a clear monthly Birr/ETB figure — "Negotiable" or "As per company scale" are left out rather than guessed at.</p>
+  <p class="method-note">Skills are classified with ESCO, job roles with ISCO-08, education with ISCED 2011 and sectors with ISIC Rev.4. Postings that don't match a category are left out of that chart rather than guessed at. Employer type (Private, Public or NGO) is a keyword heuristic on the employer's own name, not a verified registry lookup. Education specialization (what field a level is in) relies on free text descriptions, which mainly exist for HaHuJobs postings. Salary is only counted when a posting itself states a clear monthly Birr or ETB figure. "Negotiable" or "As per company scale" are left out rather than guessed at. The "most critical skills" shown when clicking a Sector Subcategory or Job Role bar only appears once at least 3 postings in that group state explicit skills, so it is never built from a single posting.</p>
 
   <footer class="page-foot">
     <span id="generatedAt">Loading…</span>
-    <span id="sourceBreakdown">Sources: EthioJobs + HaHuJobs, tracked daily</span>
+    <span id="sourceBreakdown">Data from EthioJobs and HaHuJobs, tracked daily</span>
   </footer>
 </div>
 
@@ -315,8 +317,8 @@ let charts = {
 let currentWindow = "monthly";
 let currentTrend = "monthly";
 
-const TREND_LABELS = { weekly: "Week", monthly: "Month", yearly: "Year" };
-const TREND_ORDER = ["weekly", "monthly", "yearly"];
+const TREND_LABELS = { daily: "Day", weekly: "Week", monthly: "Month", yearly: "Year" };
+const TREND_ORDER = ["daily", "weekly", "monthly", "yearly"];
 
 function drawLine(canvasId, key, series) {
   const ctx = document.getElementById(canvasId);
@@ -439,7 +441,7 @@ function drawBar(canvasId, key, items, labelKey, countKey, onBarClick) {
     if (!empty) {
       empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.textContent = "Not enough data yet for this time window — check back after a few more days of tracking.";
+      empty.textContent = "Not enough data yet for this time window. Check back after a few more days of tracking.";
       holder.appendChild(empty);
     }
     return;
@@ -505,12 +507,12 @@ function showEduSpecialization(level) {
     const withField = specs ? specs.with_field_stated : 0;
     panel.innerHTML = `
       <div class="drilldown-head">
-        <strong>${level} — in what field?</strong>
+        <strong>What field is this ${level} in?</strong>
         <button class="drilldown-close" onclick="hideEduSpecialization()">&times;</button>
       </div>
       <p class="panel-sub" style="margin:4px 0 0;">
-        ${withField} of ${total} postings at this level state a specific field of study clearly enough to classify —
-        not enough yet to break this level down further.
+        ${withField} of ${total} postings at this level state a specific field of study clearly enough to classify.
+        Not enough yet to break this level down further.
       </p>`;
     panel.style.display = "block";
     return;
@@ -521,7 +523,7 @@ function showEduSpecialization(level) {
     .join("");
   panel.innerHTML = `
     <div class="drilldown-head">
-      <strong>${level} — in what field?</strong>
+      <strong>What field is this ${level} in?</strong>
       <button class="drilldown-close" onclick="hideEduSpecialization()">&times;</button>
     </div>
     <p class="panel-sub" style="margin:4px 0 8px;">
@@ -535,6 +537,48 @@ function hideEduSpecialization() {
   const panel = document.getElementById("eduSpecialization");
   panel.style.display = "none";
   panel.innerHTML = "";
+}
+
+function hideCriticalSkills(panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.style.display = "none";
+  panel.innerHTML = "";
+}
+
+function showCriticalSkills(label, dataKey, panelId) {
+  const data = payload.windows[currentWindow];
+  const groups = data[dataKey] || {};
+  const entry = groups[label];
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  if (!entry || !entry.skills.length) {
+    panel.innerHTML = `
+      <div class="drilldown-head">
+        <strong>Most critical skills for ${label}</strong>
+        <button class="drilldown-close" onclick="hideCriticalSkills('${panelId}')">&times;</button>
+      </div>
+      <p class="panel-sub" style="margin:4px 0 0;">
+        Not enough postings in this group state explicit skills yet to call out a top 1-3.
+      </p>`;
+    panel.style.display = "block";
+    return;
+  }
+
+  const rows = entry.skills
+    .map(s => `<li><span>${s.label}</span><span class="spec-count">${s.count}</span></li>`)
+    .join("");
+  panel.innerHTML = `
+    <div class="drilldown-head">
+      <strong>Most critical skills for ${label}</strong>
+      <button class="drilldown-close" onclick="hideCriticalSkills('${panelId}')">&times;</button>
+    </div>
+    <p class="panel-sub" style="margin:4px 0 8px;">
+      Based on ${entry.postings_considered} posting(s) in this group stating explicit skills
+    </p>
+    <ul class="spec-list">${rows}</ul>`;
+  panel.style.display = "block";
 }
 
 function renderStatRow(windowData, windowKey) {
@@ -566,40 +610,44 @@ function renderWindow(windowKey) {
 
   const srcEl = document.getElementById("sourceBreakdown");
   if (srcEl && data.source_breakdown && data.source_breakdown.length) {
-    srcEl.textContent = "Sources: " + data.source_breakdown
+    srcEl.textContent = "Data from " + data.source_breakdown
       .map(s => `${s.label} (${s.count})`).join(", ");
   }
 
   hideEduSpecialization();
+  hideCriticalSkills("subCatSkills");
+  hideCriticalSkills("jobsSkills");
 
   document.getElementById("skillsSub").textContent =
-    `Top skills explicitly required, ESCO-classified — ${WINDOW_LABELS[windowKey]} view`;
+    `Top skills explicitly required, ESCO classified, ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("eduSub").textContent =
-    `${data.education.known_total} of ${data.education.total} postings state an ISCED level — click a bar to see what field`;
+    `${data.education.known_total} of ${data.education.total} postings state an ISCED level. Click a bar to see what field`;
   document.getElementById("expSub").textContent =
-    `${data.experience.known_total} of ${data.experience.total} postings state years of experience — ${WINDOW_LABELS[windowKey]} view`;
+    `${data.experience.known_total} of ${data.experience.total} postings state years of experience, ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("salarySub").textContent =
-    `${data.salary.known_total} of ${data.salary.total} postings state a clear monthly figure — ${WINDOW_LABELS[windowKey]} view`;
+    `${data.salary.known_total} of ${data.salary.total} postings state a clear monthly figure, ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("catSub").textContent =
-    `Top sectors (ISIC Rev.4) — ${WINDOW_LABELS[windowKey]} view`;
+    `Top sectors (ISIC Rev.4), ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("subCatSub").textContent =
-    `Finer-grained categories beneath each sector, as tagged by the posting itself — ${WINDOW_LABELS[windowKey]} view`;
+    `Finer categories beneath each sector, as tagged by the posting itself. Click a bar to see its most critical skills. ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("jobsSub").textContent =
-    `Top job roles (ISCO-08 major groups) — ${WINDOW_LABELS[windowKey]} view`;
+    `Top job roles (ISCO-08 major groups). Click a bar to see its most critical skills. ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("locSub").textContent =
-    `Top locations by postings tracked — ${WINDOW_LABELS[windowKey]} view`;
+    `Top locations by postings tracked, ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("hirersSub").textContent =
-    `Who is hiring the most — ${WINDOW_LABELS[windowKey]} view`;
+    `Who is hiring the most, ${WINDOW_LABELS[windowKey]} view`;
   document.getElementById("sourcesSub").textContent =
-    `Postings contributed per site — a vacancy cross-posted to more than one site counts toward each`;
+    `Postings contributed per site. A vacancy posted to more than one site counts toward each`;
 
   drawBar("skillsChart", "skills", data.top_skills, "label", "count");
   drawBar("eduChart", "edu", data.education.levels, "label", "count", showEduSpecialization);
   drawBar("expChart", "exp", data.experience.buckets, "label", "count");
   drawBar("salaryChart", "salary", data.salary.buckets, "label", "count");
   drawBar("catChart", "cat", data.top_categories, "label", "count");
-  drawBar("subCatChart", "subCat", data.sector_subcategories, "label", "count");
-  drawBar("jobsChart", "jobs", data.top_jobs, "label", "count");
+  drawBar("subCatChart", "subCat", data.sector_subcategories, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_subsector", "subCatSkills"));
+  drawBar("jobsChart", "jobs", data.top_jobs, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_role", "jobsSkills"));
   drawBar("locChart", "loc", data.top_locations, "label", "count");
   drawBar("employersChart", "employers", data.top_employers, "label", "count");
   drawBar("employerTypeChart", "employerType", data.employer_type.types, "label", "count");
@@ -640,7 +688,7 @@ fetch("./data/rollups.json", { cache: "no-store" })
   .catch(err => {
     document.getElementById("generatedAt").textContent = "Could not load data.";
     document.getElementById("tabs").innerHTML =
-      `<p style="color:var(--ink-soft); font-size:13px;">Dashboard data isn't available yet — it appears after the first successful pipeline run.</p>`;
+      `<p style="color:var(--ink-soft); font-size:13px;">Dashboard data isn't available yet. It appears after the first successful pipeline run.</p>`;
     console.error(err);
   });
 </script>

@@ -36,7 +36,14 @@ from datetime import datetime, timezone
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 
-INPUT_FILES = ["ethiojobs_tracker.xlsx", "hahujobs_tracker.xlsx", "reporterjobs_tracker.xlsx"]
+INPUT_FILES = [
+    "ethiojobs_tracker.xlsx",
+    "hahujobs_tracker.xlsx",
+    "reporterjobs_tracker.xlsx",
+    "palmjobs_tracker.xlsx",
+    "devnetjobs_tracker.xlsx",
+    "harmeejobs_tracker.xlsx",
+]
 OUTPUT_XLSX = "combined_tracker.xlsx"
 DEDUP_WINDOW_DAYS = 14
 
@@ -176,6 +183,9 @@ def combine(all_rows):
     return combined_rows, dup_count
 
 
+SOURCE_LOG_ORDER = ["EthioJobs", "HaHuJobs", "ReporterJobs", "PalmJobs", "DevNetJobs", "HarmeeJobs"]
+
+
 def write_output(rows, per_source_counts, dup_count):
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -188,17 +198,23 @@ def write_output(rows, per_source_counts, dup_count):
         ws.append([r.get(col) for col in COLUMNS])
 
     log = wb.create_sheet("Run Log")
-    log.append(["run_timestamp_utc", "ethiojobs_rows", "hahujobs_rows",
-                "duplicates_merged", "combined_total"])
+    # Logs a column per known source (in SOURCE_LOG_ORDER), plus any source
+    # label this run saw that isn't in that list yet (a new pipeline wired
+    # in without updating SOURCE_LOG_ORDER still gets logged, just as a
+    # trailing column instead of in a fixed position).
+    extra_sources = sorted(s for s in per_source_counts if s and s not in SOURCE_LOG_ORDER)
+    source_columns = SOURCE_LOG_ORDER + extra_sources
+    log.append(
+        ["run_timestamp_utc"] + [f"{s.lower()}_rows" for s in source_columns]
+        + ["duplicates_merged", "combined_total"]
+    )
     for cell in log[1]:
         cell.font = Font(bold=True)
-    log.append([
-        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
-        per_source_counts.get("EthioJobs", 0),
-        per_source_counts.get("HaHuJobs", 0),
-        dup_count,
-        len(rows),
-    ])
+    log.append(
+        [datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")]
+        + [per_source_counts.get(s, 0) for s in source_columns]
+        + [dup_count, len(rows)]
+    )
     wb.save(OUTPUT_XLSX)
 
 
