@@ -1,25 +1,39 @@
 {
-  "generated_at": "2026-10-01 12:12:12 UTC",
-  "source": "EthioJobs",
+  "generated_at": "2026-10-01 12:31:40 UTC",
+  "source": "EthioJobs + HaHuJobs",
+  "taxonomies": {
+    "skills": "ESCO (EU skills/competences taxonomy)",
+    "jobs": "ISCO-08 (ILO International Standard Classification of Occupations)",
+    "education": "ISCED 2011 (UNESCO International Standard Classification of Education)",
+    "sectors": "ISIC Rev.4 (UN International Standard Industrial Classification)"
+  },
   "windows": {
     "daily": {
-      "posting_count": 126,
+      "posting_count": 952,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 46
+          "count": 71
         },
         {
           "label": "Attention to detail",
-          "count": 29
+          "count": 31
         },
         {
           "label": "Problem solving",
-          "count": 22
+          "count": 26
+        },
+        {
+          "label": "Accounting",
+          "count": 17
         },
         {
           "label": "Decision-making",
           "count": 15
+        },
+        {
+          "label": "Teamwork",
+          "count": 10
         },
         {
           "label": "Adaptability",
@@ -30,645 +44,1449 @@
           "count": 7
         },
         {
-          "label": "Accounting",
-          "count": 6
-        },
-        {
           "label": "A genuine passion for education and student development",
           "count": 6
         },
         {
-          "label": "Good communication and teamwork",
-          "count": 6
-        },
-        {
-          "label": "Proficiency in AutoCAD and related design software",
+          "label": "Creativity",
           "count": 6
         }
       ],
+      "skill_groups": [
+        {
+          "label": "Communication, collaboration and creativity",
+          "count": 91
+        },
+        {
+          "label": "Information skills",
+          "count": 65
+        },
+        {
+          "label": "Working with computers",
+          "count": 49
+        },
+        {
+          "label": "Management skills",
+          "count": 41
+        },
+        {
+          "label": "Constructing",
+          "count": 15
+        },
+        {
+          "label": "Working with machinery and specialised equipment",
+          "count": 4
+        },
+        {
+          "label": "Handling and moving",
+          "count": 2
+        },
+        {
+          "label": "Assisting and caring",
+          "count": 1
+        }
+      ],
       "education": {
-        "known_total": 41,
-        "total": 126,
+        "known_total": 232,
+        "total": 952,
         "levels": [
           {
-            "label": "Bachelor's degree",
-            "count": 34
-          },
-          {
-            "label": "Master's degree",
-            "count": 6
+            "label": "Certificate",
+            "count": 15,
+            "isced_level": 4,
+            "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 1
+            "count": 117,
+            "isced_level": 5,
+            "isced_label": "Short-cycle tertiary education"
+          },
+          {
+            "label": "Bachelor's degree",
+            "count": 80,
+            "isced_level": 6,
+            "isced_label": "Bachelor's or equivalent"
+          },
+          {
+            "label": "Master's degree",
+            "count": 17,
+            "isced_level": 7,
+            "isced_label": "Master's or equivalent"
+          },
+          {
+            "label": "PhD",
+            "count": 3,
+            "isced_level": 8,
+            "isced_label": "Doctoral or equivalent"
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Engineering",
-          "count": 32
+          "label": "Professional, scientific and technical activities",
+          "count": 392
         },
         {
-          "label": "Accounting and Finance",
-          "count": 26
+          "label": "Education",
+          "count": 161
         },
         {
-          "label": "Social Sciences and Communications",
+          "label": "Accommodation and food service activities",
+          "count": 86
+        },
+        {
+          "label": "Human health and social work activities",
+          "count": 85
+        },
+        {
+          "label": "Financial and insurance activities",
+          "count": 62
+        },
+        {
+          "label": "Transportation and storage",
+          "count": 55
+        },
+        {
+          "label": "Construction",
+          "count": 34
+        },
+        {
+          "label": "Information and communication",
+          "count": 31
+        },
+        {
+          "label": "Wholesale and retail trade",
+          "count": 24
+        },
+        {
+          "label": "Manufacturing",
+          "count": 20
+        }
+      ],
+      "top_jobs": [
+        {
+          "label": "Professionals",
+          "count": 373
+        },
+        {
+          "label": "Managers",
+          "count": 145
+        },
+        {
+          "label": "Technicians and associate professionals",
+          "count": 80
+        },
+        {
+          "label": "Service and sales workers",
+          "count": 46
+        },
+        {
+          "label": "Clerical support workers",
+          "count": 36
+        },
+        {
+          "label": "Plant and machine operators, and assemblers",
           "count": 16
         },
         {
-          "label": "Natural Sciences",
-          "count": 11
-        },
-        {
-          "label": "Management",
+          "label": "Craft and related trades workers",
           "count": 10
         },
         {
-          "label": "Business and Administra",
-          "count": 9
+          "label": "Elementary occupations",
+          "count": 3
+        }
+      ],
+      "top_locations": [
+        {
+          "label": "Addis Ababa",
+          "count": 689
         },
         {
-          "label": "Sales and Marketing",
-          "count": 8
+          "label": "Bule Hora",
+          "count": 49
         },
         {
-          "label": "Health Care",
-          "count": 8
+          "label": "Oromia",
+          "count": 22
         },
         {
-          "label": "IT, Computer Science an",
-          "count": 8
+          "label": "Hawassa",
+          "count": 15
         },
         {
-          "label": "Architecture and Constr",
-          "count": 8
+          "label": "Jimma",
+          "count": 15
+        },
+        {
+          "label": "Adama",
+          "count": 14
+        },
+        {
+          "label": "Arba Minch",
+          "count": 11
+        },
+        {
+          "label": "Harar",
+          "count": 7
+        },
+        {
+          "label": "Akaki",
+          "count": 6
+        },
+        {
+          "label": "Assosa",
+          "count": 5
+        }
+      ],
+      "source_breakdown": [
+        {
+          "label": "HaHuJobs",
+          "count": 819
+        },
+        {
+          "label": "EthioJobs",
+          "count": 114
+        },
+        {
+          "label": "EthioJobs, HaHuJobs",
+          "count": 19
         }
       ]
     },
     "weekly": {
-      "posting_count": 546,
+      "posting_count": 1372,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 220
+          "count": 312
         },
         {
           "label": "Attention to detail",
-          "count": 134
+          "count": 137
         },
         {
           "label": "Problem solving",
-          "count": 81
+          "count": 114
+        },
+        {
+          "label": "Teamwork",
+          "count": 64
+        },
+        {
+          "label": "Accounting",
+          "count": 63
         },
         {
           "label": "Decision-making",
           "count": 52
         },
         {
-          "label": "Accounting",
-          "count": 27
+          "label": "Creativity",
+          "count": 29
         },
         {
-          "label": "Creativity",
+          "label": "Microsoft Office",
           "count": 24
         },
         {
-          "label": "Strong coordination and networking skills",
-          "count": 19
+          "label": "Coordination",
+          "count": 24
         },
         {
-          "label": "Good communication and teamwork",
-          "count": 19
+          "label": "Analytical thinking",
+          "count": 20
+        }
+      ],
+      "skill_groups": [
+        {
+          "label": "Communication, collaboration and creativity",
+          "count": 436
         },
         {
-          "label": "Adaptability",
-          "count": 18
+          "label": "Information skills",
+          "count": 262
         },
         {
-          "label": "Accounting Principles (GAAP), IFRS and ERP",
-          "count": 17
+          "label": "Working with computers",
+          "count": 149
+        },
+        {
+          "label": "Management skills",
+          "count": 142
+        },
+        {
+          "label": "Constructing",
+          "count": 32
+        },
+        {
+          "label": "Assisting and caring",
+          "count": 16
+        },
+        {
+          "label": "Working with machinery and specialised equipment",
+          "count": 13
+        },
+        {
+          "label": "Handling and moving",
+          "count": 6
         }
       ],
       "education": {
-        "known_total": 167,
-        "total": 546,
+        "known_total": 374,
+        "total": 1372,
         "levels": [
           {
-            "label": "Bachelor's degree",
-            "count": 110
-          },
-          {
-            "label": "Master's degree",
-            "count": 39
+            "label": "Certificate",
+            "count": 22,
+            "isced_level": 4,
+            "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 10
+            "count": 132,
+            "isced_level": 5,
+            "isced_label": "Short-cycle tertiary education"
           },
           {
-            "label": "Certificate",
-            "count": 4
+            "label": "Bachelor's degree",
+            "count": 159,
+            "isced_level": 6,
+            "isced_label": "Bachelor's or equivalent"
+          },
+          {
+            "label": "Master's degree",
+            "count": 54,
+            "isced_level": 7,
+            "isced_label": "Master's or equivalent"
           },
           {
             "label": "PhD",
-            "count": 4
+            "count": 7,
+            "isced_level": 8,
+            "isced_label": "Doctoral or equivalent"
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Accounting and Finance",
-          "count": 108
+          "label": "Professional, scientific and technical activities",
+          "count": 570
         },
         {
-          "label": "Social Sciences and Communications",
-          "count": 95
+          "label": "Education",
+          "count": 174
         },
         {
-          "label": "Engineering",
-          "count": 92
+          "label": "Financial and insurance activities",
+          "count": 162
         },
         {
-          "label": "Business and Administra",
-          "count": 67
+          "label": "Accommodation and food service activities",
+          "count": 121
         },
         {
-          "label": "Natural Sciences",
-          "count": 63
+          "label": "Human health and social work activities",
+          "count": 117
         },
         {
-          "label": "Management",
-          "count": 45
+          "label": "Transportation and storage",
+          "count": 77
         },
         {
-          "label": "Sales and Marketing",
-          "count": 44
+          "label": "Wholesale and retail trade",
+          "count": 64
         },
         {
-          "label": "Hotel and Hospitality",
-          "count": 36
+          "label": "Information and communication",
+          "count": 55
         },
         {
-          "label": "Health Care",
-          "count": 33
+          "label": "Administrative and support service activities",
+          "count": 51
         },
         {
-          "label": "Economics",
-          "count": 31
+          "label": "Manufacturing",
+          "count": 43
+        }
+      ],
+      "top_jobs": [
+        {
+          "label": "Professionals",
+          "count": 533
+        },
+        {
+          "label": "Managers",
+          "count": 192
+        },
+        {
+          "label": "Technicians and associate professionals",
+          "count": 117
+        },
+        {
+          "label": "Service and sales workers",
+          "count": 80
+        },
+        {
+          "label": "Clerical support workers",
+          "count": 49
+        },
+        {
+          "label": "Plant and machine operators, and assemblers",
+          "count": 25
+        },
+        {
+          "label": "Craft and related trades workers",
+          "count": 17
+        },
+        {
+          "label": "Elementary occupations",
+          "count": 5
+        }
+      ],
+      "top_locations": [
+        {
+          "label": "Addis Ababa",
+          "count": 996
+        },
+        {
+          "label": "Oromia",
+          "count": 70
+        },
+        {
+          "label": "Bule Hora",
+          "count": 49
+        },
+        {
+          "label": "Hawassa",
+          "count": 15
+        },
+        {
+          "label": "Jimma",
+          "count": 15
+        },
+        {
+          "label": "Adama",
+          "count": 14
+        },
+        {
+          "label": "Arba Minch",
+          "count": 11
+        },
+        {
+          "label": "Somali",
+          "count": 8
+        },
+        {
+          "label": "Amhara",
+          "count": 8
+        },
+        {
+          "label": "Harar",
+          "count": 7
+        }
+      ],
+      "source_breakdown": [
+        {
+          "label": "HaHuJobs",
+          "count": 819
+        },
+        {
+          "label": "EthioJobs",
+          "count": 385
+        },
+        {
+          "label": "EthioJobs, HaHuJobs",
+          "count": 168
         }
       ]
     },
     "monthly": {
-      "posting_count": 848,
+      "posting_count": 1674,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 367
-        },
-        {
-          "label": "Attention to detail",
-          "count": 175
+          "count": 494
         },
         {
           "label": "Problem solving",
-          "count": 141
+          "count": 181
+        },
+        {
+          "label": "Attention to detail",
+          "count": 179
+        },
+        {
+          "label": "Teamwork",
+          "count": 97
+        },
+        {
+          "label": "Accounting",
+          "count": 93
         },
         {
           "label": "Decision-making",
           "count": 67
         },
         {
-          "label": "Accounting",
-          "count": 40
-        },
-        {
-          "label": "Teamwork",
-          "count": 35
-        },
-        {
           "label": "Creativity",
-          "count": 33
+          "count": 42
         },
         {
-          "label": "Accounting Principles (GAAP), IFRS and ERP",
+          "label": "Leadership",
+          "count": 37
+        },
+        {
+          "label": "Coordination",
+          "count": 32
+        },
+        {
+          "label": "Analytical thinking",
           "count": 28
+        }
+      ],
+      "skill_groups": [
+        {
+          "label": "Communication, collaboration and creativity",
+          "count": 697
         },
         {
-          "label": "Strong coordination and networking skills",
-          "count": 27
+          "label": "Information skills",
+          "count": 356
         },
         {
-          "label": "Adaptability",
-          "count": 25
+          "label": "Management skills",
+          "count": 212
+        },
+        {
+          "label": "Working with computers",
+          "count": 210
+        },
+        {
+          "label": "Constructing",
+          "count": 42
+        },
+        {
+          "label": "Assisting and caring",
+          "count": 21
+        },
+        {
+          "label": "Working with machinery and specialised equipment",
+          "count": 19
+        },
+        {
+          "label": "Handling and moving",
+          "count": 7
         }
       ],
       "education": {
-        "known_total": 284,
-        "total": 848,
+        "known_total": 500,
+        "total": 1674,
         "levels": [
           {
-            "label": "Bachelor's degree",
-            "count": 180
-          },
-          {
-            "label": "Master's degree",
-            "count": 74
+            "label": "Certificate",
+            "count": 27,
+            "isced_level": 4,
+            "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 18
+            "count": 148,
+            "isced_level": 5,
+            "isced_label": "Short-cycle tertiary education"
           },
           {
-            "label": "Certificate",
-            "count": 8
+            "label": "Bachelor's degree",
+            "count": 229,
+            "isced_level": 6,
+            "isced_label": "Bachelor's or equivalent"
+          },
+          {
+            "label": "Master's degree",
+            "count": 89,
+            "isced_level": 7,
+            "isced_label": "Master's or equivalent"
           },
           {
             "label": "PhD",
-            "count": 4
+            "count": 7,
+            "isced_level": 8,
+            "isced_label": "Doctoral or equivalent"
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Accounting and Finance",
-          "count": 169
+          "label": "Professional, scientific and technical activities",
+          "count": 675
         },
         {
-          "label": "Social Sciences and Communications",
-          "count": 167
+          "label": "Financial and insurance activities",
+          "count": 232
         },
         {
-          "label": "Engineering",
-          "count": 120
+          "label": "Education",
+          "count": 181
         },
         {
-          "label": "Business and Administra",
-          "count": 119
+          "label": "Human health and social work activities",
+          "count": 164
         },
         {
-          "label": "Natural Sciences",
+          "label": "Accommodation and food service activities",
+          "count": 125
+        },
+        {
+          "label": "Wholesale and retail trade",
+          "count": 101
+        },
+        {
+          "label": "Transportation and storage",
+          "count": 98
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 69
+        },
+        {
+          "label": "Information and communication",
+          "count": 68
+        },
+        {
+          "label": "Manufacturing",
+          "count": 52
+        }
+      ],
+      "top_jobs": [
+        {
+          "label": "Professionals",
+          "count": 624
+        },
+        {
+          "label": "Managers",
+          "count": 251
+        },
+        {
+          "label": "Technicians and associate professionals",
+          "count": 143
+        },
+        {
+          "label": "Service and sales workers",
+          "count": 93
+        },
+        {
+          "label": "Clerical support workers",
+          "count": 61
+        },
+        {
+          "label": "Plant and machine operators, and assemblers",
+          "count": 26
+        },
+        {
+          "label": "Craft and related trades workers",
+          "count": 21
+        },
+        {
+          "label": "Elementary occupations",
+          "count": 5
+        }
+      ],
+      "top_locations": [
+        {
+          "label": "Addis Ababa",
+          "count": 1230
+        },
+        {
+          "label": "Oromia",
           "count": 91
         },
         {
-          "label": "Sales and Marketing",
-          "count": 81
-        },
-        {
-          "label": "Health Care",
-          "count": 79
-        },
-        {
-          "label": "Management",
-          "count": 74
-        },
-        {
-          "label": "Economics",
+          "label": "Bule Hora",
           "count": 49
         },
         {
-          "label": "IT, Computer Science an",
-          "count": 43
+          "label": "Hawassa",
+          "count": 15
+        },
+        {
+          "label": "Jimma",
+          "count": 15
+        },
+        {
+          "label": "Somali",
+          "count": 14
+        },
+        {
+          "label": "Adama",
+          "count": 14
+        },
+        {
+          "label": "Amhara",
+          "count": 11
+        },
+        {
+          "label": "Arba Minch",
+          "count": 11
+        },
+        {
+          "label": "Afar",
+          "count": 10
+        }
+      ],
+      "source_breakdown": [
+        {
+          "label": "HaHuJobs",
+          "count": 819
+        },
+        {
+          "label": "EthioJobs",
+          "count": 603
+        },
+        {
+          "label": "EthioJobs, HaHuJobs",
+          "count": 252
         }
       ]
     },
     "quarterly": {
-      "posting_count": 848,
+      "posting_count": 1674,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 367
-        },
-        {
-          "label": "Attention to detail",
-          "count": 175
+          "count": 494
         },
         {
           "label": "Problem solving",
-          "count": 141
+          "count": 181
+        },
+        {
+          "label": "Attention to detail",
+          "count": 179
+        },
+        {
+          "label": "Teamwork",
+          "count": 97
+        },
+        {
+          "label": "Accounting",
+          "count": 93
         },
         {
           "label": "Decision-making",
           "count": 67
         },
         {
-          "label": "Accounting",
-          "count": 40
-        },
-        {
-          "label": "Teamwork",
-          "count": 35
-        },
-        {
           "label": "Creativity",
-          "count": 33
+          "count": 42
         },
         {
-          "label": "Accounting Principles (GAAP), IFRS and ERP",
+          "label": "Leadership",
+          "count": 37
+        },
+        {
+          "label": "Coordination",
+          "count": 32
+        },
+        {
+          "label": "Analytical thinking",
           "count": 28
+        }
+      ],
+      "skill_groups": [
+        {
+          "label": "Communication, collaboration and creativity",
+          "count": 697
         },
         {
-          "label": "Strong coordination and networking skills",
-          "count": 27
+          "label": "Information skills",
+          "count": 356
         },
         {
-          "label": "Adaptability",
-          "count": 25
+          "label": "Management skills",
+          "count": 212
+        },
+        {
+          "label": "Working with computers",
+          "count": 210
+        },
+        {
+          "label": "Constructing",
+          "count": 42
+        },
+        {
+          "label": "Assisting and caring",
+          "count": 21
+        },
+        {
+          "label": "Working with machinery and specialised equipment",
+          "count": 19
+        },
+        {
+          "label": "Handling and moving",
+          "count": 7
         }
       ],
       "education": {
-        "known_total": 284,
-        "total": 848,
+        "known_total": 500,
+        "total": 1674,
         "levels": [
           {
-            "label": "Bachelor's degree",
-            "count": 180
-          },
-          {
-            "label": "Master's degree",
-            "count": 74
+            "label": "Certificate",
+            "count": 27,
+            "isced_level": 4,
+            "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 18
+            "count": 148,
+            "isced_level": 5,
+            "isced_label": "Short-cycle tertiary education"
           },
           {
-            "label": "Certificate",
-            "count": 8
+            "label": "Bachelor's degree",
+            "count": 229,
+            "isced_level": 6,
+            "isced_label": "Bachelor's or equivalent"
+          },
+          {
+            "label": "Master's degree",
+            "count": 89,
+            "isced_level": 7,
+            "isced_label": "Master's or equivalent"
           },
           {
             "label": "PhD",
-            "count": 4
+            "count": 7,
+            "isced_level": 8,
+            "isced_label": "Doctoral or equivalent"
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Accounting and Finance",
-          "count": 169
+          "label": "Professional, scientific and technical activities",
+          "count": 675
         },
         {
-          "label": "Social Sciences and Communications",
-          "count": 167
+          "label": "Financial and insurance activities",
+          "count": 232
         },
         {
-          "label": "Engineering",
-          "count": 120
+          "label": "Education",
+          "count": 181
         },
         {
-          "label": "Business and Administra",
-          "count": 119
+          "label": "Human health and social work activities",
+          "count": 164
         },
         {
-          "label": "Natural Sciences",
+          "label": "Accommodation and food service activities",
+          "count": 125
+        },
+        {
+          "label": "Wholesale and retail trade",
+          "count": 101
+        },
+        {
+          "label": "Transportation and storage",
+          "count": 98
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 69
+        },
+        {
+          "label": "Information and communication",
+          "count": 68
+        },
+        {
+          "label": "Manufacturing",
+          "count": 52
+        }
+      ],
+      "top_jobs": [
+        {
+          "label": "Professionals",
+          "count": 624
+        },
+        {
+          "label": "Managers",
+          "count": 251
+        },
+        {
+          "label": "Technicians and associate professionals",
+          "count": 143
+        },
+        {
+          "label": "Service and sales workers",
+          "count": 93
+        },
+        {
+          "label": "Clerical support workers",
+          "count": 61
+        },
+        {
+          "label": "Plant and machine operators, and assemblers",
+          "count": 26
+        },
+        {
+          "label": "Craft and related trades workers",
+          "count": 21
+        },
+        {
+          "label": "Elementary occupations",
+          "count": 5
+        }
+      ],
+      "top_locations": [
+        {
+          "label": "Addis Ababa",
+          "count": 1230
+        },
+        {
+          "label": "Oromia",
           "count": 91
         },
         {
-          "label": "Sales and Marketing",
-          "count": 81
-        },
-        {
-          "label": "Health Care",
-          "count": 79
-        },
-        {
-          "label": "Management",
-          "count": 74
-        },
-        {
-          "label": "Economics",
+          "label": "Bule Hora",
           "count": 49
         },
         {
-          "label": "IT, Computer Science an",
-          "count": 43
+          "label": "Hawassa",
+          "count": 15
+        },
+        {
+          "label": "Jimma",
+          "count": 15
+        },
+        {
+          "label": "Somali",
+          "count": 14
+        },
+        {
+          "label": "Adama",
+          "count": 14
+        },
+        {
+          "label": "Amhara",
+          "count": 11
+        },
+        {
+          "label": "Arba Minch",
+          "count": 11
+        },
+        {
+          "label": "Afar",
+          "count": 10
+        }
+      ],
+      "source_breakdown": [
+        {
+          "label": "HaHuJobs",
+          "count": 819
+        },
+        {
+          "label": "EthioJobs",
+          "count": 603
+        },
+        {
+          "label": "EthioJobs, HaHuJobs",
+          "count": 252
         }
       ]
     },
     "yearly": {
-      "posting_count": 848,
+      "posting_count": 1674,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 367
-        },
-        {
-          "label": "Attention to detail",
-          "count": 175
+          "count": 494
         },
         {
           "label": "Problem solving",
-          "count": 141
+          "count": 181
+        },
+        {
+          "label": "Attention to detail",
+          "count": 179
+        },
+        {
+          "label": "Teamwork",
+          "count": 97
+        },
+        {
+          "label": "Accounting",
+          "count": 93
         },
         {
           "label": "Decision-making",
           "count": 67
         },
         {
-          "label": "Accounting",
-          "count": 40
-        },
-        {
-          "label": "Teamwork",
-          "count": 35
-        },
-        {
           "label": "Creativity",
-          "count": 33
+          "count": 42
         },
         {
-          "label": "Accounting Principles (GAAP), IFRS and ERP",
+          "label": "Leadership",
+          "count": 37
+        },
+        {
+          "label": "Coordination",
+          "count": 32
+        },
+        {
+          "label": "Analytical thinking",
           "count": 28
+        }
+      ],
+      "skill_groups": [
+        {
+          "label": "Communication, collaboration and creativity",
+          "count": 697
         },
         {
-          "label": "Strong coordination and networking skills",
-          "count": 27
+          "label": "Information skills",
+          "count": 356
         },
         {
-          "label": "Adaptability",
-          "count": 25
+          "label": "Management skills",
+          "count": 212
+        },
+        {
+          "label": "Working with computers",
+          "count": 210
+        },
+        {
+          "label": "Constructing",
+          "count": 42
+        },
+        {
+          "label": "Assisting and caring",
+          "count": 21
+        },
+        {
+          "label": "Working with machinery and specialised equipment",
+          "count": 19
+        },
+        {
+          "label": "Handling and moving",
+          "count": 7
         }
       ],
       "education": {
-        "known_total": 284,
-        "total": 848,
+        "known_total": 500,
+        "total": 1674,
         "levels": [
           {
-            "label": "Bachelor's degree",
-            "count": 180
-          },
-          {
-            "label": "Master's degree",
-            "count": 74
+            "label": "Certificate",
+            "count": 27,
+            "isced_level": 4,
+            "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 18
+            "count": 148,
+            "isced_level": 5,
+            "isced_label": "Short-cycle tertiary education"
           },
           {
-            "label": "Certificate",
-            "count": 8
+            "label": "Bachelor's degree",
+            "count": 229,
+            "isced_level": 6,
+            "isced_label": "Bachelor's or equivalent"
+          },
+          {
+            "label": "Master's degree",
+            "count": 89,
+            "isced_level": 7,
+            "isced_label": "Master's or equivalent"
           },
           {
             "label": "PhD",
-            "count": 4
+            "count": 7,
+            "isced_level": 8,
+            "isced_label": "Doctoral or equivalent"
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Accounting and Finance",
-          "count": 169
+          "label": "Professional, scientific and technical activities",
+          "count": 675
         },
         {
-          "label": "Social Sciences and Communications",
-          "count": 167
+          "label": "Financial and insurance activities",
+          "count": 232
         },
         {
-          "label": "Engineering",
-          "count": 120
+          "label": "Education",
+          "count": 181
         },
         {
-          "label": "Business and Administra",
-          "count": 119
+          "label": "Human health and social work activities",
+          "count": 164
         },
         {
-          "label": "Natural Sciences",
+          "label": "Accommodation and food service activities",
+          "count": 125
+        },
+        {
+          "label": "Wholesale and retail trade",
+          "count": 101
+        },
+        {
+          "label": "Transportation and storage",
+          "count": 98
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 69
+        },
+        {
+          "label": "Information and communication",
+          "count": 68
+        },
+        {
+          "label": "Manufacturing",
+          "count": 52
+        }
+      ],
+      "top_jobs": [
+        {
+          "label": "Professionals",
+          "count": 624
+        },
+        {
+          "label": "Managers",
+          "count": 251
+        },
+        {
+          "label": "Technicians and associate professionals",
+          "count": 143
+        },
+        {
+          "label": "Service and sales workers",
+          "count": 93
+        },
+        {
+          "label": "Clerical support workers",
+          "count": 61
+        },
+        {
+          "label": "Plant and machine operators, and assemblers",
+          "count": 26
+        },
+        {
+          "label": "Craft and related trades workers",
+          "count": 21
+        },
+        {
+          "label": "Elementary occupations",
+          "count": 5
+        }
+      ],
+      "top_locations": [
+        {
+          "label": "Addis Ababa",
+          "count": 1230
+        },
+        {
+          "label": "Oromia",
           "count": 91
         },
         {
-          "label": "Sales and Marketing",
-          "count": 81
-        },
-        {
-          "label": "Health Care",
-          "count": 79
-        },
-        {
-          "label": "Management",
-          "count": 74
-        },
-        {
-          "label": "Economics",
+          "label": "Bule Hora",
           "count": 49
         },
         {
-          "label": "IT, Computer Science an",
-          "count": 43
+          "label": "Hawassa",
+          "count": 15
+        },
+        {
+          "label": "Jimma",
+          "count": 15
+        },
+        {
+          "label": "Somali",
+          "count": 14
+        },
+        {
+          "label": "Adama",
+          "count": 14
+        },
+        {
+          "label": "Amhara",
+          "count": 11
+        },
+        {
+          "label": "Arba Minch",
+          "count": 11
+        },
+        {
+          "label": "Afar",
+          "count": 10
+        }
+      ],
+      "source_breakdown": [
+        {
+          "label": "HaHuJobs",
+          "count": 819
+        },
+        {
+          "label": "EthioJobs",
+          "count": 603
+        },
+        {
+          "label": "EthioJobs, HaHuJobs",
+          "count": 252
         }
       ]
     },
     "all_time": {
-      "posting_count": 848,
+      "posting_count": 1674,
       "top_skills": [
         {
           "label": "Communication",
-          "count": 367
-        },
-        {
-          "label": "Attention to detail",
-          "count": 175
+          "count": 494
         },
         {
           "label": "Problem solving",
-          "count": 141
+          "count": 181
+        },
+        {
+          "label": "Attention to detail",
+          "count": 179
+        },
+        {
+          "label": "Teamwork",
+          "count": 97
+        },
+        {
+          "label": "Accounting",
+          "count": 93
         },
         {
           "label": "Decision-making",
           "count": 67
         },
         {
-          "label": "Accounting",
-          "count": 40
-        },
-        {
-          "label": "Teamwork",
-          "count": 35
-        },
-        {
           "label": "Creativity",
-          "count": 33
+          "count": 42
         },
         {
-          "label": "Accounting Principles (GAAP), IFRS and ERP",
+          "label": "Leadership",
+          "count": 37
+        },
+        {
+          "label": "Coordination",
+          "count": 32
+        },
+        {
+          "label": "Analytical thinking",
           "count": 28
+        }
+      ],
+      "skill_groups": [
+        {
+          "label": "Communication, collaboration and creativity",
+          "count": 697
         },
         {
-          "label": "Strong coordination and networking skills",
-          "count": 27
+          "label": "Information skills",
+          "count": 356
         },
         {
-          "label": "Adaptability",
-          "count": 25
+          "label": "Management skills",
+          "count": 212
+        },
+        {
+          "label": "Working with computers",
+          "count": 210
+        },
+        {
+          "label": "Constructing",
+          "count": 42
+        },
+        {
+          "label": "Assisting and caring",
+          "count": 21
+        },
+        {
+          "label": "Working with machinery and specialised equipment",
+          "count": 19
+        },
+        {
+          "label": "Handling and moving",
+          "count": 7
         }
       ],
       "education": {
-        "known_total": 284,
-        "total": 848,
+        "known_total": 500,
+        "total": 1674,
         "levels": [
           {
-            "label": "Bachelor's degree",
-            "count": 180
-          },
-          {
-            "label": "Master's degree",
-            "count": 74
+            "label": "Certificate",
+            "count": 27,
+            "isced_level": 4,
+            "isced_label": "Post-secondary non-tertiary education"
           },
           {
             "label": "Diploma",
-            "count": 18
+            "count": 148,
+            "isced_level": 5,
+            "isced_label": "Short-cycle tertiary education"
           },
           {
-            "label": "Certificate",
-            "count": 8
+            "label": "Bachelor's degree",
+            "count": 229,
+            "isced_level": 6,
+            "isced_label": "Bachelor's or equivalent"
+          },
+          {
+            "label": "Master's degree",
+            "count": 89,
+            "isced_level": 7,
+            "isced_label": "Master's or equivalent"
           },
           {
             "label": "PhD",
-            "count": 4
+            "count": 7,
+            "isced_level": 8,
+            "isced_label": "Doctoral or equivalent"
           }
         ]
       },
       "top_categories": [
         {
-          "label": "Accounting and Finance",
-          "count": 169
+          "label": "Professional, scientific and technical activities",
+          "count": 675
         },
         {
-          "label": "Social Sciences and Communications",
-          "count": 167
+          "label": "Financial and insurance activities",
+          "count": 232
         },
         {
-          "label": "Engineering",
-          "count": 120
+          "label": "Education",
+          "count": 181
         },
         {
-          "label": "Business and Administra",
-          "count": 119
+          "label": "Human health and social work activities",
+          "count": 164
         },
         {
-          "label": "Natural Sciences",
+          "label": "Accommodation and food service activities",
+          "count": 125
+        },
+        {
+          "label": "Wholesale and retail trade",
+          "count": 101
+        },
+        {
+          "label": "Transportation and storage",
+          "count": 98
+        },
+        {
+          "label": "Administrative and support service activities",
+          "count": 69
+        },
+        {
+          "label": "Information and communication",
+          "count": 68
+        },
+        {
+          "label": "Manufacturing",
+          "count": 52
+        }
+      ],
+      "top_jobs": [
+        {
+          "label": "Professionals",
+          "count": 624
+        },
+        {
+          "label": "Managers",
+          "count": 251
+        },
+        {
+          "label": "Technicians and associate professionals",
+          "count": 143
+        },
+        {
+          "label": "Service and sales workers",
+          "count": 93
+        },
+        {
+          "label": "Clerical support workers",
+          "count": 61
+        },
+        {
+          "label": "Plant and machine operators, and assemblers",
+          "count": 26
+        },
+        {
+          "label": "Craft and related trades workers",
+          "count": 21
+        },
+        {
+          "label": "Elementary occupations",
+          "count": 5
+        }
+      ],
+      "top_locations": [
+        {
+          "label": "Addis Ababa",
+          "count": 1230
+        },
+        {
+          "label": "Oromia",
           "count": 91
         },
         {
-          "label": "Sales and Marketing",
-          "count": 81
-        },
-        {
-          "label": "Health Care",
-          "count": 79
-        },
-        {
-          "label": "Management",
-          "count": 74
-        },
-        {
-          "label": "Economics",
+          "label": "Bule Hora",
           "count": 49
         },
         {
-          "label": "IT, Computer Science an",
-          "count": 43
+          "label": "Hawassa",
+          "count": 15
+        },
+        {
+          "label": "Jimma",
+          "count": 15
+        },
+        {
+          "label": "Somali",
+          "count": 14
+        },
+        {
+          "label": "Adama",
+          "count": 14
+        },
+        {
+          "label": "Amhara",
+          "count": 11
+        },
+        {
+          "label": "Arba Minch",
+          "count": 11
+        },
+        {
+          "label": "Afar",
+          "count": 10
+        }
+      ],
+      "source_breakdown": [
+        {
+          "label": "HaHuJobs",
+          "count": 819
+        },
+        {
+          "label": "EthioJobs",
+          "count": 603
+        },
+        {
+          "label": "EthioJobs, HaHuJobs",
+          "count": 252
         }
       ]
     }
