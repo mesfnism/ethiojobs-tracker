@@ -211,6 +211,11 @@
   <header class="page-head">
     <h1>Ethiopia Labour Market Dashboard</h1>
     <p class="sub">Skills, education levels, sectors, job roles and locations in demand. Tracked automatically from live job postings.</p>
+    <p class="sub" style="margin-top:8px;">
+      <a href="./reports/weekly-intelligence-report.html" style="color:var(--navy-soft); font-weight:600; text-decoration:none;">Weekly Intelligence Report</a>
+      &nbsp;&middot;&nbsp;
+      <a href="./reports/monthly-intelligence-report.html" style="color:var(--navy-soft); font-weight:600; text-decoration:none;">Monthly Intelligence Report</a>
+    </p>
   </header>
 
   <div class="tabs" id="tabs"></div>
@@ -234,21 +239,25 @@
       <p class="panel-sub" id="eduSub"></p>
       <div class="chart-holder"><canvas id="eduChart" height="220"></canvas></div>
       <div class="drilldown" id="eduSpecialization"></div>
+      <div class="drilldown" id="eduSkills"></div>
     </div>
     <div class="panel">
       <h2>Experience Required</h2>
       <p class="panel-sub" id="expSub"></p>
       <div class="chart-holder"><canvas id="expChart" height="220"></canvas></div>
+      <div class="drilldown" id="expSkills"></div>
     </div>
     <div class="panel">
       <h2>Salary / Pay (Monthly ETB)</h2>
       <p class="panel-sub" id="salarySub"></p>
       <div class="chart-holder"><canvas id="salaryChart" height="220"></canvas></div>
+      <div class="drilldown" id="salarySkills"></div>
     </div>
     <div class="panel">
       <h2>Most Active Sectors</h2>
       <p class="panel-sub" id="catSub"></p>
       <div class="chart-holder"><canvas id="catChart" height="220"></canvas></div>
+      <div class="drilldown" id="catSkills"></div>
     </div>
     <div class="panel">
       <h2>Sector Subcategories</h2>
@@ -266,6 +275,7 @@
       <h2>Locations</h2>
       <p class="panel-sub" id="locSub"></p>
       <div class="chart-holder"><canvas id="locChart" height="220"></canvas></div>
+      <div class="drilldown" id="locSkills"></div>
     </div>
     <div class="panel">
       <h2>Job Sources</h2>
@@ -279,16 +289,18 @@
         <div>
           <p class="panel-sub" style="font-weight:600; color:var(--ink);">By individual employer</p>
           <div class="chart-holder"><canvas id="employersChart" height="220"></canvas></div>
+          <div class="drilldown" id="employersSkills"></div>
         </div>
         <div>
           <p class="panel-sub" style="font-weight:600; color:var(--ink);">By type (Private, Public or NGO)</p>
           <div class="chart-holder"><canvas id="employerTypeChart" height="220"></canvas></div>
+          <div class="drilldown" id="employerTypeSkills"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <p class="method-note">Skills are classified with ESCO, job roles with ISCO-08, education with ISCED 2011 and sectors with ISIC Rev.4. Postings that don't match a category are left out of that chart rather than guessed at. Employer type (Private, Public or NGO) is a keyword heuristic on the employer's own name, not a verified registry lookup. Education specialization (what field a level is in) relies on free text descriptions, which mainly exist for HaHuJobs postings. Salary is only counted when a posting itself states a clear monthly Birr or ETB figure. "Negotiable" or "As per company scale" are left out rather than guessed at. The "most critical skills" shown when clicking a Sector Subcategory or Job Role bar only appears once at least 3 postings in that group state explicit skills, so it is never built from a single posting.</p>
+  <p class="method-note">Skills are classified with ESCO, job roles with ISCO-08, education with ISCED 2011 and sectors with ISIC Rev.4. Postings that don't match a category are left out of that chart rather than guessed at. Employer type (Private, Public or NGO) is a keyword heuristic on the employer's own name, not a verified registry lookup. Education specialization (what field a level is in) relies on free text descriptions, which mainly exist for HaHuJobs postings. Salary is only counted when a posting itself states a clear monthly Birr or ETB figure. "Negotiable" or "As per company scale" are left out rather than guessed at. The "most critical skills" shown when clicking a bar on most charts (Skills, Education, Experience, Salary, Sectors, Sector Subcategories, Job Roles, Locations and Top Hirers) only appears once at least 3 postings in that group state explicit skills, so it is never built from a single posting.</p>
 
   <footer class="page-foot">
     <span id="generatedAt">Loading…</span>
@@ -617,6 +629,13 @@ function renderWindow(windowKey) {
   hideEduSpecialization();
   hideCriticalSkills("subCatSkills");
   hideCriticalSkills("jobsSkills");
+  hideCriticalSkills("eduSkills");
+  hideCriticalSkills("expSkills");
+  hideCriticalSkills("salarySkills");
+  hideCriticalSkills("catSkills");
+  hideCriticalSkills("locSkills");
+  hideCriticalSkills("employersSkills");
+  hideCriticalSkills("employerTypeSkills");
 
   document.getElementById("skillsSub").textContent =
     `Top skills explicitly required, ESCO classified, ${WINDOW_LABELS[windowKey]} view`;
@@ -640,17 +659,26 @@ function renderWindow(windowKey) {
     `Postings contributed per site. A vacancy posted to more than one site counts toward each`;
 
   drawBar("skillsChart", "skills", data.top_skills, "label", "count");
-  drawBar("eduChart", "edu", data.education.levels, "label", "count", showEduSpecialization);
-  drawBar("expChart", "exp", data.experience.buckets, "label", "count");
-  drawBar("salaryChart", "salary", data.salary.buckets, "label", "count");
-  drawBar("catChart", "cat", data.top_categories, "label", "count");
+  drawBar("eduChart", "edu", data.education.levels, "label", "count", (label) => {
+    showEduSpecialization(label);
+    showCriticalSkills(label, "critical_skills_by_education", "eduSkills");
+  });
+  drawBar("expChart", "exp", data.experience.buckets, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_experience", "expSkills"));
+  drawBar("salaryChart", "salary", data.salary.buckets, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_salary_bucket", "salarySkills"));
+  drawBar("catChart", "cat", data.top_categories, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_sector", "catSkills"));
   drawBar("subCatChart", "subCat", data.sector_subcategories, "label", "count",
     (label) => showCriticalSkills(label, "critical_skills_by_subsector", "subCatSkills"));
   drawBar("jobsChart", "jobs", data.top_jobs, "label", "count",
     (label) => showCriticalSkills(label, "critical_skills_by_role", "jobsSkills"));
-  drawBar("locChart", "loc", data.top_locations, "label", "count");
-  drawBar("employersChart", "employers", data.top_employers, "label", "count");
-  drawBar("employerTypeChart", "employerType", data.employer_type.types, "label", "count");
+  drawBar("locChart", "loc", data.top_locations, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_location", "locSkills"));
+  drawBar("employersChart", "employers", data.top_employers, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_employer", "employersSkills"));
+  drawBar("employerTypeChart", "employerType", data.employer_type.types, "label", "count",
+    (label) => showCriticalSkills(label, "critical_skills_by_employer_type", "employerTypeSkills"));
   drawBar("sourcesChart", "sources", data.source_sites, "label", "count");
 }
 
