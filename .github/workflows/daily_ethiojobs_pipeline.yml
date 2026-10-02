@@ -1,4 +1,4 @@
-name: Daily Jobs Pipeline (EthioJobs + HaHuJobs + ReporterJobs + PalmJobs + DevNetJobs + HarmeeJobs)
+name: Daily Jobs Pipeline (EthioJobs + HaHuJobs + ReporterJobs + PalmJobs + DevNetJobs + HarmeeJobs + ElelanaJobs + KebenaJobs + Afriworket + GeezJobs)
 
 permissions:
   contents: write
@@ -50,11 +50,26 @@ jobs:
       - name: Run HarmeeJobs pipeline
         run: python harmeejobs_pipeline.py
 
+      - name: Run ElelanaJobs pipeline
+        run: python elelanajobs_pipeline.py
+
+      - name: Run KebenaJobs pipeline
+        run: python kebenajobs_pipeline.py
+
+      - name: Run Afriworket pipeline
+        run: python afriworket_pipeline.py
+
+      - name: Run GeezJobs pipeline
+        run: python geezjobs_pipeline.py
+
       - name: Combine trackers and dedup cross-posted vacancies
         run: python combine_trackers.py
 
       - name: Build dashboard data (daily / weekly / monthly / quarterly / yearly rollups)
         run: python rollup_ethiojobs.py
+
+      - name: Build per-source reliability scorecard
+        run: python source_health.py
 
       - name: Build the Vacancy and Skill Intelligence Reports (weekly + monthly)
         run: python generate_intelligence_report.py
@@ -63,6 +78,6 @@ jobs:
         run: |
           git config user.name "jobs-pipeline-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json docs/data/report_history.json docs/reports/weekly-intelligence-report.html docs/reports/monthly-intelligence-report.html docs/reports/weekly-intelligence-report.pdf docs/reports/monthly-intelligence-report.pdf
+          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx elelanajobs_tracker.xlsx kebenajobs_tracker.xlsx afriworket_tracker.xlsx geezjobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json docs/data/source_health.json docs/data/report_history.json docs/reports/weekly-intelligence-report.html docs/reports/monthly-intelligence-report.html docs/reports/weekly-intelligence-report.pdf docs/reports/monthly-intelligence-report.pdf
           git diff --quiet --cached || git commit -m "Daily jobs update $(date -u +%Y-%m-%d)"
           git push
