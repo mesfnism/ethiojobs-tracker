@@ -451,49 +451,49 @@
   {
     "date": "2026-10-02",
     "weekly": {
-      "posting_count": 1886,
+      "posting_count": 2399,
       "coverage": {
         "education": {
-          "known": 536,
-          "total": 1886
+          "known": 560,
+          "total": 2399
         },
         "experience": {
-          "known": 1402,
-          "total": 1886
+          "known": 1680,
+          "total": 2399
         },
         "salary": {
-          "known": 56,
-          "total": 1886
+          "known": 70,
+          "total": 2399
         },
         "employer_type": {
-          "known": 890,
-          "total": 1886
+          "known": 1074,
+          "total": 2399
         }
       },
       "top_skills": [
         {
           "label": "Communication",
-          "count": 404
-        },
-        {
-          "label": "Attention to detail",
-          "count": 144
+          "count": 430
         },
         {
           "label": "Problem solving",
-          "count": 142
+          "count": 156
+        },
+        {
+          "label": "Attention to detail",
+          "count": 151
         },
         {
           "label": "Teamwork",
-          "count": 78
+          "count": 81
         },
         {
           "label": "Accounting",
-          "count": 67
+          "count": 69
         },
         {
           "label": "Decision-making",
-          "count": 48
+          "count": 49
         },
         {
           "label": "Creativity",
@@ -501,143 +501,147 @@
         },
         {
           "label": "Leadership",
-          "count": 39
+          "count": 40
         },
         {
           "label": "Customer service",
-          "count": 29
+          "count": 30
         },
         {
-          "label": "Coordination",
-          "count": 27
+          "label": "Microsoft Office",
+          "count": 28
         }
       ],
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 690
-        },
-        {
-          "label": "Education",
-          "count": 221
+          "count": 753
         },
         {
           "label": "Financial and insurance activities",
-          "count": 184
+          "count": 262
         },
         {
-          "label": "Human health and social work activities",
-          "count": 143
+          "label": "Education",
+          "count": 237
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 136
+          "count": 155
+        },
+        {
+          "label": "Human health and social work activities",
+          "count": 144
         },
         {
           "label": "Transportation and storage",
-          "count": 110
+          "count": 136
         },
         {
           "label": "Information and communication",
-          "count": 79
-        },
-        {
-          "label": "Wholesale and retail trade",
-          "count": 73
-        },
-        {
-          "label": "Construction",
-          "count": 65
+          "count": 120
         },
         {
           "label": "Manufacturing",
-          "count": 56
+          "count": 95
+        },
+        {
+          "label": "Construction",
+          "count": 85
+        },
+        {
+          "label": "Wholesale and retail trade",
+          "count": 80
         }
       ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 698
+          "count": 871
         },
         {
           "label": "Managers",
-          "count": 252
+          "count": 338
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 144
+          "count": 181
         },
         {
           "label": "Service and sales workers",
-          "count": 118
+          "count": 149
         },
         {
           "label": "Clerical support workers",
-          "count": 64
+          "count": 75
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 40
+          "count": 49
         },
         {
           "label": "Craft and related trades workers",
-          "count": 20
+          "count": 21
         },
         {
           "label": "Elementary occupations",
           "count": 9
+        },
+        {
+          "label": "Skilled agricultural, forestry and fishery workers",
+          "count": 1
         }
       ],
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1183
+          "count": 1454
         },
         {
           "label": "Addis Ababa, Ethiopia",
-          "count": 192
+          "count": 267
         },
         {
           "label": "Oromia",
-          "count": 71
+          "count": 75
         },
         {
           "label": "Bule Hora",
           "count": 59
         },
         {
+          "label": "Addis Ababa, Addis Ababa, Ethiopia",
+          "count": 50
+        },
+        {
           "label": "Addis Ababa - Ethiopia",
-          "count": 47
+          "count": 48
+        },
+        {
+          "label": "Ethiopia",
+          "count": 33
         },
         {
           "label": "Hawassa",
-          "count": 20
+          "count": 22
         },
         {
           "label": "Jimma",
-          "count": 19
+          "count": 21
         },
         {
           "label": "Adama",
           "count": 16
-        },
-        {
-          "label": "Arba Minch",
-          "count": 11
-        },
-        {
-          "label": "Ethiopia",
-          "count": 11
         }
       ],
       "top_employers": [
         {
           "label": "Company",
-          "count": 120
+          "count": 131
         },
         {
           "label": "Private Client",
-          "count": 68
+          "count": 76
         },
         {
           "label": "Bule Hora University",
@@ -664,59 +668,59 @@
           "count": 15
         },
         {
-          "label": "Commercial Nominees PLC",
-          "count": 13
+          "label": "Amg Holdings",
+          "count": 14
         },
         {
-          "label": "Amg Holdings",
+          "label": "Commercial Nominees PLC",
           "count": 13
         }
       ]
     },
     "monthly": {
-      "posting_count": 2281,
+      "posting_count": 2794,
       "coverage": {
         "education": {
-          "known": 705,
-          "total": 2281
+          "known": 729,
+          "total": 2794
         },
         "experience": {
-          "known": 1629,
-          "total": 2281
+          "known": 1909,
+          "total": 2794
         },
         "salary": {
-          "known": 62,
-          "total": 2281
+          "known": 76,
+          "total": 2794
         },
         "employer_type": {
-          "known": 1098,
-          "total": 2281
+          "known": 1282,
+          "total": 2794
         }
       },
       "top_skills": [
         {
           "label": "Communication",
-          "count": 643
+          "count": 669
         },
         {
           "label": "Problem solving",
-          "count": 232
+          "count": 246
         },
         {
           "label": "Attention to detail",
-          "count": 215
+          "count": 222
         },
         {
           "label": "Teamwork",
-          "count": 119
+          "count": 122
         },
         {
           "label": "Accounting",
-          "count": 107
+          "count": 109
         },
         {
           "label": "Decision-making",
-          "count": 73
+          "count": 74
         },
         {
           "label": "Creativity",
@@ -724,7 +728,7 @@
         },
         {
           "label": "Leadership",
-          "count": 56
+          "count": 57
         },
         {
           "label": "Coordination",
@@ -732,135 +736,139 @@
         },
         {
           "label": "Analytical thinking",
-          "count": 35
+          "count": 36
         }
       ],
       "top_categories": [
         {
           "label": "Professional, scientific and technical activities",
-          "count": 836
+          "count": 899
         },
         {
           "label": "Financial and insurance activities",
-          "count": 270
+          "count": 348
         },
         {
           "label": "Education",
-          "count": 235
+          "count": 251
         },
         {
           "label": "Human health and social work activities",
-          "count": 192
+          "count": 193
         },
         {
           "label": "Accommodation and food service activities",
-          "count": 145
+          "count": 164
         },
         {
           "label": "Transportation and storage",
-          "count": 136
-        },
-        {
-          "label": "Wholesale and retail trade",
-          "count": 118
+          "count": 162
         },
         {
           "label": "Information and communication",
-          "count": 98
+          "count": 139
         },
         {
-          "label": "Administrative and support service activities",
-          "count": 73
+          "label": "Wholesale and retail trade",
+          "count": 125
         },
         {
           "label": "Manufacturing",
-          "count": 70
+          "count": 109
+        },
+        {
+          "label": "Construction",
+          "count": 89
         }
       ],
       "top_jobs": [
         {
           "label": "Professionals",
-          "count": 830
+          "count": 1003
         },
         {
           "label": "Managers",
-          "count": 324
+          "count": 410
         },
         {
           "label": "Technicians and associate professionals",
-          "count": 176
+          "count": 213
         },
         {
           "label": "Service and sales workers",
-          "count": 135
+          "count": 166
         },
         {
           "label": "Clerical support workers",
-          "count": 81
+          "count": 92
         },
         {
           "label": "Plant and machine operators, and assemblers",
-          "count": 42
+          "count": 51
         },
         {
           "label": "Craft and related trades workers",
-          "count": 25
+          "count": 26
         },
         {
           "label": "Elementary occupations",
           "count": 9
+        },
+        {
+          "label": "Skilled agricultural, forestry and fishery workers",
+          "count": 1
         }
       ],
       "top_locations": [
         {
           "label": "Addis Ababa",
-          "count": 1490
+          "count": 1761
         },
         {
           "label": "Addis Ababa, Ethiopia",
-          "count": 192
+          "count": 267
         },
         {
           "label": "Oromia",
-          "count": 101
+          "count": 105
         },
         {
           "label": "Bule Hora",
           "count": 59
         },
         {
+          "label": "Addis Ababa, Addis Ababa, Ethiopia",
+          "count": 50
+        },
+        {
           "label": "Addis Ababa - Ethiopia",
-          "count": 47
+          "count": 48
+        },
+        {
+          "label": "Ethiopia",
+          "count": 33
         },
         {
           "label": "Hawassa",
-          "count": 20
+          "count": 22
         },
         {
           "label": "Jimma",
-          "count": 19
+          "count": 21
         },
         {
           "label": "Adama",
           "count": 16
-        },
-        {
-          "label": "Somali",
-          "count": 14
-        },
-        {
-          "label": "Amhara",
-          "count": 11
         }
       ],
       "top_employers": [
         {
           "label": "Company",
-          "count": 120
+          "count": 131
         },
         {
           "label": "Private Client",
-          "count": 68
+          "count": 76
         },
         {
           "label": "Bule Hora University",
@@ -892,7 +900,7 @@
         },
         {
           "label": "Amg Holdings",
-          "count": 16
+          "count": 17
         }
       ]
     }
