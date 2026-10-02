@@ -10,7 +10,38 @@ structure_job(), which is where any schema-mapping mistake would show up
 first and most cheaply.
 """
 
-from palmjobs_pipeline import normalize_education, build_salary_hint, structure_job, COLUMNS
+from palmjobs_pipeline import (
+    normalize_education, build_salary_hint, structure_job, COLUMNS,
+    _filter_identifying_headers, fetch_jobs_page,
+)
+
+
+class _FakeResponse:
+    def __init__(self, status, json_data=None, text=""):
+        self.status = status
+        self._json_data = json_data
+        self._text = text
+
+    def json(self):
+        return self._json_data
+
+    def text(self):
+        return self._text
+
+
+class _FakeRequestContext:
+    """Captures the headers it was called with, so the Accept-header
+    override in fetch_jobs_page can be tested without a real Playwright
+    APIRequestContext or network access."""
+
+    def __init__(self, status=200, json_data=None):
+        self.last_headers = None
+        self._status = status
+        self._json_data = json_data if json_data is not None else []
+
+    def get(self, url, headers=None, timeout=None):
+        self.last_headers = headers
+        return _FakeResponse(self._status, json_data=self._json_data)
 
 
 def check(name, condition):
@@ -161,6 +192,46 @@ def main():
     all_ok &= check(
         "sparse: how_to_apply falls back to email_application when no external_link",
         sparse_row["how_to_apply"] == "hr@example.org",
+    )
+
+    # --- _filter_identifying_headers (the 2026-10-02 PGRST116 fix) --------
+    full_captured = {
+        "apikey": "anon-key-abc",
+        "Authorization": "Bearer anon-key-abc",
+        "Accept": "application/vnd.pgrst.object+json",  # the actual culprit header
+        "Range": "0-0",
+        "User-Agent": "Mozilla/5.0 ...",
+        "Referer": "https://palmjobs.et/jobs",
+    }
+    filtered = _filter_identifying_headers(full_captured)
+    all_ok &= check("header filter: keeps apikey", filtered.get("apikey") == "anon-key-abc")
+    all_ok &= check("header filter: keeps Authorization", filtered.get("Authorization") == "Bearer anon-key-abc")
+    all_ok &= check("header filter: drops the singular-object Accept header",
+                     "Accept" not in filtered and "accept" not in filtered)
+    all_ok &= check("header filter: drops Range/User-Agent/Referer", len(filtered) == 2)
+
+    # Case-insensitive input (real headers dicts aren't guaranteed casing).
+    lowercase_captured = {"apikey": "k", "authorization": "Bearer k", "accept": "application/vnd.pgrst.object+json"}
+    filtered_lower = _filter_identifying_headers(lowercase_captured)
+    all_ok &= check("header filter: case-insensitive apikey", filtered_lower.get("apikey") == "k")
+    all_ok &= check("header filter: case-insensitive Authorization", filtered_lower.get("Authorization") == "Bearer k")
+    all_ok &= check("header filter: still drops lowercase accept", len(filtered_lower) == 2)
+
+    # Nothing identifying present -> empty dict, not a crash, not None.
+    all_ok &= check("header filter: empty input -> {}", _filter_identifying_headers({}) == {})
+
+    # --- fetch_jobs_page always sends its own Accept, even if the caller's
+    # headers dict (however it was obtained) still carried a stray one ---
+    poisoned_headers = {"apikey": "k", "Authorization": "Bearer k", "Accept": "application/vnd.pgrst.object+json"}
+    fake_ctx = _FakeRequestContext(status=200, json_data=[{"id": "1"}])
+    fetch_jobs_page(fake_ctx, "https://example.supabase.co/rest/v1/jobs", poisoned_headers, offset=0)
+    all_ok &= check(
+        "fetch_jobs_page overrides a poisoned Accept header with application/json",
+        fake_ctx.last_headers.get("Accept") == "application/json",
+    )
+    all_ok &= check(
+        "fetch_jobs_page still sends the real apikey/Authorization through",
+        fake_ctx.last_headers.get("apikey") == "k" and fake_ctx.last_headers.get("Authorization") == "Bearer k",
     )
 
     print()

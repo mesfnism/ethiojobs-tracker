@@ -24,6 +24,45 @@ shows every anonymous visitor.
 Job IDs come directly from the API's own `id` field (a real UUID), so
 dedup across runs is exact — no derived/hashed identifier needed, unlike
 sites where only scraped text is available.
+
+Update (2026-10-02): a real run on GitHub Actions reported "Could not
+find API credentials by either method," while the exact same code,
+run locally minutes later, found them immediately. Checked live: the
+site's JS bundle structure hadn't changed at all — a real browser finds
+the anon key on the first try. This is the same pattern already
+confirmed for reporterjobs_pipeline.py: some sites' hosting (this one is
+a Next.js app, commonly hosted on Vercel, which offers its own bot/attack
+protection) can detect and block Chrome-DevTools-Protocol-driven
+automation specifically — independent of IP, headless-or-not, or request
+headers — so Playwright's in-page fetch() calls for the JS chunks can
+come back empty on a cloud runner while working fine from an ordinary
+connection. Unlike ReporterJobs, this file still uses Playwright (its
+actual data fetch is a plain authenticated REST call via Playwright's
+APIRequestContext, not browser-rendered scraping, so there was reason to
+hope it would fare differently) — if GitHub Actions runs keep failing
+here while local runs keep succeeding, the same curl_cffi-style rewrite
+done for ReporterJobs is the next thing to try.
+
+That same local run also surfaced a second, unrelated, genuine bug: a
+Playwright API misuse, not a site-blocking issue. main() captured
+`page.context.request` and then called `page.close()` — but `page` was
+created via `browser.new_page()`, which implicitly creates its own
+BrowserContext tied 1:1 to that page; closing the page closes that
+implicit context too, which invalidates the APIRequestContext derived
+from it. Every subsequent `request_context.get()` call then failed with
+"Target page, context or browser has been closed." Fixed by creating an
+explicit `browser.new_context()` first, so the context's lifetime isn't
+tied to the single page closed early to free the renderer.
+
+Also fixed in the same pass: main() previously treated "could not find
+API credentials" and "the very first page fetch failed" the same way it
+would treat a legitimate empty result — printing a message and still
+calling append_rows(path, []), which both creates/updates the workbook
+and logs a 0-new-postings run. That is the exact same silent-failure
+pattern identified and fixed in reporterjobs_pipeline.py: a scraping
+failure should never produce a tracker/log entry that looks identical to
+a genuinely quiet day. Both of those cases now exit(1) without writing
+anything at all.
 """
 
 import os
@@ -143,24 +182,59 @@ def structure_job(row):
 # Browser-driven fetch: capture real request headers, then page the table
 # --------------------------------------------------------------------------
 
-def capture_api_headers(page):
-    """Loads the /jobs page and captures the headers the site's own code
-    sends on its first call to the public jobs table — the same headers
-    any anonymous visitor's browser would send. Returns None if no such
-    call is seen within the timeout.
+def _filter_identifying_headers(raw_headers):
+    """Keeps only the two headers that identify a request as using this
+    site's own public anon key (apikey, Authorization) and drops
+    everything else — in particular any Accept/Prefer/Range header, which
+    belongs to the specific query the ORIGINAL captured request happened
+    to be making and must not be reused for a different query of our own
+    (see capture_api_headers' 2026-10-02 docstring note for the PGRST116
+    bug this caused). Case-insensitive, since header casing isn't
+    guaranteed; returns {} (not None) when neither is present, so callers
+    can treat "no useful headers found" uniformly rather than branching on
+    None vs {}."""
+    lower = {k.lower(): v for k, v in raw_headers.items()}
+    headers = {}
+    if "apikey" in lower:
+        headers["apikey"] = lower["apikey"]
+    if "authorization" in lower:
+        headers["Authorization"] = lower["authorization"]
+    return headers
 
-    As of this update, the site renders the first page of jobs server-side
-    (confirmed live: its __NEXT_DATA__ payload already carries the first 20
-    jobs, and the listing page no longer makes a client-side call to
-    /rest/v1/jobs on load at all), so this request is never seen anymore —
-    this function now always returns (None, None), and discover_api_credentials
-    below is the real credential source. Kept only as a cheap first attempt
-    in case the site's behavior changes back."""
+
+def capture_api_headers(page):
+    """Loads the /jobs page and captures the identifying headers (apikey +
+    Authorization only — see below) from the site's own first call to the
+    public jobs table. Returns (None, None) if no such call is seen within
+    the timeout.
+
+    As of the previous update, the site usually renders the first page of
+    jobs server-side and this request is never seen, so discover_api_credentials
+    below is the usual credential source — this is kept as a cheap first
+    attempt for whenever the site does still make this call client-side
+    (confirmed live on 2026-10-02 that it sometimes still does).
+
+    Update (2026-10-02): a real run captured a live request successfully
+    this way, but the resulting headers broke every subsequent paginated
+    call with PostgREST's PGRST116 ("Cannot coerce the result to a single
+    JSON object"). The cause: this used to return the FULL captured header
+    dict verbatim, and whatever page request happened to be captured
+    first might not be a plain list query — e.g. a "featured job" or
+    "latest job" widget using Supabase's `.single()`, which sets
+    `Accept: application/vnd.pgrst.object+json`. Reusing THAT Accept
+    header for our own 50-row paginated query is what produced "you asked
+    for one object, I have 50 rows." Fixed by keeping only the two headers
+    that actually identify the request as coming from this site's own
+    public anon key (apikey, Authorization) — the same minimal set
+    discover_api_credentials already builds by design — and letting
+    fetch_jobs_page set its own explicit Accept header for a list query,
+    rather than trusting whatever Accept/Prefer/Range headers happened to
+    belong to the specific request that got captured."""
     captured = {}
 
     def on_request(request):
         if SUPABASE_JOBS_PATH_MARKER in request.url and "headers" not in captured:
-            captured["headers"] = dict(request.headers)
+            captured["headers"] = _filter_identifying_headers(dict(request.headers))
             captured["base_url"] = request.url.split("/rest/v1/jobs")[0] + "/rest/v1/jobs"
 
     page.on("request", on_request)
@@ -228,7 +302,13 @@ def fetch_jobs_page(request_context, base_url, headers, offset):
         f"{base_url}?select={SELECT_FIELDS}&job_status=eq.Active"
         f"&order=created_at.desc&limit={PAGE_SIZE}&offset={offset}"
     )
-    resp = request_context.get(url, headers=headers, timeout=30000)
+    # Explicit Accept: application/json for OUR OWN list query, regardless
+    # of what's in `headers` — defense in depth against the 2026-10-02
+    # PGRST116 bug (see capture_api_headers' docstring note): even if some
+    # future credential-discovery path reintroduces a stray singular-object
+    # Accept header, this request's own intent always wins.
+    request_headers = {**headers, "Accept": "application/json"}
+    resp = request_context.get(url, headers=request_headers, timeout=30000)
     if resp.status != 200:
         raise RuntimeError(f"Unexpected status {resp.status} fetching jobs page: {resp.text()[:300]}")
     return resp.json()
@@ -318,7 +398,12 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page()
+        # An EXPLICIT context, not browser.new_page()'s implicit one — see
+        # the 2026-10-02 docstring note. page.close() below must not tear
+        # down the context the APIRequestContext (request_context) depends
+        # on for the rest of this run.
+        context = browser.new_context()
+        page = context.new_page()
 
         headers, base_url = capture_api_headers(page)
         if not headers or not base_url:
@@ -328,15 +413,17 @@ def main():
             headers, base_url = discover_api_credentials(page)
         if not headers or not base_url:
             print("  Could not find API credentials by either method — the site's "
-                  "behavior may have changed further. Stopping without writing "
-                  "anything, rather than guessing at credentials.")
+                  "behavior may have changed, or (see this file's 2026-10-02 "
+                  "docstring note) automated-browser detection may be blocking the "
+                  "in-page fetch() calls that read its JS bundle. Aborting this run "
+                  "without writing anything, rather than committing a tracker that "
+                  "would look like a legitimate 'zero new postings' day.")
             page.close()
             browser.close()
-            append_rows(output_path, [])
-            return
+            sys.exit(1)
         print(f"  Using API base URL: {base_url}")
 
-        request_context = page.context.request
+        request_context = context.request
         page.close()
 
         for page_num in range(MAX_PAGES):
@@ -344,7 +431,17 @@ def main():
             try:
                 batch = fetch_jobs_page(request_context, base_url, headers, offset)
             except Exception as e:
-                print(f"  Offset {offset}: fetch failed ({e}) — stopping pagination.")
+                if offset == 0:
+                    # The very first fetch failing isn't "zero jobs" — it's
+                    # "we don't know," the same distinction ReporterJobs'
+                    # ListingPageBlocked makes for its own first page.
+                    print(f"  Offset 0: fetch failed ({e}) — aborting this run without "
+                          f"writing anything, rather than committing a tracker that "
+                          f"would look like a legitimate 'zero new postings' day.")
+                    browser.close()
+                    sys.exit(1)
+                print(f"  Offset {offset}: fetch failed ({e}) — stopping pagination "
+                      f"(keeping the {len(new_rows)} new posting(s) already found).")
                 break
 
             if not batch:
