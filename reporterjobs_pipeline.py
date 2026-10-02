@@ -18,34 +18,55 @@ and hahujobs_pipeline.py, this one was built from inspecting the site's
 rendered text rather than from a captured live DOM fixture, because this
 sandbox has no live network access to the site itself. The label-based
 detail-page parser (see parse_detail_text) does not depend on field order,
-so it should be fairly robust; the listing-card parser is positional, best
--effort, and the most likely thing to need a small fix after the first
-real run — if a run fails or looks wrong, send the Action log and this
-gets corrected quickly, the same way the HaHuJobs pipeline's few early
-rough edges were.
+so it should be fairly robust; the listing-card parser is positional,
+best-effort, and the most likely thing to need a small fix if the site's
+markup changes — if a run looks wrong, send the run's log and this gets
+corrected quickly.
 
-Update (2026-10-02): a real run's Action log confirmed the suspicion in
-the USER_AGENT comment below — a plain HTTP 403 on every listing-page
-request, which never got past the warm-up/header changes. The bug this
-exposed is architectural, not cosmetic: fetch_listing_page's "no cards
-found" return value was being used for two completely different
-situations — "we were blocked" and "we genuinely reached the end of the
-postings" — and main() treated both as the harmless latter case, so a
-403 on every page produced a valid-looking Excel file with zero rows, no
-error, and no sign anything was wrong. That's now fixed: fetch_listing_page
-raises ListingPageBlocked for an HTTP error status (any page) or for zero
-job links found on page 1 specifically with an otherwise-OK status (a
-soft block or layout change) — zero cards on a LATER page, after earlier
-pages already returned real postings, is still treated as a legitimate
-end of pagination. main() aborts the whole run (sys.exit(1), no workbook
-write at all) on ListingPageBlocked, rather than writing a file that would
-look identical to a genuinely quiet day. This does not by itself solve the
-403 — if GitHub Actions' outbound IP range is blocked at the WAF/ASN
-level, no amount of header or parser fixing from inside the runner can
-work around that (see the note in fetch_listing_page for what to try
-next: a proxy with a residential/non-data-center exit IP, or running this
-one script from somewhere that isn't on a cloud ASN) — it only makes sure
-that failure is loud instead of silent.
+Update (2026-10-02, part 1): a real run's Action log confirmed a plain
+HTTP 403 on every listing-page request. This exposed an architectural bug
+(now fixed): fetch_listing_page's "no cards found" return value was being
+used for two different situations — "we were blocked" and "we genuinely
+reached the end of the postings" — and main() treated both as the
+harmless latter case, silently writing a valid-looking Excel file with
+zero rows. ListingPageBlocked (below) now distinguishes these: an HTTP
+error status on any page, or zero job links on page 1 specifically with
+an otherwise-OK status, both raise and abort the whole run (no workbook
+write at all) rather than writing a misleading empty tracker.
+
+Update (2026-10-02, part 2): that 403 was then confirmed to NOT be an
+IP/ASN block — the same 403 reproduced from a residential/university
+connection (not just GitHub Actions), in both headless and fully visible
+("headed") Playwright-driven Chromium, while the exact same URL loaded
+fine seconds later through an ordinary, non-automated real Chrome browser
+on what was effectively the same network. That rules out IP reputation
+and headless-detection as the cause and points at something that targets
+browser-automation tooling specifically: Playwright and Puppeteer both
+drive the browser through the Chrome DevTools Protocol (CDP), which
+leaves detectable fingerprints a WAF/security plugin can flag even in a
+fully visible, "real-looking" browser window — independent of headless
+mode, user-agent, or IP reputation.
+
+The fix: this file no longer uses a real automated browser at all. It
+fetches plain HTTP requests with curl_cffi, which impersonates a genuine
+Chrome's TLS/JA3 fingerprint and header set at the network level without
+driving any browser or using CDP — there is no automation protocol
+signature for a CDP-fingerprinting rule to catch, because no automation
+protocol is involved. The returned HTML is then parsed directly with
+BeautifulSoup (no JavaScript execution at all). This works because this
+site's listing and detail pages are server-rendered HTML — confirmed by
+inspecting the real listing URL in a real browser, including the
+"ajax_filter=true" listing URL, which returns fully-formed job cards
+without needing any client-side rendering step.
+
+If this new approach is STILL blocked, that would mean the detection
+operates at the TLS/network layer in a way curl_cffi's impersonation
+doesn't match (less likely, since curl_cffi is built specifically to
+reproduce real Chrome's fingerprint), or there's a layer not yet
+identified — at that point the pragmatic move is probably to stop
+investing further here and let this source stay "not yet recovered," as
+the intelligence report already states honestly, rather than one more
+round of increasingly exotic workarounds.
 """
 
 import os
@@ -54,46 +75,25 @@ import sys
 import time
 from pathlib import Path
 from datetime import datetime, timezone
+from urllib.parse import urljoin
 
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+from bs4 import BeautifulSoup
 
-# A realistic desktop Chrome user agent and viewport.
-#
-# Update (2026-10-01): the previous version of this comment assumed a
-# Cloudflare JS-challenge was the failure mode, and the earlier fix (this
-# user agent + --disable-blink-features=AutomationControlled) was built on
-# that assumption. A real run's Action log instead showed a PLAIN
-# "403 - Forbidden" / "Access to this page is forbidden." page — that is a
-# different signature from a Cloudflare interstitial (which shows
-# "Just a moment..." / "Checking your browser" branding). A bare 403 like
-# this is much more commonly either (a) a WAF/security-plugin rule that
-# blocks requests missing ordinary browser headers (Accept, Accept-Language,
-# a same-site Referer, sec-fetch-*) or that have no prior session/cookie on
-# the site, or (b) an IP/ASN-level block on data-center ranges (GitHub
-# Actions runners all come from well-known cloud ASNs that many WAFs and
-# hosting-provider security plugins block outright, regardless of browser
-# fingerprint). This file now also does a "warm-up" homepage visit (to pick
-# up cookies and a referer chain, in case (a) is the cause) and sends a
-# fuller set of request headers, and it prints the real HTTP status code on
-# every navigation so a repeat failure is easy to tell apart: if the status
-# is still 403 even after these changes, that points at (b) — an IP-level
-# block GitHub Actions cannot work around by itself (see the note in
-# fetch_listing_page below for what to try next in that case).
-USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
-)
+try:
+    from curl_cffi import requests as curl_requests
+except ImportError:  # pragma: no cover - reported plainly in main(), not a silent skip
+    curl_requests = None
 
-EXTRA_HEADERS = {
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Upgrade-Insecure-Requests": "1",
-    "sec-ch-ua": '"Chromium";v="129", "Google Chrome";v="129", "Not=A?Brand";v="99"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
-}
+# curl_cffi's "impersonate" setting reproduces a real Chrome release's
+# TLS/JA3 fingerprint AND a matching header set (User-Agent, sec-ch-ua,
+# Accept, etc.) together, so this file does not set its own User-Agent or
+# sec-ch-ua headers separately — a hand-set header that doesn't match the
+# TLS fingerprint's real Chrome version is itself a known detection signal,
+# the opposite of what a spoofed header set is supposed to achieve.
+IMPERSONATE = os.environ.get("REPORTERJOBS_IMPERSONATE", "chrome124")
 
 BASE_URL = "https://www.ethiopianreporterjobs.com"
 # Verified live (2026-10-01) by loading the site in a real browser and
@@ -113,6 +113,7 @@ STOP_AFTER_CONSECUTIVE_SEEN = int(os.environ.get("REPORTERJOBS_STOP_AFTER_SEEN",
 LIST_REQUEST_DELAY_SECONDS = float(os.environ.get("REPORTERJOBS_LIST_DELAY", "1.5"))
 DETAIL_REQUEST_DELAY_SECONDS = float(os.environ.get("REPORTERJOBS_DETAIL_DELAY", "1.5"))
 MAX_NEW_DETAIL_FETCHES_PER_RUN = int(os.environ.get("REPORTERJOBS_MAX_NEW_PER_RUN", "300"))
+REQUEST_TIMEOUT_SECONDS = 30
 
 OUTPUT_XLSX = os.environ.get("REPORTERJOBS_OUTPUT_XLSX", "reporterjobs_tracker.xlsx")
 
@@ -134,6 +135,8 @@ EDUCATION_PATTERNS = [
     (re.compile(r"\bdiploma\b", re.I), "Diploma"),
     (re.compile(r"\bcertificate\b", re.I), "Certificate"),
 ]
+
+_JOB_HREF_RE = re.compile(r"/jobs/\d+/?$")
 
 
 class ListingPageBlocked(Exception):
@@ -177,7 +180,14 @@ def parse_listing_card(href, raw_text):
     had this backwards — it treated the lines BEFORE "ago" as category
     and the lines AFTER it as employer/location, when it's the other way
     around — so every field it filled in was being assigned from the
-    wrong line. This version matches the real layout directly."""
+    wrong line. This version matches the real layout directly.
+
+    BeautifulSoup's get_text(separator="\\n", strip=True) (used by
+    fetch_listing_page below) produces the same line-per-visible-text-node
+    shape this parser was built against, since it was captured from the
+    real, server-rendered markup rather than from anything JavaScript
+    assembled at runtime — so no change was needed here when the fetch
+    layer switched from a real browser's innerText to BeautifulSoup."""
     lines = [ln.strip() for ln in raw_text.split("\n") if ln.strip()]
     job_id = _job_id_from_href(href)
     source_url = href if href.startswith("http") else BASE_URL + href
@@ -325,96 +335,81 @@ def structure_job(listing_fields, detail_fields):
 
 
 # --------------------------------------------------------------------------
-# Browser-driven fetch (Playwright — requires real internet access)
+# Plain-HTTP fetch via curl_cffi (TLS-fingerprint impersonation, no
+# browser, no CDP — see this file's module docstring for why) + direct
+# HTML parsing via BeautifulSoup (no JavaScript execution at all, since
+# this site's listing and detail pages are server-rendered).
 # --------------------------------------------------------------------------
 
-def fetch_listing_page(page, page_num):
+def _extract_cards(html, base_url):
+    """Finds every anchor whose href matches /jobs/<id>/, dedups by URL,
+    and for each one returns {href, text} where text is the visible text
+    of its closest li/article/div ancestor — the same shape (and, for
+    server-rendered HTML, very nearly the same text) that the earlier
+    Playwright-based version produced via closest('li, article, div') +
+    .innerText, so parse_listing_card needed no changes."""
+    soup = BeautifulSoup(html, "html.parser")
+    seen = set()
+    cards = []
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if not _JOB_HREF_RE.search(href):
+            continue
+        full_href = urljoin(base_url, href)
+        if full_href in seen:
+            continue
+        seen.add(full_href)
+        container = a.find_parent(["li", "article", "div"]) or a
+        text = container.get_text(separator="\n", strip=True)
+        cards.append({"href": full_href, "text": text})
+    return cards
+
+
+def fetch_listing_page(session, page_num):
     url = LIST_URL_FIRST_PAGE if page_num == 1 else LIST_URL_TEMPLATE.format(page=page_num)
-    prev_url = BASE_URL if page_num == 1 else (
+    referer = BASE_URL if page_num == 1 else (
         LIST_URL_FIRST_PAGE if page_num == 2 else LIST_URL_TEMPLATE.format(page=page_num - 1)
     )
-    response = page.goto(
-        url, wait_until="domcontentloaded", timeout=45000,
-        referer=prev_url,
-    )
-    status = response.status if response else None
+    resp = session.get(url, headers={"Referer": referer}, timeout=REQUEST_TIMEOUT_SECONDS)
+    status = resp.status_code
 
     # An explicit HTTP error status (confirmed live on 2026-10-01: a bare
     # 403 from this site) is never a legitimate "no more postings" signal
-    # on ANY page, so it always raises rather than falling through to the
-    # selector-timeout handling below. Likewise no response object at all
-    # (status is None) means the request itself never completed.
+    # on ANY page, so it always raises rather than being read as an empty
+    # listing.
     if status is None or status >= 400:
-        raise ListingPageBlocked(page_num, status, "request returned no response, or an HTTP error status")
+        raise ListingPageBlocked(page_num, status, "request returned an HTTP error status")
 
-    try:
-        page.wait_for_selector('a[href*="/jobs/"]', timeout=20000)
-    except Exception:
-        # Print the HTTP status code plus the page title/body snippet so a
-        # real failure is diagnosable from the Action log instead of a bare
-        # "no cards found". A status of 403 here that PERSISTS even with
-        # the warm-up visit + fuller headers (see main()) most likely means
-        # an IP/ASN-level block on GitHub Actions' data-center IP ranges —
-        # fingerprint/header tweaks from the runner itself cannot work
-        # around that. If this keeps happening, the next thing to try is
-        # routing this one pipeline's requests through a proxy/VPN with a
-        # residential or non-data-center exit IP, or running just this
-        # script from a machine that isn't on a cloud ASN.
-        try:
-            title = page.title()
-            snippet = page.inner_text("body")[:300].replace("\n", " ")
-        except Exception:
-            title, snippet = "(could not read page)", ""
+    cards = _extract_cards(resp.text, url)
+
+    if not cards and page_num == 1:
+        # Zero job links on the very first listing page, with an
+        # otherwise-OK HTTP status, almost never means "zero active
+        # postings" on a board that normally runs 1,000+ of them — it
+        # means something is wrong (a soft block that still returns 200,
+        # or a layout/markup change this parser no longer matches).
+        # Treating this as "reached the end" would silently produce an
+        # empty tracker that looks identical to a genuinely quiet day.
+        snippet = resp.text[:300].replace("\n", " ")
         print(f"    [diagnostic] HTTP status: {status!r}")
-        print(f"    [diagnostic] page title: {title!r}")
         print(f"    [diagnostic] body snippet: {snippet!r}")
-        if page_num == 1:
-            # No job links on the very first listing page, with an
-            # otherwise-OK HTTP status, almost never means "zero active
-            # postings" on a board that normally runs 1,000+ of them — it
-            # means something is wrong (a soft block that still returns
-            # 200, a layout change, a JS challenge). Treating this as
-            # "reached the end" would silently produce an empty tracker
-            # that looks identical to a genuinely quiet day. Page 1 is the
-            # one place this pipeline can be confident enough to say so.
-            raise ListingPageBlocked(
-                page_num, status,
-                f"no job links found on the first listing page (title={title!r}); "
-                "treated as a failure, not an empty listing",
-            )
-        return []
-    page.wait_for_timeout(600)
+        raise ListingPageBlocked(
+            page_num, status,
+            "no job links found on the first listing page; treated as a failure, not an empty listing",
+        )
 
-    raw_cards = page.evaluate(
-        """
-        () => {
-          const anchors = Array.from(document.querySelectorAll('a')).filter(a => {
-            const h = a.getAttribute('href') || '';
-            return /\\/jobs\\/\\d+\\/?$/.test(h);
-          });
-          const seen = new Set();
-          const cards = [];
-          for (const a of anchors) {
-            const href = a.href;
-            if (seen.has(href)) continue;
-            seen.add(href);
-            const container = a.closest('li, article, div') || a.parentElement;
-            cards.push({href, text: container ? container.innerText : a.innerText});
-          }
-          return cards;
-        }
-        """
-    )
-    return raw_cards
+    return cards
 
 
-def fetch_detail_page(page, url, referer=None):
-    response = page.goto(url, wait_until="domcontentloaded", timeout=45000, referer=referer)
-    status = response.status if response else None
-    if status and status >= 400:
-        print(f"    [diagnostic] detail page HTTP status: {status!r} for {url}")
-    page.wait_for_timeout(500)
-    return page.inner_text("body")
+def fetch_detail_page(session, url, referer=None):
+    headers = {"Referer": referer} if referer else {}
+    resp = session.get(url, headers=headers, timeout=REQUEST_TIMEOUT_SECONDS)
+    if resp.status_code and resp.status_code >= 400:
+        print(f"    [diagnostic] detail page HTTP status: {resp.status_code!r} for {url}")
+        raise RuntimeError(f"HTTP {resp.status_code} fetching {url}")
+    soup = BeautifulSoup(resp.text, "html.parser")
+    body = soup.body or soup
+    return body.get_text(separator="\n", strip=True)
 
 
 # --------------------------------------------------------------------------
@@ -486,10 +481,8 @@ def append_rows(path: Path, rows):
 # --------------------------------------------------------------------------
 
 def main():
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print("Playwright is not installed. Run: pip install -r requirements.txt && playwright install chromium")
+    if curl_requests is None:
+        print("curl_cffi is not installed. Run: pip install -r requirements.txt")
         sys.exit(1)
 
     output_path = Path(OUTPUT_XLSX)
@@ -499,100 +492,84 @@ def main():
     new_listing_fields = []
     consecutive_seen = 0
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            args=["--disable-blink-features=AutomationControlled"],
-        )
-        context = browser.new_context(
-            user_agent=USER_AGENT,
-            viewport={"width": 1366, "height": 900},
-            locale="en-US",
-            extra_http_headers=EXTRA_HEADERS,
-        )
-        list_page = context.new_page()
+    session = curl_requests.Session(impersonate=IMPERSONATE)
 
-        # Warm-up visit: load the homepage first, like a real visitor would,
-        # before going straight to a deep listing URL. This picks up any
-        # cookies/session the site's WordPress stack sets on first contact,
-        # in case the 403 is coming from a WAF rule keyed on "no prior
-        # session" rather than (or in addition to) an IP-level block.
+    # Warm-up visit: load the homepage first, like a real visitor would,
+    # before going straight to a deep listing URL. This picks up any
+    # cookies/session the site's WordPress stack sets on first contact
+    # (the Session object keeps cookies across requests automatically),
+    # and is cheap diagnostic signal on its own: if THIS already comes
+    # back as an error status, the block is happening before any listing
+    # logic is even involved.
+    try:
+        warm_resp = session.get(BASE_URL, timeout=REQUEST_TIMEOUT_SECONDS)
+        print(f"  Warm-up homepage visit: HTTP status {warm_resp.status_code}")
+    except Exception as e:
+        print(f"  Warm-up homepage visit failed ({e}) — continuing anyway.")
+
+    for page_num in range(1, MAX_PAGES + 1):
         try:
-            warm_response = list_page.goto(BASE_URL, wait_until="domcontentloaded", timeout=45000)
-            print(f"  Warm-up homepage visit: HTTP status {warm_response.status if warm_response else '(none)'}")
-            list_page.wait_for_timeout(800)
+            cards = fetch_listing_page(session, page_num)
+        except ListingPageBlocked as e:
+            print(f"  Page {page_num}: BLOCKED/FAILED ({e}) — aborting this run without writing "
+                  f"anything, rather than committing a tracker that would look like a legitimate "
+                  f"'zero new postings' day.")
+            sys.exit(1)
         except Exception as e:
-            print(f"  Warm-up homepage visit failed ({e}) — continuing anyway.")
-
-        for page_num in range(1, MAX_PAGES + 1):
-            try:
-                cards = fetch_listing_page(list_page, page_num)
-            except ListingPageBlocked as e:
-                print(f"  Page {page_num}: BLOCKED/FAILED ({e}) — aborting this run without writing "
-                      f"anything, rather than committing a tracker that would look like a legitimate "
-                      f"'zero new postings' day.")
-                browser.close()
+            if page_num == 1:
+                # The very first page failing to even load (a connection
+                # error, a timeout) is the same "can't trust this run"
+                # situation as ListingPageBlocked above, just from a
+                # different kind of exception — so it gets the same
+                # hard-abort treatment rather than silently producing an
+                # empty-looking result.
+                print(f"  Page {page_num}: failed to load ({e}) — aborting this run without writing "
+                      f"anything (see reporterjobs_pipeline.py's module docstring/ListingPageBlocked "
+                      f"for why page 1 is treated this strictly).")
                 sys.exit(1)
-            except Exception as e:
-                if page_num == 1:
-                    # The very first page failing to even load (a navigation
-                    # timeout, a crashed request) is the same "can't trust
-                    # this run" situation as ListingPageBlocked above, just
-                    # from a different kind of exception — so it gets the
-                    # same hard-abort treatment rather than silently
-                    # producing an empty-looking result.
-                    print(f"  Page {page_num}: failed to load ({e}) — aborting this run without writing "
-                          f"anything (see reporterjobs_pipeline.py's module docstring/ListingPageBlocked "
-                          f"for why page 1 is treated this strictly).")
-                    browser.close()
-                    sys.exit(1)
-                print(f"  Page {page_num}: failed to load ({e}) — stopping pagination.")
-                break
+            print(f"  Page {page_num}: failed to load ({e}) — stopping pagination.")
+            break
 
-            if not cards:
-                print(f"  Page {page_num}: no cards found — reached the end.")
-                break
+        if not cards:
+            print(f"  Page {page_num}: no cards found — reached the end.")
+            break
 
-            page_new = 0
-            for c in cards:
-                fields = parse_listing_card(c["href"], c["text"])
-                if fields["job_id"] in existing_ids:
-                    consecutive_seen += 1
-                else:
-                    consecutive_seen = 0
-                    new_listing_fields.append(fields)
-                    page_new += 1
+        page_new = 0
+        for c in cards:
+            fields = parse_listing_card(c["href"], c["text"])
+            if fields["job_id"] in existing_ids:
+                consecutive_seen += 1
+            else:
+                consecutive_seen = 0
+                new_listing_fields.append(fields)
+                page_new += 1
 
-            print(f"  Page {page_num}: {len(cards)} cards, {page_new} new, "
-                  f"{consecutive_seen} consecutive already-seen.")
+        print(f"  Page {page_num}: {len(cards)} cards, {page_new} new, "
+              f"{consecutive_seen} consecutive already-seen.")
 
-            if consecutive_seen >= STOP_AFTER_CONSECUTIVE_SEEN:
-                print(f"  Hit {STOP_AFTER_CONSECUTIVE_SEEN} consecutive already-seen postings — "
-                      f"caught up, stopping pagination.")
-                break
-            time.sleep(LIST_REQUEST_DELAY_SECONDS)
+        if consecutive_seen >= STOP_AFTER_CONSECUTIVE_SEEN:
+            print(f"  Hit {STOP_AFTER_CONSECUTIVE_SEEN} consecutive already-seen postings — "
+                  f"caught up, stopping pagination.")
+            break
+        time.sleep(LIST_REQUEST_DELAY_SECONDS)
 
-        list_page.close()
+    if len(new_listing_fields) > MAX_NEW_DETAIL_FETCHES_PER_RUN:
+        print(f"  {len(new_listing_fields)} new postings found, capping detail fetches at "
+              f"{MAX_NEW_DETAIL_FETCHES_PER_RUN} for this run.")
+        to_fetch = new_listing_fields[:MAX_NEW_DETAIL_FETCHES_PER_RUN]
+    else:
+        to_fetch = new_listing_fields
 
-        if len(new_listing_fields) > MAX_NEW_DETAIL_FETCHES_PER_RUN:
-            print(f"  {len(new_listing_fields)} new postings found, capping detail fetches at "
-                  f"{MAX_NEW_DETAIL_FETCHES_PER_RUN} for this run.")
-            to_fetch = new_listing_fields[:MAX_NEW_DETAIL_FETCHES_PER_RUN]
-        else:
-            to_fetch = new_listing_fields
-
-        detail_page = context.new_page()
-        rows = []
-        for fields in to_fetch:
-            try:
-                raw = fetch_detail_page(detail_page, fields["source_url"], referer=LIST_URL_FIRST_PAGE)
-                detail_fields = parse_detail_text(raw)
-            except Exception as e:
-                print(f"  Detail fetch failed for {fields['source_url']}: {e}")
-                detail_fields = None
-            rows.append(structure_job(fields, detail_fields))
-            time.sleep(DETAIL_REQUEST_DELAY_SECONDS)
-
-        browser.close()
+    rows = []
+    for fields in to_fetch:
+        try:
+            raw = fetch_detail_page(session, fields["source_url"], referer=LIST_URL_FIRST_PAGE)
+            detail_fields = parse_detail_text(raw)
+        except Exception as e:
+            print(f"  Detail fetch failed for {fields['source_url']}: {e}")
+            detail_fields = None
+        rows.append(structure_job(fields, detail_fields))
+        time.sleep(DETAIL_REQUEST_DELAY_SECONDS)
 
     if rows:
         append_rows(output_path, rows)
