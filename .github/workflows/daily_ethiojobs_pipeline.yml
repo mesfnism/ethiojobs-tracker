@@ -32,35 +32,71 @@ jobs:
       - name: Install Playwright's Chromium
         run: playwright install --with-deps chromium
 
+      # continue-on-error: true on every per-source step below (added
+      # 2026-10-02): reporterjobs_pipeline.py and palmjobs_pipeline.py now
+      # correctly exit(1) on a real failure instead of silently writing an
+      # empty-looking tracker — but GitHub Actions' default behavior is to
+      # stop the whole job at the first failed step, which would mean ONE
+      # blocked source (ReporterJobs, currently) takes down all 11 other
+      # sources, the combine step, the dashboard rebuild, and the reports
+      # with it, every single day. continue-on-error lets each source fail
+      # independently without blocking its neighbors; the step still shows
+      # as failed in the Actions UI (a yellow warning triangle) so it's not
+      # silently swallowed, and source_health.py's reliability scorecard
+      # plus the intelligence report's own data-quality section are the
+      # real, honest record of which sources are and aren't working — not
+      # the job's overall green/red status.
       - name: Run EthioJobs pipeline
+        continue-on-error: true
         run: python ethiojobs_pipeline.py
 
       - name: Run HaHuJobs pipeline
+        continue-on-error: true
         run: python hahujobs_pipeline.py
 
       - name: Run Ethiopian Reporter Jobs pipeline
+        continue-on-error: true
         run: python reporterjobs_pipeline.py
 
       - name: Run PalmJobs pipeline
+        continue-on-error: true
         run: python palmjobs_pipeline.py
 
       - name: Run DevNetJobs pipeline (Ethiopia-filtered)
+        continue-on-error: true
         run: python devnetjobs_pipeline.py
 
       - name: Run HarmeeJobs pipeline
+        continue-on-error: true
         run: python harmeejobs_pipeline.py
 
       - name: Run ElelanaJobs pipeline
+        continue-on-error: true
         run: python elelanajobs_pipeline.py
 
       - name: Run KebenaJobs pipeline
+        continue-on-error: true
         run: python kebenajobs_pipeline.py
 
       - name: Run Afriworket pipeline
+        continue-on-error: true
         run: python afriworket_pipeline.py
 
       - name: Run GeezJobs pipeline
+        continue-on-error: true
         run: python geezjobs_pipeline.py
+
+      - name: Run ReliefWeb pipeline (Ethiopia-filtered, via the ReliefWeb API)
+        continue-on-error: true
+        env:
+          RELIEFWEB_APPNAME: ${{ secrets.RELIEFWEB_APPNAME }}
+        run: python reliefweb_pipeline.py
+
+      # No automated step for X runs here. x_jobs_tracker.xlsx is built by
+      # x_grok_pipeline.py, run manually whenever a new Grok search is done
+      # (see that script's docstring), and committed to the repo by hand.
+      # This workflow still picks up whatever is already checked in when it
+      # combines trackers below, it just never regenerates that one itself.
 
       - name: Combine trackers and dedup cross-posted vacancies
         run: python combine_trackers.py
@@ -78,6 +114,6 @@ jobs:
         run: |
           git config user.name "jobs-pipeline-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx elelanajobs_tracker.xlsx kebenajobs_tracker.xlsx afriworket_tracker.xlsx geezjobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json docs/data/source_health.json docs/data/report_history.json docs/reports/weekly-intelligence-report.html docs/reports/monthly-intelligence-report.html docs/reports/weekly-intelligence-report.pdf docs/reports/monthly-intelligence-report.pdf
+          git add ethiojobs_tracker.xlsx hahujobs_tracker.xlsx reporterjobs_tracker.xlsx palmjobs_tracker.xlsx devnetjobs_tracker.xlsx harmeejobs_tracker.xlsx elelanajobs_tracker.xlsx kebenajobs_tracker.xlsx afriworket_tracker.xlsx geezjobs_tracker.xlsx reliefweb_tracker.xlsx x_jobs_tracker.xlsx combined_tracker.xlsx docs/data/rollups.json docs/data/source_health.json docs/data/report_history.json docs/reports/weekly-intelligence-report.html docs/reports/monthly-intelligence-report.html docs/reports/weekly-intelligence-report.pdf docs/reports/monthly-intelligence-report.pdf
           git diff --quiet --cached || git commit -m "Daily jobs update $(date -u +%Y-%m-%d)"
           git push
