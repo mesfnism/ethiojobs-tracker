@@ -1,6 +1,6 @@
 playwright>=1.40
 openpyxl>=3.1
 requests>=2.31  # used by reliefweb_pipeline.py (a plain JSON API call, no browser needed)
-curl_cffi>=0.7  # used by reporterjobs_pipeline.py (TLS-fingerprint-impersonating HTTP, no browser — see that file's docstring)
-beautifulsoup4>=4.12  # used by reporterjobs_pipeline.py to parse the plain HTML curl_cffi fetches
+curl_cffi>=0.7  # used by reporterjobs_pipeline.py and palmjobs_pipeline.py (TLS-fingerprint-impersonating HTTP, no browser — see their docstrings)
+beautifulsoup4>=4.12  # used by reporterjobs_pipeline.py and palmjobs_pipeline.py to parse the plain HTML curl_cffi fetches
 anthropic>=0.40  # optional — not used by default; only relevant if you add LLM enrichment later

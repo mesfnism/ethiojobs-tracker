@@ -8,61 +8,57 @@ clean structured fields most other sites only state in free text:
 min/max salary with currency (ETB or USD), education level, field of
 study, required skills (as an actual list), experience level, and more.
 
-How this gets the data, and why: loading the /jobs page triggers the
-site's own front end to fetch ONE job's detail from
-`<project>.supabase.co/rest/v1/jobs` — the exact same public endpoint
-used for every job. This pipeline opens that page, captures the request
-headers the site's own code used for that one call (the public anon key,
-same as any visitor's browser sends), and reuses those headers to page
-through the SAME table itself, in the SAME shape, via Playwright's
-request context — not a different, non-public API, not a different
-request shape, not a bypassed protection of any kind. It never touches
-account-scoped tables (candidates, resumes, notifications, user_*) —
-only the public `jobs` and `companies_public` tables the site already
-shows every anonymous visitor.
+How this gets the data, and why: `<project>.supabase.co/rest/v1/jobs` is
+the exact same public endpoint the site's own front end uses to render
+every job, with the public anon key every visitor's browser already
+downloads as part of the page's JS bundle. This pipeline fetches the
+/jobs page's HTML, finds that anon key by reading the same JS bundle
+(see discover_api_credentials below), and reuses it to page through the
+SAME table itself, in the SAME shape — not a different, non-public API,
+not a different request shape, not a bypassed protection of any kind. It
+never touches account-scoped tables (candidates, resumes, notifications,
+user_*) — only the public `jobs` and `companies_public` tables the site
+already shows every anonymous visitor. (This used to run through a real
+Playwright browser instead of plain HTTP; see the 2026-10-02 updates
+below for why that was dropped.)
 
 Job IDs come directly from the API's own `id` field (a real UUID), so
 dedup across runs is exact — no derived/hashed identifier needed, unlike
 sites where only scraped text is available.
 
-Update (2026-10-02): a real run on GitHub Actions reported "Could not
-find API credentials by either method," while the exact same code,
-run locally minutes later, found them immediately. Checked live: the
-site's JS bundle structure hadn't changed at all — a real browser finds
-the anon key on the first try. This is the same pattern already
-confirmed for reporterjobs_pipeline.py: some sites' hosting (this one is
-a Next.js app, commonly hosted on Vercel, which offers its own bot/attack
-protection) can detect and block Chrome-DevTools-Protocol-driven
-automation specifically — independent of IP, headless-or-not, or request
-headers — so Playwright's in-page fetch() calls for the JS chunks can
-come back empty on a cloud runner while working fine from an ordinary
-connection. Unlike ReporterJobs, this file still uses Playwright (its
-actual data fetch is a plain authenticated REST call via Playwright's
-APIRequestContext, not browser-rendered scraping, so there was reason to
-hope it would fare differently) — if GitHub Actions runs keep failing
-here while local runs keep succeeding, the same curl_cffi-style rewrite
-done for ReporterJobs is the next thing to try.
+Update (2026-10-02, part 1): a real run on GitHub Actions reported "Could
+not find API credentials by either method," while the exact same code,
+run locally minutes later, found them immediately — confirming the same
+automated-browser-detection pattern already found for reporterjobs_pipeline.py
+(see that file's docstring). That same local run also surfaced two
+further, unrelated, genuine bugs, both fixed in the same pass: (a) main()
+captured `page.context.request` then called `page.close()` on a page
+created via `browser.new_page()`, whose IMPLICIT context is tied 1:1 to
+that page — closing the page tore down the context the APIRequestContext
+depended on, breaking every subsequent call with "Target page, context or
+browser has been closed"; and (b) a captured live request's FULL header
+set was being reused verbatim for a different query than the one it was
+captured from, which broke pagination with PostgREST's PGRST116 error
+("Cannot coerce the result to a single JSON object") whenever the
+captured request happened to be a different (singular-result) query than
+our own list query.
 
-That same local run also surfaced a second, unrelated, genuine bug: a
-Playwright API misuse, not a site-blocking issue. main() captured
-`page.context.request` and then called `page.close()` — but `page` was
-created via `browser.new_page()`, which implicitly creates its own
-BrowserContext tied 1:1 to that page; closing the page closes that
-implicit context too, which invalidates the APIRequestContext derived
-from it. Every subsequent `request_context.get()` call then failed with
-"Target page, context or browser has been closed." Fixed by creating an
-explicit `browser.new_context()` first, so the context's lifetime isn't
-tied to the single page closed early to free the renderer.
-
-Also fixed in the same pass: main() previously treated "could not find
-API credentials" and "the very first page fetch failed" the same way it
-would treat a legitimate empty result — printing a message and still
-calling append_rows(path, []), which both creates/updates the workbook
-and logs a 0-new-postings run. That is the exact same silent-failure
-pattern identified and fixed in reporterjobs_pipeline.py: a scraping
-failure should never produce a tracker/log entry that looks identical to
-a genuinely quiet day. Both of those cases now exit(1) without writing
-anything at all.
+Update (2026-10-02, part 2): a second GitHub Actions run, after fixing
+both of those bugs, STILL failed with "Could not find API credentials,"
+while a local run with the identical code succeeded and pulled 468
+postings cleanly. That confirms this is the same automation-fingerprint
+blocking as ReporterJobs, not a flaky one-off — so this file now drops
+Playwright entirely, the same fix applied there: curl_cffi (TLS-fingerprint
+-impersonating plain HTTP, no browser, no CDP) fetches the /jobs page's
+HTML and its JS chunks to find the anon key, and also fetches the
+paginated REST API data itself — which was always a plain authenticated
+REST call, never something that actually needed a real browser. The
+capture_api_headers() "intercept a live request" method is dropped along
+with it: that only ever worked by watching a real client-side JS XHR
+fire, which has no equivalent when nothing executes any JavaScript at
+all; discover_api_credentials() (reading the public anon key straight out
+of the JS bundle text) was always the dominant, more reliable path
+anyway, so nothing of real value is lost.
 """
 
 import os
@@ -75,9 +71,21 @@ from datetime import datetime, timezone
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+from bs4 import BeautifulSoup
+
+try:
+    from curl_cffi import requests as curl_requests
+except ImportError:
+    curl_requests = None
+
+# TLS-fingerprint to impersonate (see this file's 2026-10-02 part-2 docstring
+# note) — "chrome124" matches reporterjobs_pipeline.py's own default, kept
+# overridable via env var the same way, in case one site's WAF ever reacts
+# differently to a particular Chrome version's fingerprint than the other's.
+IMPERSONATE = os.environ.get("PALMJOBS_IMPERSONATE", "chrome124")
 
 LIST_PAGE_URL = "https://palmjobs.et/jobs"
-SUPABASE_JOBS_PATH_MARKER = "/rest/v1/jobs"
+_CHUNK_SRC_RE = re.compile(r"/_next/static/chunks/")
 
 PAGE_SIZE = int(os.environ.get("PALMJOBS_PAGE_SIZE", "50"))
 MAX_PAGES = int(os.environ.get("PALMJOBS_MAX_PAGES", "40"))
@@ -179,117 +187,80 @@ def structure_job(row):
 
 
 # --------------------------------------------------------------------------
-# Browser-driven fetch: capture real request headers, then page the table
+# Plain-HTTP (curl_cffi) credential discovery and paginated data fetch
 # --------------------------------------------------------------------------
-
-def _filter_identifying_headers(raw_headers):
-    """Keeps only the two headers that identify a request as using this
-    site's own public anon key (apikey, Authorization) and drops
-    everything else — in particular any Accept/Prefer/Range header, which
-    belongs to the specific query the ORIGINAL captured request happened
-    to be making and must not be reused for a different query of our own
-    (see capture_api_headers' 2026-10-02 docstring note for the PGRST116
-    bug this caused). Case-insensitive, since header casing isn't
-    guaranteed; returns {} (not None) when neither is present, so callers
-    can treat "no useful headers found" uniformly rather than branching on
-    None vs {}."""
-    lower = {k.lower(): v for k, v in raw_headers.items()}
-    headers = {}
-    if "apikey" in lower:
-        headers["apikey"] = lower["apikey"]
-    if "authorization" in lower:
-        headers["Authorization"] = lower["authorization"]
-    return headers
-
-
-def capture_api_headers(page):
-    """Loads the /jobs page and captures the identifying headers (apikey +
-    Authorization only — see below) from the site's own first call to the
-    public jobs table. Returns (None, None) if no such call is seen within
-    the timeout.
-
-    As of the previous update, the site usually renders the first page of
-    jobs server-side and this request is never seen, so discover_api_credentials
-    below is the usual credential source — this is kept as a cheap first
-    attempt for whenever the site does still make this call client-side
-    (confirmed live on 2026-10-02 that it sometimes still does).
-
-    Update (2026-10-02): a real run captured a live request successfully
-    this way, but the resulting headers broke every subsequent paginated
-    call with PostgREST's PGRST116 ("Cannot coerce the result to a single
-    JSON object"). The cause: this used to return the FULL captured header
-    dict verbatim, and whatever page request happened to be captured
-    first might not be a plain list query — e.g. a "featured job" or
-    "latest job" widget using Supabase's `.single()`, which sets
-    `Accept: application/vnd.pgrst.object+json`. Reusing THAT Accept
-    header for our own 50-row paginated query is what produced "you asked
-    for one object, I have 50 rows." Fixed by keeping only the two headers
-    that actually identify the request as coming from this site's own
-    public anon key (apikey, Authorization) — the same minimal set
-    discover_api_credentials already builds by design — and letting
-    fetch_jobs_page set its own explicit Accept header for a list query,
-    rather than trusting whatever Accept/Prefer/Range headers happened to
-    belong to the specific request that got captured."""
-    captured = {}
-
-    def on_request(request):
-        if SUPABASE_JOBS_PATH_MARKER in request.url and "headers" not in captured:
-            captured["headers"] = _filter_identifying_headers(dict(request.headers))
-            captured["base_url"] = request.url.split("/rest/v1/jobs")[0] + "/rest/v1/jobs"
-
-    page.on("request", on_request)
-    page.goto(LIST_PAGE_URL, wait_until="domcontentloaded", timeout=45000)
-    page.wait_for_timeout(4000)
-    page.remove_listener("request", on_request)
-    return captured.get("headers"), captured.get("base_url")
-
 
 _ANON_KEY_PATTERN = r"eyJ[a-zA-Z0-9_\-\.]{60,}"
 _SUPABASE_URL_PATTERN = r"https://[a-z0-9]+\.supabase\.co"
 
 
-def discover_api_credentials(page):
+def _chunk_script_urls(html, base_url):
+    """Finds every /_next/static/chunks/ script src on the page, resolved
+    to an absolute URL. The chunk file that happens to hold the anon key
+    is content-hashed and changes on every deployment, so this doesn't
+    guess a filename — it returns every candidate chunk and
+    discover_api_credentials below checks them all."""
+    soup = BeautifulSoup(html, "html.parser")
+    urls = []
+    for tag in soup.find_all("script", src=True):
+        src = tag["src"]
+        if not _CHUNK_SRC_RE.search(src):
+            continue
+        if src.startswith("http"):
+            urls.append(src)
+        elif src.startswith("/"):
+            urls.append("https://palmjobs.et" + src)
+        else:
+            urls.append(base_url.rstrip("/") + "/" + src)
+    return urls
+
+
+def discover_api_credentials(session):
     """Finds the site's own public Supabase anon key and project URL by
     reading its already-loaded JS bundle — the same public key and URL
     every visitor's browser already downloads just to render the page,
-    not a different or bypassed credential. The site stopped calling
-    /rest/v1/jobs directly from the browser (see capture_api_headers), so
-    this reads the same information a live network capture used to get,
-    straight from the client code instead.
+    not a different or bypassed credential.
 
-    The chunk file that happens to hold them is content-hashed and
-    changes on every deployment, so this doesn't guess a filename: it
-    fetches every loaded /_next/static/chunks/ script in parallel, from
-    inside the page, and keeps the first key and URL pattern it finds."""
-    result = page.evaluate(
-        """
-        async () => {
-          const urls = Array.from(document.querySelectorAll('script[src]'))
-            .map(s => s.src)
-            .filter(s => s.includes('/_next/static/chunks/'));
-          const texts = await Promise.all(urls.map(async (u) => {
-            try {
-              const r = await fetch(u);
-              return await r.text();
-            } catch (e) { return ''; }
-          }));
-          let anonKey = null, supaUrl = null;
-          for (const t of texts) {
-            if (!anonKey) {
-              const m = t.match(/eyJ[a-zA-Z0-9_\\-\\.]{60,}/);
-              if (m) anonKey = m[0];
-            }
-            if (!supaUrl) {
-              const m2 = t.match(/https:\\/\\/[a-z0-9]+\\.supabase\\.co/);
-              if (m2) supaUrl = m2[0];
-            }
-            if (anonKey && supaUrl) break;
-          }
-          return {anonKey, supaUrl};
-        }
-        """
-    )
-    anon_key, supa_url = result.get("anonKey"), result.get("supaUrl")
+    Update (2026-10-02, part 2): this used to run inside a real Playwright
+    page via page.evaluate(), fetching each chunk with the browser's own
+    fetch(). Rewritten here to do the exact same two steps as plain HTTP
+    through curl_cffi instead: GET the /jobs page's HTML, find its chunk
+    script tags with BeautifulSoup, then GET each chunk directly — no
+    browser, no CDP, nothing for automation-fingerprint detection to catch.
+    capture_api_headers() (watching for a live client-side XHR to
+    /rest/v1/jobs) is dropped entirely along with Playwright: there is no
+    JS execution here to watch, and that method was already the weaker,
+    fallback path even when a real browser was available."""
+    try:
+        resp = session.get(LIST_PAGE_URL, timeout=30)
+    except Exception as e:
+        print(f"  Could not load {LIST_PAGE_URL}: {e}")
+        return None, None
+    if resp.status_code != 200:
+        print(f"  Unexpected status {resp.status_code} loading {LIST_PAGE_URL}")
+        return None, None
+
+    chunk_urls = _chunk_script_urls(resp.text, LIST_PAGE_URL)
+    anon_key, supa_url = None, None
+    for chunk_url in chunk_urls:
+        try:
+            chunk_resp = session.get(chunk_url, timeout=30)
+        except Exception:
+            continue
+        if chunk_resp.status_code != 200:
+            continue
+        text = chunk_resp.text
+        if not anon_key:
+            m = re.search(_ANON_KEY_PATTERN, text)
+            if m:
+                anon_key = m.group(0)
+        if not supa_url:
+            m2 = re.search(_SUPABASE_URL_PATTERN, text)
+            if m2:
+                supa_url = m2.group(0)
+        if anon_key and supa_url:
+            break
+
     if not anon_key or not supa_url:
         return None, None
     headers = {"apikey": anon_key, "Authorization": f"Bearer {anon_key}"}
@@ -297,20 +268,20 @@ def discover_api_credentials(page):
     return headers, base_url
 
 
-def fetch_jobs_page(request_context, base_url, headers, offset):
+def fetch_jobs_page(session, base_url, headers, offset):
     url = (
         f"{base_url}?select={SELECT_FIELDS}&job_status=eq.Active"
         f"&order=created_at.desc&limit={PAGE_SIZE}&offset={offset}"
     )
     # Explicit Accept: application/json for OUR OWN list query, regardless
     # of what's in `headers` — defense in depth against the 2026-10-02
-    # PGRST116 bug (see capture_api_headers' docstring note): even if some
-    # future credential-discovery path reintroduces a stray singular-object
-    # Accept header, this request's own intent always wins.
+    # PGRST116 bug (a reused Accept header from a different, singular-
+    # result query once broke pagination with "Cannot coerce the result
+    # to a single JSON object"): this request's own intent always wins.
     request_headers = {**headers, "Accept": "application/json"}
-    resp = request_context.get(url, headers=request_headers, timeout=30000)
-    if resp.status != 200:
-        raise RuntimeError(f"Unexpected status {resp.status} fetching jobs page: {resp.text()[:300]}")
+    resp = session.get(url, headers=request_headers, timeout=30)
+    if resp.status_code != 200:
+        raise RuntimeError(f"Unexpected status {resp.status_code} fetching jobs page: {resp.text[:300]}")
     return resp.json()
 
 
@@ -383,10 +354,8 @@ def append_rows(path: Path, rows):
 # --------------------------------------------------------------------------
 
 def main():
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print("Playwright is not installed. Run: pip install -r requirements.txt && playwright install chromium")
+    if curl_requests is None:
+        print("curl_cffi is not installed. Run: pip install -r requirements.txt")
         sys.exit(1)
 
     output_path = Path(OUTPUT_XLSX)
@@ -396,81 +365,65 @@ def main():
     new_rows = []
     consecutive_seen = 0
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        # An EXPLICIT context, not browser.new_page()'s implicit one — see
-        # the 2026-10-02 docstring note. page.close() below must not tear
-        # down the context the APIRequestContext (request_context) depends
-        # on for the rest of this run.
-        context = browser.new_context()
-        page = context.new_page()
+    # Plain TLS-fingerprint-impersonating HTTP, no browser, no CDP — see
+    # this file's 2026-10-02 (part 2) docstring note for why Playwright was
+    # dropped entirely.
+    session = curl_requests.Session(impersonate=IMPERSONATE)
 
-        headers, base_url = capture_api_headers(page)
-        if not headers or not base_url:
-            print("  No live /rest/v1/jobs request seen on page load (the site now "
-                  "renders its first page server-side) — falling back to reading "
-                  "the public anon key straight out of its own JS bundle.")
-            headers, base_url = discover_api_credentials(page)
-        if not headers or not base_url:
-            print("  Could not find API credentials by either method — the site's "
-                  "behavior may have changed, or (see this file's 2026-10-02 "
-                  "docstring note) automated-browser detection may be blocking the "
-                  "in-page fetch() calls that read its JS bundle. Aborting this run "
-                  "without writing anything, rather than committing a tracker that "
-                  "would look like a legitimate 'zero new postings' day.")
-            page.close()
-            browser.close()
-            sys.exit(1)
-        print(f"  Using API base URL: {base_url}")
+    headers, base_url = discover_api_credentials(session)
+    if not headers or not base_url:
+        print("  Could not find API credentials — the site's behavior may "
+              "have changed (a different chunk layout, a renamed anon-key "
+              "pattern), or it may be blocking this request the same way "
+              "ethiopianreporterjobs.com blocks curl_cffi (see that file's "
+              "docstring). Aborting this run without writing anything, "
+              "rather than committing a tracker that would look like a "
+              "legitimate 'zero new postings' day.")
+        sys.exit(1)
+    print(f"  Using API base URL: {base_url}")
 
-        request_context = context.request
-        page.close()
+    for page_num in range(MAX_PAGES):
+        offset = page_num * PAGE_SIZE
+        try:
+            batch = fetch_jobs_page(session, base_url, headers, offset)
+        except Exception as e:
+            if offset == 0:
+                # The very first fetch failing isn't "zero jobs" — it's
+                # "we don't know," the same distinction ReporterJobs'
+                # ListingPageBlocked makes for its own first page.
+                print(f"  Offset 0: fetch failed ({e}) — aborting this run without "
+                      f"writing anything, rather than committing a tracker that "
+                      f"would look like a legitimate 'zero new postings' day.")
+                sys.exit(1)
+            print(f"  Offset {offset}: fetch failed ({e}) — stopping pagination "
+                  f"(keeping the {len(new_rows)} new posting(s) already found).")
+            break
 
-        for page_num in range(MAX_PAGES):
-            offset = page_num * PAGE_SIZE
-            try:
-                batch = fetch_jobs_page(request_context, base_url, headers, offset)
-            except Exception as e:
-                if offset == 0:
-                    # The very first fetch failing isn't "zero jobs" — it's
-                    # "we don't know," the same distinction ReporterJobs'
-                    # ListingPageBlocked makes for its own first page.
-                    print(f"  Offset 0: fetch failed ({e}) — aborting this run without "
-                          f"writing anything, rather than committing a tracker that "
-                          f"would look like a legitimate 'zero new postings' day.")
-                    browser.close()
-                    sys.exit(1)
-                print(f"  Offset {offset}: fetch failed ({e}) — stopping pagination "
-                      f"(keeping the {len(new_rows)} new posting(s) already found).")
-                break
+        if not batch:
+            print(f"  Offset {offset}: no more jobs — reached the end.")
+            break
 
-            if not batch:
-                print(f"  Offset {offset}: no more jobs — reached the end.")
-                break
+        page_new = 0
+        for row in batch:
+            job_id = row.get("id")
+            if job_id in existing_ids:
+                consecutive_seen += 1
+            else:
+                consecutive_seen = 0
+                new_rows.append(structure_job(row))
+                existing_ids.add(job_id)
+                page_new += 1
 
-            page_new = 0
-            for row in batch:
-                job_id = row.get("id")
-                if job_id in existing_ids:
-                    consecutive_seen += 1
-                else:
-                    consecutive_seen = 0
-                    new_rows.append(structure_job(row))
-                    existing_ids.add(job_id)
-                    page_new += 1
+        print(f"  Offset {offset}: {len(batch)} jobs, {page_new} new, "
+              f"{consecutive_seen} consecutive already-seen.")
 
-            print(f"  Offset {offset}: {len(batch)} jobs, {page_new} new, "
-                  f"{consecutive_seen} consecutive already-seen.")
-
-            if consecutive_seen >= STOP_AFTER_CONSECUTIVE_SEEN:
-                print(f"  Hit {STOP_AFTER_CONSECUTIVE_SEEN} consecutive already-seen postings — "
-                      f"caught up, stopping pagination.")
-                break
-            if len(batch) < PAGE_SIZE:
-                break
-            time.sleep(REQUEST_DELAY_SECONDS)
-
-        browser.close()
+        if consecutive_seen >= STOP_AFTER_CONSECUTIVE_SEEN:
+            print(f"  Hit {STOP_AFTER_CONSECUTIVE_SEEN} consecutive already-seen postings — "
+                  f"caught up, stopping pagination.")
+            break
+        if len(batch) < PAGE_SIZE:
+            break
+        time.sleep(REQUEST_DELAY_SECONDS)
 
     if new_rows:
         append_rows(output_path, new_rows)

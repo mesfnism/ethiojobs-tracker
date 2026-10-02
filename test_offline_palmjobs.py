@@ -3,45 +3,55 @@ Offline tests for palmjobs_pipeline.py's data-shaping functions, against
 mock rows shaped exactly like the public Supabase `jobs` table API
 response captured during live reconnaissance (field names, list-typed
 required_skills, numeric min/max salary, etc.). This cannot exercise
-capture_api_headers()/fetch_jobs_page() themselves — those need a live
-network+browser, unavailable in this sandbox — so this test covers the
-pure functions: normalize_education(), build_salary_hint(), and
-structure_job(), which is where any schema-mapping mistake would show up
-first and most cheaply.
+discover_api_credentials()/fetch_jobs_page() against the real network —
+unavailable in this sandbox — so this test covers the pure functions
+(normalize_education(), build_salary_hint(), structure_job()) plus
+fetch_jobs_page() and _chunk_script_urls() against fake curl_cffi-shaped
+responses, which is where any schema-mapping or header mistake would show
+up first and most cheaply.
 """
 
 from palmjobs_pipeline import (
     normalize_education, build_salary_hint, structure_job, COLUMNS,
-    _filter_identifying_headers, fetch_jobs_page,
+    fetch_jobs_page, _chunk_script_urls, discover_api_credentials,
 )
 
 
 class _FakeResponse:
-    def __init__(self, status, json_data=None, text=""):
-        self.status = status
+    """Mimics curl_cffi's Response shape: status_code (not .status) and
+    .text as a plain attribute/property (not a method call like
+    Playwright's APIResponse.text())."""
+
+    def __init__(self, status_code, json_data=None, text=""):
+        self.status_code = status_code
         self._json_data = json_data
-        self._text = text
+        self.text = text
 
     def json(self):
         return self._json_data
 
-    def text(self):
-        return self._text
 
+class _FakeSession:
+    """Captures the last headers/url it was called with and returns
+    responses from a queue, so fetch_jobs_page's Accept-header override
+    and discover_api_credentials' chunk-fetching loop can both be tested
+    without a real curl_cffi session or network access."""
 
-class _FakeRequestContext:
-    """Captures the headers it was called with, so the Accept-header
-    override in fetch_jobs_page can be tested without a real Playwright
-    APIRequestContext or network access."""
-
-    def __init__(self, status=200, json_data=None):
+    def __init__(self, responses_by_url=None, default_status=200, default_json=None):
         self.last_headers = None
-        self._status = status
-        self._json_data = json_data if json_data is not None else []
+        self.last_url = None
+        self.calls = []
+        self._responses_by_url = responses_by_url or {}
+        self._default_status = default_status
+        self._default_json = default_json if default_json is not None else []
 
     def get(self, url, headers=None, timeout=None):
         self.last_headers = headers
-        return _FakeResponse(self._status, json_data=self._json_data)
+        self.last_url = url
+        self.calls.append(url)
+        if url in self._responses_by_url:
+            return self._responses_by_url[url]
+        return _FakeResponse(self._default_status, json_data=self._default_json)
 
 
 def check(name, condition):
@@ -194,44 +204,98 @@ def main():
         sparse_row["how_to_apply"] == "hr@example.org",
     )
 
-    # --- _filter_identifying_headers (the 2026-10-02 PGRST116 fix) --------
-    full_captured = {
-        "apikey": "anon-key-abc",
-        "Authorization": "Bearer anon-key-abc",
-        "Accept": "application/vnd.pgrst.object+json",  # the actual culprit header
-        "Range": "0-0",
-        "User-Agent": "Mozilla/5.0 ...",
-        "Referer": "https://palmjobs.et/jobs",
-    }
-    filtered = _filter_identifying_headers(full_captured)
-    all_ok &= check("header filter: keeps apikey", filtered.get("apikey") == "anon-key-abc")
-    all_ok &= check("header filter: keeps Authorization", filtered.get("Authorization") == "Bearer anon-key-abc")
-    all_ok &= check("header filter: drops the singular-object Accept header",
-                     "Accept" not in filtered and "accept" not in filtered)
-    all_ok &= check("header filter: drops Range/User-Agent/Referer", len(filtered) == 2)
-
-    # Case-insensitive input (real headers dicts aren't guaranteed casing).
-    lowercase_captured = {"apikey": "k", "authorization": "Bearer k", "accept": "application/vnd.pgrst.object+json"}
-    filtered_lower = _filter_identifying_headers(lowercase_captured)
-    all_ok &= check("header filter: case-insensitive apikey", filtered_lower.get("apikey") == "k")
-    all_ok &= check("header filter: case-insensitive Authorization", filtered_lower.get("Authorization") == "Bearer k")
-    all_ok &= check("header filter: still drops lowercase accept", len(filtered_lower) == 2)
-
-    # Nothing identifying present -> empty dict, not a crash, not None.
-    all_ok &= check("header filter: empty input -> {}", _filter_identifying_headers({}) == {})
-
     # --- fetch_jobs_page always sends its own Accept, even if the caller's
-    # headers dict (however it was obtained) still carried a stray one ---
+    # headers dict (however it was obtained) still carried a stray one
+    # (the 2026-10-02 PGRST116 fix: a reused singular-object Accept header
+    # once broke pagination with "Cannot coerce the result to a single
+    # JSON object") ---
     poisoned_headers = {"apikey": "k", "Authorization": "Bearer k", "Accept": "application/vnd.pgrst.object+json"}
-    fake_ctx = _FakeRequestContext(status=200, json_data=[{"id": "1"}])
-    fetch_jobs_page(fake_ctx, "https://example.supabase.co/rest/v1/jobs", poisoned_headers, offset=0)
+    fake_session = _FakeSession(default_status=200, default_json=[{"id": "1"}])
+    fetch_jobs_page(fake_session, "https://example.supabase.co/rest/v1/jobs", poisoned_headers, offset=0)
     all_ok &= check(
         "fetch_jobs_page overrides a poisoned Accept header with application/json",
-        fake_ctx.last_headers.get("Accept") == "application/json",
+        fake_session.last_headers.get("Accept") == "application/json",
     )
     all_ok &= check(
         "fetch_jobs_page still sends the real apikey/Authorization through",
-        fake_ctx.last_headers.get("apikey") == "k" and fake_ctx.last_headers.get("Authorization") == "Bearer k",
+        fake_session.last_headers.get("apikey") == "k" and fake_session.last_headers.get("Authorization") == "Bearer k",
+    )
+
+    # fetch_jobs_page raises (rather than returning something falsy) on a
+    # non-200 status, so main()'s offset==0 hard-fail path actually fires.
+    error_session = _FakeSession(default_status=403, default_json=None)
+    error_session._responses_by_url = {}
+    error_session_resp_raised = False
+    try:
+        fetch_jobs_page(error_session, "https://example.supabase.co/rest/v1/jobs", {"apikey": "k"}, offset=0)
+    except RuntimeError:
+        error_session_resp_raised = True
+    all_ok &= check("fetch_jobs_page raises RuntimeError on non-200 status", error_session_resp_raised)
+
+    # --- _chunk_script_urls (2026-10-02 part 2: curl_cffi rewrite) --------
+    sample_html = """
+    <html><head>
+    <script src="/_next/static/chunks/app/jobs-abc123.js"></script>
+    <script src="https://palmjobs.et/_next/static/chunks/framework-def456.js"></script>
+    <script src="/_next/static/css/main-xyz.css"></script>
+    <script src="/some/other/script.js"></script>
+    </head></html>
+    """
+    chunk_urls = _chunk_script_urls(sample_html, "https://palmjobs.et/jobs")
+    all_ok &= check(
+        "chunk urls: finds both /_next/static/chunks/ script tags",
+        len(chunk_urls) == 2,
+    )
+    all_ok &= check(
+        "chunk urls: resolves a relative src to an absolute palmjobs.et URL",
+        "https://palmjobs.et/_next/static/chunks/app/jobs-abc123.js" in chunk_urls,
+    )
+    all_ok &= check(
+        "chunk urls: keeps an already-absolute src as-is",
+        "https://palmjobs.et/_next/static/chunks/framework-def456.js" in chunk_urls,
+    )
+    all_ok &= check(
+        "chunk urls: ignores non-chunk scripts (css, unrelated js)",
+        all("chunks" in u for u in chunk_urls),
+    )
+
+    # --- discover_api_credentials (2026-10-02 part 2: curl_cffi rewrite) --
+    # End-to-end: fetch the /jobs page -> find chunk URLs -> fetch each
+    # chunk -> find the anon key + supabase URL patterns inside one of them.
+    fake_anon_key = "eyJ" + ("a" * 80)  # matches _ANON_KEY_PATTERN's length requirement
+    chunk_js_with_key = f'var k="{fake_anon_key}";var u="https://abcxyz123.supabase.co";'
+    list_page_url = "https://palmjobs.et/jobs"
+    chunk_url = "https://palmjobs.et/_next/static/chunks/app/jobs-abc123.js"
+    discover_session = _FakeSession(responses_by_url={
+        list_page_url: _FakeResponse(200, text=(
+            '<html><head><script src="/_next/static/chunks/app/jobs-abc123.js">'
+            '</script></head></html>'
+        )),
+        chunk_url: _FakeResponse(200, text=chunk_js_with_key),
+    })
+    found_headers, found_base_url = discover_api_credentials(discover_session)
+    all_ok &= check(
+        "discover_api_credentials: finds the anon key inside the chunk",
+        found_headers is not None and found_headers.get("apikey") == fake_anon_key,
+    )
+    all_ok &= check(
+        "discover_api_credentials: builds Authorization from the same key",
+        found_headers is not None and found_headers.get("Authorization") == f"Bearer {fake_anon_key}",
+    )
+    all_ok &= check(
+        "discover_api_credentials: builds the /rest/v1/jobs base URL from the discovered supabase URL",
+        found_base_url == "https://abcxyz123.supabase.co/rest/v1/jobs",
+    )
+
+    # Credentials genuinely absent (e.g. site changed, or blocked) -> a
+    # clean (None, None), not a crash, so main() can sys.exit(1) on it.
+    no_creds_session = _FakeSession(responses_by_url={
+        list_page_url: _FakeResponse(200, text="<html><head></head></html>"),
+    })
+    missing_headers, missing_base_url = discover_api_credentials(no_creds_session)
+    all_ok &= check(
+        "discover_api_credentials: no chunk scripts at all -> (None, None), not a crash",
+        missing_headers is None and missing_base_url is None,
     )
 
     print()
