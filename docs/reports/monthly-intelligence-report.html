@@ -50,6 +50,12 @@
   .tag.gap { background: #FBF1DE; color: var(--gold); }
   .tag.stable { background: #EFEAE0; color: var(--ink-soft); }
   ul.plain { font-size: 14.5px; line-height: 1.8; padding-left: 20px; margin: 0 0 14px; }
+  .scope-box { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px 4px; margin: 4px 0 20px; }
+  .scope-box h3 { margin-top: 0; font-size: 14.5px; }
+  .scope-cols { display: flex; gap: 24px; flex-wrap: wrap; }
+  .scope-cols > div { flex: 1; min-width: 200px; }
+  .scope-head { font-weight: 700; font-size: 12.5px; color: var(--navy); margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .scope-box ul.plain { font-size: 13px; margin-bottom: 10px; }
   ol.ref-list { font-size: 13px; line-height: 1.9; padding-left: 20px; }
   ol.ref-list li { margin-bottom: 10px; }
   .page-foot { font-size: 11.5px; color: var(--ink-soft); margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -66,11 +72,13 @@
 <div class="page cover">
 <div class="kicker">EthioSkills Intelligence</div>
 <h1>EthioSkills Intelligence Monthly Vacancy and Skill Report</h1>
-<p class="period">Covers the 30 days up to 2026-10-01</p>
+<p class="period">Covers the 30 days up to 2026-10-02</p>
 <div class="meta-row">
   <div><strong>Author and Project Owner</strong> Mesfin Abraham Ali</div>
   <div><strong>Contact</strong> mesfnism@gmail.com</div>
-  <div><strong>Generated</strong> 2026-10-01 17:07:16 UTC</div>
+  <div><strong>Generated</strong> 2026-10-02 11:23:08 UTC</div>
+  <div><strong>Classifier version</strong> v1.0</div>
+  <div><strong>Taxonomies applied</strong> ESCO groups (own keyword mapping), ISCO-08, ISCED 2011, ISIC Rev.4</div>
   <div class="nav-links">
     <a href="../index.html">Live dashboard &rarr;</a>
     <a href="weekly-intelligence-report.html">Companion report &rarr;</a>
@@ -78,28 +86,57 @@
 </div>
 <p class="collab">This report is produced and maintained independently by Mesfin Abraham Ali. Comments, corrections, proposals to share data, and collaboration or funding inquiries are welcome at mesfnism@gmail.com. The underlying pipeline is built to scale to additional vacancy sources, additional countries in the Horn of Africa, and partnerships with official statistical and labour market information bodies.</p>
 </div>
-<div class="page "><h1 class="page-title">Contents</h1><div class="toc"><ol><li><a href="#exec-summary">Executive Summary</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#sources">Data Sources</a></li><li><a href="#analysis">Analysis</a></li><li><a href="#limitations">Advantages, Limitations and Planned Improvements</a></li><li><a href="#conclusion">Conclusion</a></li><li><a href="#recommendations">Recommendations</a></li><li><a href="#references">References</a></li></ol></div></div>
+<div class="page "><h1 class="page-title">Contents</h1><div class="toc"><ol><li><a href="#exec-summary">Executive Summary</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#sources">Data Sources</a></li><li><a href="#analysis">Analysis</a></li><li><a href="#data-quality">Concentration, Coverage and Source Reliability</a></li><li><a href="#limitations">Advantages, Limitations and Planned Improvements</a></li><li><a href="#conclusion">Conclusion</a></li><li><a href="#recommendations">Recommendations</a></li><li><a href="#references">References</a></li></ol></div></div>
 <div class="page ">
 <h1 class="page-title" id="exec-summary">Executive Summary</h1>
-<p>This month edition of EthioSkills Intelligence tracked 1905 vacancy
-postings across six Ethiopian job boards, standardized against international occupation, skills,
+<p>This month edition of EthioSkills Intelligence tracked 2281 vacancy
+postings across ten Ethiopian job boards, standardized against international occupation, skills,
 education and industry taxonomies so that figures reported here are comparable across sources and
 over time. The purpose of this exercise is not to replace Ethiopia's official labour market
 information architecture, but to complement it. The national E-LMIS and the Ethiopian Statistical
 Service's household and establishment surveys provide periodic, authoritative but infrequent
 measurement of the labour market [1][3]. This report offers a continuously updated, narrower read
-of what employers are actually advertising for, close to real time.</p>
-<p>The leading skill requested this period was <strong>Communication</strong>, the most active
-sector was <strong>Professional, scientific and technical activities</strong>, and the single largest identifiable hiring employer
-was <strong>Bule Hora University</strong>. This is the first snapshot recorded for this reporting cycle, so no week-on-week or month-on-month comparison is yet possible; subsequent editions of this report will carry trend comparisons as tracking history accumulates. The Analysis section below sets out these
-patterns in full, with supporting tables and figures; the Data Sources and Limitations sections set
-out, without qualification, what this exercise can and cannot yet claim to measure.</p>
+of what employers are actually advertising for, close to real time. It tracks advertised demand.
+It does not measure labour shortages, unemployment or actual hiring outcomes, which require the
+survey and administrative sources cited above.</p>
+<p>The most frequently mentioned skill this period was <strong>Communication</strong>, the
+leading economic activity by posting count was <strong>Professional, scientific and technical activities</strong>, and the employer
+with the most identifiable postings was <strong>Company</strong>. A posting mentioning a
+skill is not by itself evidence that the skill is scarce or that employers struggle to find it.
+This is the first snapshot recorded for this reporting cycle, so a comparison from one week to the next, or one month to the next, is not yet possible. Subsequent editions of this report will carry trend comparisons as tracking history accumulates. The Analysis section below sets out these patterns in full, with supporting tables
+and figures. The Data Sources and Limitations sections set out, without qualification, what this
+exercise can and cannot yet claim to measure.</p>
 
     <div class="stat-row">
-      <div class="stat-tile"><div class="num">1905</div><div class="label">Postings tracked (month)</div></div>
-      <div class="stat-tile"><div class="num">Communication</div><div class="label">Leading skill in demand</div></div>
-      <div class="stat-tile"><div class="num">Professional, scientific and technical activities</div><div class="label">Most active sector</div></div>
-      <div class="stat-tile"><div class="num">Bule Hora University</div><div class="label">Leading hiring employer</div></div>
+      <div class="stat-tile"><div class="num">2281</div><div class="label">Postings tracked (month)</div></div>
+      <div class="stat-tile"><div class="num">Communication</div><div class="label">Most frequently mentioned skill</div></div>
+      <div class="stat-tile"><div class="num">Professional, scientific and technical activities</div><div class="label">Leading economic activity (ISIC)</div></div>
+      <div class="stat-tile"><div class="num">Company</div><div class="label">Employer with the most postings</div></div>
+    </div>
+    
+
+    <div class="scope-box">
+      <h3>What this report measures, and what it does not</h3>
+      <div class="scope-cols">
+        <div>
+          <p class="scope-head">It measures</p>
+          <ul class="plain">
+            <li>Online vacancy advertisements on ten tracked job boards</li>
+            <li>Skills, qualifications and experience as advertised in those postings</li>
+            <li>Employer and economic activity patterns within that advertised set</li>
+            <li>Period to period change in what is advertised online</li>
+          </ul>
+        </div>
+        <div>
+          <p class="scope-head">It does not measure</p>
+          <ul class="plain">
+            <li>Total vacancies or total labour demand in Ethiopia</li>
+            <li>Unemployment or skill shortages</li>
+            <li>Whether a posting results in an actual hire</li>
+            <li>Informal or unadvertised recruitment</li>
+          </ul>
+        </div>
+      </div>
     </div>
     
 </div>
@@ -121,13 +158,14 @@ classified against four international standards. ESCO for skills, ISCO-08 for oc
 2011 for education levels, and ISIC Rev.4 for industry sectors [4][5][6][7]. This makes a posting's
 requirements comparable across sources and legible to anyone already familiar with those schemes,
 including statistical agencies and development partners.</p>
-<p>This month report covers covers the 30 days up to 2026-10-01. It is one of two companion editions
-produced on a rolling basis. A weekly edition captures short-term movement, and a monthly edition
+<p>This month report covers covers the 30 days up to 2026-10-02. It is one of two companion editions
+produced on a rolling basis. A weekly edition captures movement over the short run, and a monthly edition
 captures a steadier baseline. Both are generated automatically from the same underlying dataset and
 published alongside a live, continuously updated dashboard.</p>
 <h2>Scope and methodology, briefly</h2>
-<p>Six sources are tracked. EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs
-(filtered to postings relevant to Ethiopia) and HarmeeJobs. A posting that has been cross posted to
+<p>Ten sources are tracked. EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs
+(filtered to postings relevant to Ethiopia), HarmeeJobs, ElelanaJobs, KebenaJobs, Afriworket and
+GeezJobs. A posting that has been cross posted to
 more than one source is identified and merged rather than double counted, matched on employer, job
 title and location within a short window around the posting date. Each of the four taxonomies above
 is applied independently per field. A posting that cannot be confidently classified against a given
@@ -185,58 +223,130 @@ Ethiopia's wider system of labour market information [1].</p>
   <p><strong>Weakness.</strong> Its main limitation is that an RSS feed typically carries less structured detail per posting than a full detail page, so some fields (years of experience, a specific salary figure) are stated less often here than for sources read from full detail pages.</p>
   <p><strong>Possible improvement.</strong> where the feed links back to a full posting page, fetching that page for the subset of fields it still lacks is a natural next step.</p>
 </div>
-<p>Separately from coverage at the source level, this period's data also shows thin coverage on fields that depend on a posting stating them explicitly. Fewer than 50 percent of postings report stating a clear education level, stating a clear monthly pay figure. This is a property of what employers choose to disclose, not a parsing failure, and it is treated as a stated limitation throughout rather than estimated or imputed.</p>
+<div class="source-block">
+  <h3>ElelanaJobs</h3>
+  <p><strong>Scope.</strong> A smaller Ethiopian job board read via its own public RSS feed, carrying a mix of banking, insurance and private sector postings.</p>
+  <p><strong>Strength.</strong> Its principal advantage in this dataset is the full posting text comes through in the feed itself, with no separate page fetch needed, the same stable connection advantage HarmeeJobs has.</p>
+  <p><strong>Weakness.</strong> Its main limitation is that many of its postings are bulletins announcing several distinct roles at one employer under a single headline rather than one posting per role, so this report counts each bulletin once rather than once per role within it, and fields such as education and years of experience, which would need to be attributed to a specific role within a multi role bulletin, are left unstated rather than guessed at.</p>
+  <p><strong>Possible improvement.</strong> splitting a multi role bulletin into one tracked posting per numbered role is the natural next step, and would also make education and experience extractable per role instead of left blank.</p>
+</div>
+<div class="source-block">
+  <h3>KebenaJobs</h3>
+  <p><strong>Scope.</strong> A smaller Ethiopian job board, built on the same underlying software as ElelanaJobs and read the same way, via its own public RSS feed.</p>
+  <p><strong>Strength.</strong> Its principal advantage in this dataset is the same stable, full text RSS connection as ElelanaJobs.</p>
+  <p><strong>Weakness.</strong> Its main limitation is that the same multi role bulletin pattern described for ElelanaJobs above.</p>
+  <p><strong>Possible improvement.</strong> the same fix described for ElelanaJobs above would apply here too.</p>
+</div>
+<div class="source-block">
+  <h3>Afriworket</h3>
+  <p><strong>Scope.</strong> A modern Ethiopian job platform covering a broad mix of private sector roles, including a notable share of informal, freelance and gig style postings that the older general job boards rarely carry.</p>
+  <p><strong>Strength.</strong> Its principal advantage in this dataset is the richest structured detail page of any source tracked here, stating economic activity, education qualification, vacancy count, experience level and a defined skill list as separate fields rather than mixed into free text.</p>
+  <p><strong>Weakness.</strong> Its main limitation is that a posting's pay is disclosed as a specific monthly figure only for some roles, a generic pay period label appears even when no figure is given, and this report keeps only the figure, treating the label alone as not stating a salary, so salary coverage for this source reflects what employers actually disclosed rather than an artifact of the page's own layout.</p>
+  <p><strong>Possible improvement.</strong> no fix is currently planned. The gap is a property of what employers choose to disclose on this platform, not a parsing limitation.</p>
+</div>
+<div class="source-block">
+  <h3>GeezJobs</h3>
+  <p><strong>Scope.</strong> A general Ethiopian job board covering a broad mix of private sector, NGO and public roles.</p>
+  <p><strong>Strength.</strong> Its principal advantage in this dataset is a detail page that states work type, contract type, years of experience and a specific deadline date as separate fields, and in many postings an education requirement embedded in the description text that this pipeline extracts directly.</p>
+  <p><strong>Weakness.</strong> Its main limitation is that the site exposes only its own front page of featured and latest postings, roughly seventy at a time, with no further pagination or search API behind it, so this source's tracked history is bounded by what the site itself chooses to keep visible rather than by anything this pipeline could walk further into.</p>
+  <p><strong>Possible improvement.</strong> none is available from this pipeline alone. A deeper archive would require the site itself to expose one.</p>
+</div>
+<p>Separately from coverage at the source level, this period's data also shows thin coverage on fields that depend on a posting stating them explicitly. Fewer than 50 percent of postings report stating a clear monthly pay figure, stating a clear education level. This is a property of what employers choose to disclose, not a parsing failure, and it is treated as a stated limitation throughout rather than estimated or imputed.</p>
 </div>
 <div class="page ">
 <h1 class="page-title" id="analysis">Analysis</h1>
-<h2>Skills in demand</h2>
-<p><table class="data-table"><caption>Table 1. Top skills explicitly requested, month window.</caption><thead><tr><th>#</th><th>Skill (ESCO-normalized)</th><th>Postings</th></tr></thead><tbody><tr><td>1</td><td>Communication</td><td>520</td></tr><tr><td>2</td><td>Problem solving</td><td>188</td></tr><tr><td>3</td><td>Attention to detail</td><td>182</td></tr><tr><td>4</td><td>Teamwork</td><td>112</td></tr><tr><td>5</td><td>Accounting</td><td>102</td></tr><tr><td>6</td><td>Decision-making</td><td>68</td></tr><tr><td>7</td><td>Creativity</td><td>42</td></tr><tr><td>8</td><td>Leadership</td><td>38</td></tr><tr><td>9</td><td>Coordination</td><td>36</td></tr><tr><td>10</td><td>Analytical thinking</td><td>31</td></tr></tbody></table></p>
-<figure><svg viewBox="0 0 600 240" width="100%" height="240" role="img" aria-label="bar chart"><text x="182" y="14.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Communication</text><rect x="190" y="0" width="360" height="16" rx="3" fill="#1F3B57"/><text x="556" y="14.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">520</text><text x="182" y="44.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Problem solving</text><rect x="190" y="30" width="130" height="16" rx="3" fill="#1F3B57"/><text x="326" y="44.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">188</text><text x="182" y="74.96000000000001" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Attention to detail</text><rect x="190" y="60" width="126" height="16" rx="3" fill="#1F3B57"/><text x="322" y="74.96000000000001" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">182</text><text x="182" y="104.96000000000001" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Teamwork</text><rect x="190" y="90" width="78" height="16" rx="3" fill="#1F3B57"/><text x="274" y="104.96000000000001" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">112</text><text x="182" y="134.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Accounting</text><rect x="190" y="120" width="71" height="16" rx="3" fill="#1F3B57"/><text x="267" y="134.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">102</text><text x="182" y="164.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Decision-making</text><rect x="190" y="150" width="47" height="16" rx="3" fill="#1F3B57"/><text x="243" y="164.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">68</text><text x="182" y="194.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Creativity</text><rect x="190" y="180" width="29" height="16" rx="3" fill="#1F3B57"/><text x="225" y="194.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">42</text><text x="182" y="224.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Leadership</text><rect x="190" y="210" width="26" height="16" rx="3" fill="#1F3B57"/><text x="222" y="224.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">38</text></svg><figcaption>Figure 1. Posting counts for the top requested skills, month window.</figcaption></figure>
-<h2>Where those skills matter, sectoral patterns</h2>
-<p>Skill demand is not uniform across the economy. The sector a posting sits in shapes which specific
-skill is most sought after within it. Table 2 reports, for each of the most active sectors this
-period, the single skill most frequently requested within postings tagged to that sector, subject to
-a minimum of three postings in that sector stating explicit skills, so that a one-off posting is
-never reported as a sector's standard.</p>
-<table class="data-table"><caption>Table 2. Most active sectors and each sector’s single most-requested skill, month window.</caption><thead><tr><th>Sector (ISIC Rev.4)</th><th>Postings</th><th>Leading skill in this sector</th></tr></thead><tbody><tr><td>Professional, scientific and technical activities</td><td>765</td><td>Communication</td></tr><tr><td>Financial and insurance activities</td><td>262</td><td>Communication</td></tr><tr><td>Education</td><td>222</td><td>Communication</td></tr><tr><td>Human health and social work activities</td><td>185</td><td>Communication</td></tr><tr><td>Accommodation and food service activities</td><td>140</td><td>Communication</td></tr><tr><td>Transportation and storage</td><td>120</td><td>Communication</td></tr><tr><td>Wholesale and retail trade</td><td>108</td><td>Communication</td></tr><tr><td>Information and communication</td><td>81</td><td>Communication</td></tr></tbody></table>
+<h2>Most frequently mentioned skills</h2>
+<p>A skill mentioned often in postings is not, by itself, a skill employers cannot find. Generic
+transversal skills such as communication are routinely written into job advertisements regardless of
+how hard the role is to fill, so the counts below describe what is advertised, not what is scarce.</p>
+<p><table class="data-table"><caption>Table 1. Most frequently mentioned skills, month window.</caption><thead><tr><th>#</th><th>Skill (normalized to ESCO)</th><th>Postings mentioning it</th></tr></thead><tbody><tr><td>1</td><td>Communication</td><td>643</td></tr><tr><td>2</td><td>Problem solving</td><td>232</td></tr><tr><td>3</td><td>Attention to detail</td><td>215</td></tr><tr><td>4</td><td>Teamwork</td><td>119</td></tr><tr><td>5</td><td>Accounting</td><td>107</td></tr><tr><td>6</td><td>Decision-making</td><td>73</td></tr><tr><td>7</td><td>Creativity</td><td>65</td></tr><tr><td>8</td><td>Leadership</td><td>56</td></tr><tr><td>9</td><td>Coordination</td><td>40</td></tr><tr><td>10</td><td>Analytical thinking</td><td>35</td></tr></tbody></table></p>
+<figure><svg viewBox="0 0 600 240" width="100%" height="240" role="img" aria-label="bar chart"><text x="182" y="14.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Communication</text><rect x="190" y="0" width="360" height="16" rx="3" fill="#1F3B57"/><text x="556" y="14.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">643</text><text x="182" y="44.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Problem solving</text><rect x="190" y="30" width="130" height="16" rx="3" fill="#1F3B57"/><text x="326" y="44.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">232</text><text x="182" y="74.96000000000001" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Attention to detail</text><rect x="190" y="60" width="120" height="16" rx="3" fill="#1F3B57"/><text x="316" y="74.96000000000001" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">215</text><text x="182" y="104.96000000000001" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Teamwork</text><rect x="190" y="90" width="67" height="16" rx="3" fill="#1F3B57"/><text x="263" y="104.96000000000001" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">119</text><text x="182" y="134.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Accounting</text><rect x="190" y="120" width="60" height="16" rx="3" fill="#1F3B57"/><text x="256" y="134.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">107</text><text x="182" y="164.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Decision-making</text><rect x="190" y="150" width="41" height="16" rx="3" fill="#1F3B57"/><text x="237" y="164.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">73</text><text x="182" y="194.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Creativity</text><rect x="190" y="180" width="36" height="16" rx="3" fill="#1F3B57"/><text x="232" y="194.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">65</text><text x="182" y="224.96" text-anchor="end" font-size="12" font-family="Source Sans 3, sans-serif" fill="#20242B">Leadership</text><rect x="190" y="210" width="31" height="16" rx="3" fill="#1F3B57"/><text x="227" y="224.96" font-size="12" font-family="Source Sans 3, sans-serif" fill="#4B5259">56</text></svg><figcaption>Figure 1. Posting counts for the most frequently mentioned skills, month window.</figcaption></figure>
+<h2>Where those mentions cluster, patterns by economic activity</h2>
+<p>Which skill is mentioned most often varies by the employer's economic activity. Table 2 reports,
+for each of the economic activities with the most postings this period, the single skill most
+frequently mentioned within postings tied to that activity, subject to a minimum of three postings
+in that activity stating explicit skills, so that a single posting is never reported as an activity's
+standard. An economic activity (ISIC) describes the employer's industry, not the occupation being
+advertised, and the two should not be read as interchangeable.</p>
+<table class="data-table"><caption>Table 2. Economic activities represented among online postings (ISIC), with the skill most often mentioned within each, month window.</caption><thead><tr><th>Economic activity (ISIC Rev.4)</th><th>Postings</th><th>Most frequently mentioned skill within it</th></tr></thead><tbody><tr><td>Professional, scientific and technical activities</td><td>836</td><td>Communication</td></tr><tr><td>Financial and insurance activities</td><td>270</td><td>Communication</td></tr><tr><td>Education</td><td>235</td><td>Communication</td></tr><tr><td>Human health and social work activities</td><td>192</td><td>Communication</td></tr><tr><td>Accommodation and food service activities</td><td>145</td><td>Communication</td></tr><tr><td>Transportation and storage</td><td>136</td><td>Communication</td></tr><tr><td>Wholesale and retail trade</td><td>118</td><td>Communication</td></tr><tr><td>Information and communication</td><td>98</td><td>Communication</td></tr></tbody></table>
 <h2>Education, experience and pay profile</h2>
-<p>Of 1905 postings this period, 594 (31.2%) state a clear education requirement, 1490 (78.2%) state years of experience required, and only 61 (3.2%) state a clear monthly pay figure. This is consistent with the broader observation that Ethiopian employers disclose compensation far less often than qualifications.</p>
+<p>Of 2281 postings this period, 705 (30.9%) state a clear education requirement, 1629 (71.4%) state years of experience required, and only 62 (2.7%) state a clear monthly pay figure. This is consistent with the broader observation that Ethiopian employers disclose compensation far less often than qualifications.</p>
 <h2>Persistent and emerging patterns</h2>
-<p>Comparing this period against the closest available prior snapshot distinguishes demand that is
-structurally embedded in the market from demand that is newly rising or fading. A single snapshot on
-its own cannot make that distinction.</p>
+<p>Comparing this period against the closest available prior snapshot distinguishes mentions that
+recur across periods from ones that are newly rising or fading. A single snapshot on its own cannot
+make that distinction, and a recurring mention still describes what is advertised, not a confirmed
+shortage or structural need.</p>
 <p>No prior snapshot is yet available far enough back to compare against, so this edition reports levels rather than change. Persistence and emergence will be reported from the next cycle in which a comparable baseline exists.</p>
+</div>
+<div class="page ">
+<h1 class="page-title" id="data-quality">Concentration, Coverage and Source Reliability</h1>
+<p>This section reports what the rest of the Analysis section does not. It covers how concentrated
+advertised demand is among a small set of skills, employers or economic activities, how coverage
+breaks down by employer identity, region and language, and how reliably each tracked source is
+actually producing new postings. None of this changes what the headline tables say. It is context for
+how much weight to put on them.</p>
+<h2>Concentration</h2>
+<ul class="plain"><li>The top 10 skills account for 55.9 percent of all mentions this period, across 545 distinct entries seen (Herfindahl-Hirschman Index 703.2).</li><li>The top 10 employers account for 17.4 percent of all mentions this period, across 747 distinct entries seen (Herfindahl-Hirschman Index 68.4).</li><li>The top 10 economic activities account for 94.8 percent of all mentions this period, across 13 distinct entries seen (Herfindahl-Hirschman Index 1794.3).</li></ul>
+<h2>Employer registry</h2>
+<p>Employer names are canonicalized (legal suffixes such as "PLC" or "S.C." and punctuation
+differences stripped) before counting, so the same employer posting under slightly different
+spellings is counted once rather than split across entries.</p>
+<table class="data-table"><caption>Table 3. Employer posting counts after merging spelling variants of the same employer name, month window.</caption><thead><tr><th>Employer (canonicalized)</th><th>Postings</th><th>Spellings merged</th></tr></thead><tbody><tr><td>Private Client</td><td>68</td><td>1</td></tr><tr><td>Bule Hora University</td><td>59</td><td>1</td></tr><tr><td>Talent Search - Ethiojobs</td><td>30</td><td>2</td></tr><tr><td>Amg Holdings</td><td>29</td><td>2</td></tr><tr><td>National Aviation College</td><td>29</td><td>1</td></tr><tr><td>Dodai Manufacturing</td><td>19</td><td>2</td></tr><tr><td>Marie Stopes International Ethiopia</td><td>19</td><td>2</td></tr><tr><td>Ethiopian Food and Drug Authority (Efda)</td><td>19</td><td>1</td></tr><tr><td>Zamzam Bank</td><td>18</td><td>2</td></tr><tr><td>Lesso Ethiopia Trading PLC</td><td>18</td><td>1</td></tr></tbody></table>
+<p>9 of the employers listed here were counted under more than one raw spelling before being merged (for example a legal suffix like "PLC" or "S.C." present on some postings and absent on others for the same employer).</p>
+<h2>Postings by region</h2>
+<p>Of 2213 postings stating a usable location this period, 306 could not be matched to a specific region by this lookup and are left out of Table 4 rather than guessed at.</p>
+<table class="data-table"><caption>Table 4. Postings by Ethiopian region, month window.</caption><thead><tr><th>Region</th><th>Postings</th><th>Share of located postings</th></tr></thead><tbody><tr><td>Addis Ababa</td><td>1744</td><td>78.8%</td></tr><tr><td>Oromia</td><td>73</td><td>3.3%</td></tr><tr><td>Sidama</td><td>24</td><td>1.1%</td></tr><tr><td>SNNPR</td><td>17</td><td>0.8%</td></tr><tr><td>Harari</td><td>13</td><td>0.6%</td></tr><tr><td>Amhara</td><td>11</td><td>0.5%</td></tr><tr><td>Benishangul-Gumuz</td><td>10</td><td>0.5%</td></tr><tr><td>Dire Dawa</td><td>6</td><td>0.3%</td></tr><tr><td>Somali</td><td>6</td><td>0.3%</td></tr><tr><td>Tigray</td><td>2</td><td>0.1%</td></tr><tr><td>Afar</td><td>1</td><td>0.0%</td></tr></tbody></table>
+<h2>Language coverage</h2>
+<p>Classified from the Unicode script of each posting's title and description text. This tells
+English from Ethiopic script (the script Amharic and Tigrinya are both written in) reliably, but
+does not distinguish Amharic from Tigrinya, and a posting using neither Latin nor Ethiopic letters,
+such as one stated only in numerals or symbols, falls outside both categories.</p>
+<table class="data-table"><caption>Table 5. Postings by language of title and description text, month window.</caption><thead><tr><th>Language</th><th>Postings</th><th>Share</th></tr></thead><tbody><tr><td>English</td><td>2177</td><td>95.4%</td></tr><tr><td>Ethiopic script (Amharic/Tigrinya)</td><td>29</td><td>1.3%</td></tr><tr><td>Mixed</td><td>75</td><td>3.3%</td></tr></tbody></table>
+<h2>Skill intensity by occupation group</h2>
+<p>Occupation groups whose postings tend to list more distinct skills are not necessarily harder to
+fill. A longer skills list can simply reflect a more detailed job advertisement. This is reported as
+descriptive context, not as a shortage signal, and only for groups with at least three postings
+stating a skills list.</p>
+<table class="data-table"><caption>Table 6. Average number of distinct skills stated per posting, by occupation group (ISCO-08), month window.</caption><thead><tr><th>Occupation group</th><th>Postings with stated skills</th><th>Avg. skills per posting</th></tr></thead><tbody><tr><td>Service and sales workers</td><td>73</td><td>3.1</td></tr><tr><td>Craft and related trades workers</td><td>15</td><td>2.8</td></tr><tr><td>Managers</td><td>147</td><td>2.6</td></tr><tr><td>Elementary occupations</td><td>5</td><td>2.6</td></tr><tr><td>Clerical support workers</td><td>38</td><td>2.5</td></tr><tr><td>Technicians and associate professionals</td><td>90</td><td>2.3</td></tr><tr><td>Plant and machine operators, and assemblers</td><td>21</td><td>2.2</td></tr><tr><td>Professionals</td><td>414</td><td>2.1</td></tr></tbody></table>
+<h2>Source reliability</h2>
+<p>Each tracked source's own run history is checked for whether it is still finding new postings. A
+source that logs several consecutive runs adding zero new postings is flagged as stalled below.</p>
+<table class="data-table"><caption>Table 7. Per-source run reliability, as of this report's generation.</caption><thead><tr><th>Source</th><th>Status</th><th>Runs logged</th><th>New postings, last run</th></tr></thead><tbody><tr><td>EthioJobs</td><td><span class="tag stable">ACTIVE</span></td><td>21</td><td>65</td></tr><tr><td>HaHuJobs</td><td><span class="tag stable">ACTIVE</span></td><td>10</td><td>65</td></tr><tr><td>ReporterJobs</td><td><span class="tag down">STALLED</span></td><td>9</td><td>0</td></tr><tr><td>PalmJobs</td><td><span class="tag down">STALLED</span></td><td>8</td><td>0</td></tr><tr><td>DevNetJobs</td><td><span class="tag down">STALLED</span></td><td>8</td><td>0</td></tr><tr><td>HarmeeJobs</td><td><span class="tag stable">ACTIVE</span></td><td>8</td><td>9</td></tr><tr><td>ElelanaJobs</td><td><span class="tag stable">ACTIVE</span></td><td>1</td><td>14</td></tr><tr><td>KebenaJobs</td><td><span class="tag up">QUIET</span></td><td>1</td><td>0</td></tr><tr><td>Afriworket</td><td><span class="tag stable">ACTIVE</span></td><td>1</td><td>200</td></tr><tr><td>GeezJobs</td><td><span class="tag stable">ACTIVE</span></td><td>1</td><td>60</td></tr></tbody></table>
+<p>ReporterJobs, PalmJobs, DevNetJobs show no new postings across several consecutive runs as of this edition. This is flagged for investigation against the live site, not stated as a confirmed failure, since a genuinely exhausted source can also post nothing new for a stretch.</p>
 </div>
 <div class="page ">
 <h1 class="page-title" id="limitations">Advantages, Limitations and Planned Improvements</h1>
 <h2>Advantages of this approach</h2>
 <ul class="plain">
   <li>Continuous, low cost measurement that refreshes automatically, in contrast to periodic labour
-  market information based on surveys that updates on a multi-year cycle.</li>
+  market information based on surveys that updates only every few years.</li>
   <li>Standardized against the same international taxonomies (ESCO, ISCO-08, ISCED 2011, ISIC Rev.4)
   used in official reporting on labour markets, so figures here are directly comparable to other work
   using the same schemes.</li>
   <li>Full transparency on what is and is not captured. A field that cannot be classified confidently
   is excluded from that breakdown rather than estimated, and every honesty threshold used in this
-  report (for example a minimum posting count before a most-requested skill is reported for a group)
-  is stated rather than hidden.</li>
+  report (for example a minimum posting count before a skill is reported as most requested for a
+  group) is stated rather than hidden.</li>
 </ul>
 <h2>Limitations</h2>
 <ul class="plain">
   <li>Coverage is restricted to vacancies advertised on the specific online boards tracked. Informal,
   word of mouth, and unadvertised hiring, a substantial share of actual hiring activity in Ethiopia,
   is not observed at all.</li>
-  <li>Classification currently works on text written in English. A meaningful share of postings,
-  particularly from public institutions, are written in Amharic and are not yet classified into the
-  Skills, Education or Sector breakdowns, though they are still counted toward overall volume.</li>
+  <li>Classification currently works on text written in English. Postings written in Ethiopic script
+  (Amharic or Tigrinya), measured in the language table in the next section, are not yet classified
+  into the Skills, Education or Sector breakdowns, though they are still counted toward overall
+  volume.</li>
+  <li>Region is inferred from a keyword lookup against each posting's stated location, not a verified
+  gazetteer, and a location this lookup does not recognize is left unclassified rather than guessed.</li>
   <li>Employer type (Private, Public or NGO) is inferred from a keyword heuristic on the employer's own
   name, not a verified registry lookup, and should be read as indicative.</li>
   <li>Tracked history is still short relative to the seasonal cycles a labour market can exhibit over a
   full year. Early trend comparisons should be read cautiously until more history accumulates.</li>
 </ul>
-<p>In this edition specifically, coverage is thin for stating a clear education level (31.2% of postings), stating a clear monthly pay figure (3.2% of postings). Three of the six tracked sources, Ethiopian Reporter Jobs, PalmJobs and DevNetJobs, are also currently contributing fewer postings than their true listing volume, for the technical reasons specific to each source set out on the Data Sources page. Fixes for each have been applied and their effect is being confirmed over the next few scheduled runs.</p>
+<p>In this edition specifically, coverage is thin for stating a clear education level (30.9% of postings), stating a clear monthly pay figure (2.7% of postings). Three of the ten tracked sources, Ethiopian Reporter Jobs, PalmJobs and DevNetJobs, are also currently contributing fewer postings than their true listing volume, for the technical reasons specific to each source set out on the Data Sources page. Fixes for each have been applied on the pipeline side, but as of this edition their posting volume has not yet recovered (see the source reliability table in the previous section), and that is stated here rather than implied resolved. ElelanaJobs, KebenaJobs, Afriworket and GeezJobs were added to the tracked set most recently and do not yet have a confirmed run history, so their stated volume should be read with that in mind until several scheduled runs have passed.</p>
 <h2>Planned improvements</h2>
-<p>Near-term priorities are extending the language coverage of the skills and sector classifiers to
+<p>The priorities for the near future are extending the language coverage of the skills and sector classifiers to
 Amharic text, closing the volume gap on the three sources that currently fall short, and adding
 additional sources, including, subject to feasibility and permission, sources beyond Ethiopia's
 borders within the Horn of Africa. Readers who hold data, funding, or institutional mandate relevant
@@ -244,13 +354,10 @@ to any of these priorities are invited to make contact (see the cover page for d
 </div>
 <div class="page ">
 <h1 class="page-title" id="conclusion">Conclusion</h1>
-<p>Over this month window, Ethiopia's tracked online vacancy market continued to concentrate
-around a recognisable core of skill and sector demand, led by Communication as the single most
-requested skill and Professional, scientific and technical activities as the most active sector. This concentration, together with the
-persistence observed across reporting periods for a recurring set of top skills and sectors, is
-consistent with a labour market in which demand is structurally embedded in a small number of sectors
-and roles rather than shifting unpredictably from one period to the next. That pattern itself has
-implications for how training providers and jobseekers might prioritise their effort.</p>
+<p>Over this month window, Ethiopia's tracked online vacancy market concentrated around a
+recognisable core of mentioned skills and economic activity, led by Communication as the most
+frequently mentioned skill and Professional, scientific and technical activities as the economic activity with the most postings.
+This edition establishes a baseline. It does not yet show whether this concentration holds from one period to the next, since no prior snapshot exists for comparison. Subsequent editions will show whether the same skills and economic activities recur or whether this snapshot reflects a temporary pattern.</p>
 <p>At the same time, the gaps documented in this report, thin wage disclosure, uneven coverage across
 sources, and a language barrier on postings written only in Amharic, mean that this report's picture
 of the market, while directionally useful, remains partial. It is offered as a complement to, not a
@@ -275,7 +382,7 @@ reporting is welcomed.</p>
 <h2>For jobseekers</h2>
 <p>The Top Skills table and the tables of leading skill by sector in this report (Analysis section)
 are a practical starting point for prioritising which skills to acquire or present, particularly
-where a skill appears as both persistent and leading in its sector rather than a one-off spike.</p>
+where a skill appears as both persistent and leading in its sector rather than a single spike.</p>
 <h2>Scaling and collaboration</h2>
 <p>The underlying pipeline is built to extend to further sources, further geographies within the Horn
 of Africa, and partnership with institutional initiatives in labour market information or ones
@@ -284,7 +391,7 @@ invited to make contact (see the cover page for details).</p>
 </div>
 <div class="page ">
 <h1 class="page-title" id="references">References</h1>
-<ol class="ref-list"><li id="ref-1">International Labour Organization (2023). Comprehensive Assessment of the State of the Labour Market and Migration Information System in Ethiopia. ILO BRMM Programme, funded by the UK Foreign, Commonwealth and Development Office (FCDO).</li><li id="ref-2">International Labour Organization (2026). “Ethiopia and South Africa Share Lessons on Labour Market Information Systems.” ILO News, 20 April 2026. https://www.ilo.org/resource/article/ethiopia-and-south-africa-share-lessons-labour-market-information-systems-0</li><li id="ref-3">World Bank (2023). Ethiopia Education and Skills for Employability Project. Project Appraisal Document, Component 3, System Strengthening.</li><li id="ref-4">European Commission. ESCO (European Skills, Competences, Qualifications and Occupations), a skills taxonomy. https://esco.ec.europa.eu</li><li id="ref-5">International Labour Organization. ISCO-08 (International Standard Classification of Occupations). https://www.ilo.org/public/english/bureau/stat/isco/isco08/</li><li id="ref-6">UNESCO Institute for Statistics. ISCED 2011 (International Standard Classification of Education).</li><li id="ref-7">United Nations Statistics Division. ISIC Rev.4 (International Standard Industrial Classification of All Economic Activities).</li><li id="ref-8">Primary vacancy data. EthioJobs (ethiojobs.net), HaHuJobs (hahu.jobs), Ethiopian Reporter Jobs (ethiopianreporterjobs.com), PalmJobs (palmjobs.et), DevNetJobs (devnetjobs.org, filtered to Ethiopia) and HarmeeJobs, scraped and standardized daily by the author's own open pipeline (github.com, EthioJobs Tracker project).</li></ol>
+<ol class="ref-list"><li id="ref-1">International Labour Organization (2023). Comprehensive Assessment of the State of the Labour Market and Migration Information System in Ethiopia. ILO BRMM Programme, funded by the UK Foreign, Commonwealth and Development Office (FCDO).</li><li id="ref-2">International Labour Organization (2026). “Ethiopia and South Africa Share Lessons on Labour Market Information Systems.” ILO News, 20 April 2026. https://www.ilo.org/resource/article/ethiopia-and-south-africa-share-lessons-labour-market-information-systems-0</li><li id="ref-3">World Bank (2023). Ethiopia Education and Skills for Employability Project. Project Appraisal Document, Component 3, System Strengthening.</li><li id="ref-4">European Commission. ESCO (European Skills, Competences, Qualifications and Occupations), a skills taxonomy. https://esco.ec.europa.eu</li><li id="ref-5">International Labour Organization. ISCO-08 (International Standard Classification of Occupations). https://www.ilo.org/public/english/bureau/stat/isco/isco08/</li><li id="ref-6">UNESCO Institute for Statistics. ISCED 2011 (International Standard Classification of Education).</li><li id="ref-7">United Nations Statistics Division. ISIC Rev.4 (International Standard Industrial Classification of All Economic Activities).</li><li id="ref-8">Primary vacancy data. EthioJobs (ethiojobs.net), HaHuJobs (hahu.jobs), Ethiopian Reporter Jobs (ethiopianreporterjobs.com), PalmJobs (palmjobs.et), DevNetJobs (devnetjobs.org, filtered to Ethiopia), HarmeeJobs, ElelanaJobs (elelanajobs.com), KebenaJobs (kebenajobs.com), Afriworket (afriworket.com) and GeezJobs (geezjobs.com), scraped and standardized daily by the author's own open pipeline (github.com, EthioJobs Tracker project).</li></ol>
 <p class="page-foot">&copy; Mesfin Abraham Ali. Prepared for EthioSkills Intelligence. Reach the author at mesfnism@gmail.com.</p>
 </div>
 </body>

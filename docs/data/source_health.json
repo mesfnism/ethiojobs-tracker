@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-10-02 11:23:13 UTC",
+  "stalled_streak_threshold": 3,
+  "sources": [
+    {
+      "source": "EthioJobs",
+      "status": "active",
+      "total_runs_logged": 21,
+      "last_run_timestamp_utc": "2026-10-02 11:14:36 UTC",
+      "last_run_new_postings": 65,
+      "consecutive_zero_new_runs": 0,
+      "new_postings_last_5_runs": 65,
+      "current_total_postings": 952,
+      "note": ""
+    },
+    {
+      "source": "HaHuJobs",
+      "status": "active",
+      "total_runs_logged": 10,
+      "last_run_timestamp_utc": "2026-10-02 11:16:01 UTC",
+      "last_run_new_postings": 65,
+      "consecutive_zero_new_runs": 0,
+      "new_postings_last_5_runs": 66,
+      "current_total_postings": 1370,
+      "note": ""
+    },
+    {
+      "source": "ReporterJobs",
+      "status": "stalled",
+      "total_runs_logged": 9,
+      "last_run_timestamp_utc": "2026-10-02 11:16:23 UTC",
+      "last_run_new_postings": 0,
+      "consecutive_zero_new_runs": 9,
+      "new_postings_last_5_runs": 0,
+      "current_total_postings": 0,
+      "note": "No new postings logged across the last 9 consecutive runs. This may reflect a genuinely exhausted source, or a pipeline problem worth investigating directly against the live site."
+    },
+    {
+      "source": "PalmJobs",
+      "status": "stalled",
+      "total_runs_logged": 8,
+      "last_run_timestamp_utc": "2026-10-02 11:16:29 UTC",
+      "last_run_new_postings": 0,
+      "consecutive_zero_new_runs": 8,
+      "new_postings_last_5_runs": 0,
+      "current_total_postings": 0,
+      "note": "No new postings logged across the last 8 consecutive runs. This may reflect a genuinely exhausted source, or a pipeline problem worth investigating directly against the live site."
+    },
+    {
+      "source": "DevNetJobs",
+      "status": "stalled",
+      "total_runs_logged": 8,
+      "last_run_timestamp_utc": "2026-10-02 11:16:58 UTC",
+      "last_run_new_postings": 0,
+      "consecutive_zero_new_runs": 5,
+      "new_postings_last_5_runs": 0,
+      "current_total_postings": 1,
+      "note": "No new postings logged across the last 5 consecutive runs. This may reflect a genuinely exhausted source, or a pipeline problem worth investigating directly against the live site."
+    },
+    {
+      "source": "HarmeeJobs",
+      "status": "active",
+      "total_runs_logged": 8,
+      "last_run_timestamp_utc": "2026-10-02 11:17:03 UTC",
+      "last_run_new_postings": 9,
+      "consecutive_zero_new_runs": 0,
+      "new_postings_last_5_runs": 9,
+      "current_total_postings": 48,
+      "note": ""
+    },
+    {
+      "source": "ElelanaJobs",
+      "status": "active",
+      "total_runs_logged": 1,
+      "last_run_timestamp_utc": "2026-10-02 11:17:06 UTC",
+      "last_run_new_postings": 14,
+      "consecutive_zero_new_runs": 0,
+      "new_postings_last_5_runs": 14,
+      "current_total_postings": 14,
+      "note": ""
+    },
+    {
+      "source": "KebenaJobs",
+      "status": "quiet",
+      "total_runs_logged": 1,
+      "last_run_timestamp_utc": "2026-10-02 11:17:07 UTC",
+      "last_run_new_postings": 0,
+      "consecutive_zero_new_runs": 1,
+      "new_postings_last_5_runs": 0,
+      "current_total_postings": 0,
+      "note": "The most recent run added no new postings, but this has not yet repeated enough times to call it stalled."
+    },
+    {
+      "source": "Afriworket",
+      "status": "active",
+      "total_runs_logged": 1,
+      "last_run_timestamp_utc": "2026-10-02 11:21:43 UTC",
+      "last_run_new_postings": 200,
+      "consecutive_zero_new_runs": 0,
+      "new_postings_last_5_runs": 200,
+      "current_total_postings": 200,
+      "note": ""
+    },
+    {
+      "source": "GeezJobs",
+      "status": "active",
+      "total_runs_logged": 1,
+      "last_run_timestamp_utc": "2026-10-02 11:23:06 UTC",
+      "last_run_new_postings": 60,
+      "consecutive_zero_new_runs": 0,
+      "new_postings_last_5_runs": 60,
+      "current_total_postings": 60,
+      "note": ""
+    }
+  ],
+  "summary": {
+    "stalled_sources": [
+      "ReporterJobs",
+      "PalmJobs",
+      "DevNetJobs"
+    ],
+    "sources_with_no_data_yet": []
+  }
+}
