@@ -39,6 +39,7 @@ from pathlib import Path
 
 ROLLUPS_PATH = "docs/data/rollups.json"
 HISTORY_PATH = "docs/data/report_history.json"
+SOURCE_HEALTH_PATH = "docs/data/source_health.json"
 REPORTS_DIR = "docs/reports"
 
 PROJECT_NAME = "EthioSkills Intelligence"
@@ -103,8 +104,10 @@ REFERENCES = [
     "Industrial Classification of All Economic Activities).",
     "Primary vacancy data. EthioJobs (ethiojobs.net), HaHuJobs (hahu.jobs), Ethiopian "
     "Reporter Jobs (ethiopianreporterjobs.com), PalmJobs (palmjobs.et), DevNetJobs "
-    "(devnetjobs.org, filtered to Ethiopia) and HarmeeJobs, scraped and standardized "
-    "daily by the author's own open pipeline (github.com, EthioJobs Tracker project).",
+    "(devnetjobs.org, filtered to Ethiopia), HarmeeJobs, ElelanaJobs (elelanajobs.com), "
+    "KebenaJobs (kebenajobs.com), Afriworket (afriworket.com) and GeezJobs "
+    "(geezjobs.com), scraped and standardized daily by the author's own open pipeline "
+    "(github.com, EthioJobs Tracker project).",
 ]
 
 # Per-source notes: scope, strength, weakness, possible fix. Used in the Sources page.
@@ -210,6 +213,67 @@ SOURCE_PROFILES = [
                     "read from full detail pages.",
         "fix": "where the feed links back to a full posting page, fetching that page for "
                "the subset of fields it still lacks is a natural next step.",
+    },
+    {
+        "name": "ElelanaJobs", "key": "ElelanaJobs",
+        "scope": "A smaller Ethiopian job board read via its own public RSS feed, "
+                 "carrying a mix of banking, insurance and private sector postings.",
+        "strength": "the full posting text comes through in the feed itself, with no "
+                    "separate page fetch needed, the same stable connection advantage "
+                    "HarmeeJobs has.",
+        "weakness": "many of its postings are bulletins announcing several distinct "
+                    "roles at one employer under a single headline rather than one "
+                    "posting per role, so this report counts each bulletin once rather "
+                    "than once per role within it, and fields such as education and "
+                    "years of experience, which would need to be attributed to a "
+                    "specific role within a multi role bulletin, are left unstated "
+                    "rather than guessed at.",
+        "fix": "splitting a multi role bulletin into one tracked posting per numbered "
+               "role is the natural next step, and would also make education and "
+               "experience extractable per role instead of left blank.",
+    },
+    {
+        "name": "KebenaJobs", "key": "KebenaJobs",
+        "scope": "A smaller Ethiopian job board, built on the same underlying software "
+                 "as ElelanaJobs and read the same way, via its own public RSS feed.",
+        "strength": "the same stable, full text RSS connection as ElelanaJobs.",
+        "weakness": "the same multi role bulletin pattern described for ElelanaJobs "
+                    "above.",
+        "fix": "the same fix described for ElelanaJobs above would apply here too.",
+    },
+    {
+        "name": "Afriworket", "key": "Afriworket",
+        "scope": "A modern Ethiopian job platform covering a broad mix of private "
+                 "sector roles, including a notable share of informal, freelance and "
+                 "gig style postings that the older general job boards rarely carry.",
+        "strength": "the richest structured detail page of any source tracked here, "
+                    "stating economic activity, education qualification, vacancy "
+                    "count, experience level and a defined skill list as separate "
+                    "fields rather than mixed into free text.",
+        "weakness": "a posting's pay is disclosed as a specific monthly figure only "
+                    "for some roles, a generic pay period label appears even when no "
+                    "figure is given, and this report keeps only the figure, treating "
+                    "the label alone as not stating a salary, so salary coverage for "
+                    "this source reflects what employers actually disclosed rather "
+                    "than an artifact of the page's own layout.",
+        "fix": "no fix is currently planned. The gap is a property of what employers "
+               "choose to disclose on this platform, not a parsing limitation.",
+    },
+    {
+        "name": "GeezJobs", "key": "GeezJobs",
+        "scope": "A general Ethiopian job board covering a broad mix of private "
+                 "sector, NGO and public roles.",
+        "strength": "a detail page that states work type, contract type, years of "
+                    "experience and a specific deadline date as separate fields, and "
+                    "in many postings an education requirement embedded in the "
+                    "description text that this pipeline extracts directly.",
+        "weakness": "the site exposes only its own front page of featured and latest "
+                    "postings, roughly seventy at a time, with no further pagination "
+                    "or search API behind it, so this source's tracked history is "
+                    "bounded by what the site itself chooses to keep visible rather "
+                    "than by anything this pipeline could walk further into.",
+        "fix": "none is available from this pipeline alone. A deeper archive would "
+               "require the site itself to expose one.",
     },
 ]
 
@@ -509,6 +573,7 @@ def build_toc():
         ("introduction", "Introduction"),
         ("sources", "Data Sources"),
         ("analysis", "Analysis"),
+        ("data-quality", "Concentration, Coverage and Source Reliability"),
         ("limitations", "Advantages, Limitations and Planned Improvements"),
         ("conclusion", "Conclusion"),
         ("recommendations", "Recommendations"),
@@ -556,7 +621,7 @@ def build_executive_summary(window_label, period_label, current, insights):
         <div>
           <p class="scope-head">It measures</p>
           <ul class="plain">
-            <li>Online vacancy advertisements on six tracked job boards</li>
+            <li>Online vacancy advertisements on ten tracked job boards</li>
             <li>Skills, qualifications and experience as advertised in those postings</li>
             <li>Employer and economic activity patterns within that advertised set</li>
             <li>Period to period change in what is advertised online</li>
@@ -578,7 +643,7 @@ def build_executive_summary(window_label, period_label, current, insights):
     body = f"""
 <h1 class="page-title" id="exec-summary">Executive Summary</h1>
 <p>This {window_label} edition of {esc(PROJECT_NAME)} tracked {current['posting_count']} vacancy
-postings across six Ethiopian job boards, standardized against international occupation, skills,
+postings across ten Ethiopian job boards, standardized against international occupation, skills,
 education and industry taxonomies so that figures reported here are comparable across sources and
 over time. The purpose of this exercise is not to replace Ethiopia's official labour market
 information architecture, but to complement it. The national E-LMIS and the Ethiopian Statistical
@@ -624,8 +689,9 @@ produced on a rolling basis. A weekly edition captures movement over the short r
 captures a steadier baseline. Both are generated automatically from the same underlying dataset and
 published alongside a live, continuously updated dashboard.</p>
 <h2>Scope and methodology, briefly</h2>
-<p>Six sources are tracked. EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs
-(filtered to postings relevant to Ethiopia) and HarmeeJobs. A posting that has been cross posted to
+<p>Ten sources are tracked. EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs
+(filtered to postings relevant to Ethiopia), HarmeeJobs, ElelanaJobs, KebenaJobs, Afriworket and
+GeezJobs. A posting that has been cross posted to
 more than one source is identified and merged rather than double counted, matched on employer, job
 title and location within a short window around the posting date. Each of the four taxonomies above
 is applied independently per field. A posting that cannot be confidently classified against a given
@@ -778,17 +844,170 @@ shortage or structural need.</p>
     return page(body)
 
 
+def build_data_quality(window_label, window_data, source_health):
+    def conc_sentence(label, conc):
+        if not conc or not conc.get("distinct_count"):
+            return f"Not enough data yet to measure how concentrated {label} are this period."
+        return (f"The top 10 {label} account for {conc['top10_share_pct']} percent of all mentions "
+                f"this period, across {conc['distinct_count']} distinct entries seen "
+                f"(Herfindahl-Hirschman Index {conc['hhi']}).")
+
+    concentration_body = "<ul class=\"plain\">" + "".join(
+        f"<li>{esc(conc_sentence(label, window_data.get(key, {})))}</li>"
+        for key, label in [
+            ("skill_concentration", "skills"),
+            ("employer_concentration", "employers"),
+            ("category_concentration", "economic activities"),
+        ]
+    ) + "</ul>"
+
+    registry = window_data.get("employer_registry", [])
+    merged = [e for e in registry if e.get("variant_spellings", 1) > 1]
+    registry_rows = "".join(
+        f"<tr><td>{esc(e['label'])}</td><td>{e['count']}</td><td>{e['variant_spellings']}</td></tr>"
+        for e in registry[:10]
+    )
+    registry_table = (
+        f'<table class="data-table"><caption>Table 3. Employer posting counts after merging spelling '
+        f'variants of the same employer name, {esc(window_label)} window.</caption>'
+        f'<thead><tr><th>Employer (canonicalized)</th><th>Postings</th><th>Spellings merged</th></tr></thead>'
+        f'<tbody>{registry_rows}</tbody></table>'
+    ) if registry_rows else "<p><em>Not enough employer data yet to tabulate.</em></p>"
+    registry_note = (
+        f"<p>{len(merged)} of the employers listed here were counted under more than one raw spelling "
+        f"before being merged (for example a legal suffix like \"PLC\" or \"S.C.\" present on some "
+        f"postings and absent on others for the same employer).</p>" if merged else
+        "<p>No employer in this period's top entries needed more than one spelling merged.</p>"
+    )
+
+    region = window_data.get("region", {})
+    region_rows = "".join(
+        f"<tr><td>{esc(r['label'])}</td><td>{r['count']}</td><td>{r['share_pct']}%</td></tr>"
+        for r in region.get("regions", [])
+    )
+    region_table = (
+        f'<table class="data-table"><caption>Table 4. Postings by Ethiopian region, {esc(window_label)} window.</caption>'
+        f'<thead><tr><th>Region</th><th>Postings</th><th>Share of located postings</th></tr></thead>'
+        f'<tbody>{region_rows}</tbody></table>'
+    ) if region_rows else "<p><em>Not enough location data yet to tabulate by region.</em></p>"
+    region_sentence = (
+        f"Of {region.get('known_total', 0)} postings stating a usable location this period, "
+        f"{region.get('unclassified', 0)} could not be matched to a specific region by this lookup "
+        f"and are left out of Table 4 rather than guessed at."
+    ) if region.get("known_total") else "Not enough postings with a usable location this period to break down by region."
+
+    lang = window_data.get("language", {})
+    lang_rows = "".join(
+        f"<tr><td>{esc(l['label'])}</td><td>{l['count']}</td><td>{l['share_pct']}%</td></tr>"
+        for l in lang.get("languages", [])
+    )
+    lang_table = (
+        f'<table class="data-table"><caption>Table 5. Postings by language of title and description text, '
+        f'{esc(window_label)} window.</caption>'
+        f'<thead><tr><th>Language</th><th>Postings</th><th>Share</th></tr></thead>'
+        f'<tbody>{lang_rows}</tbody></table>'
+    ) if lang_rows else "<p><em>Not enough title or description text this period to classify by language.</em></p>"
+
+    intensity = window_data.get("skill_intensity_by_role", [])
+    intensity_rows = "".join(
+        f"<tr><td>{esc(i['label'])}</td><td>{i['count']}</td><td>{i['avg_skills_per_posting']}</td></tr>"
+        for i in intensity[:10]
+    )
+    intensity_table = (
+        f'<table class="data-table"><caption>Table 6. Average number of distinct skills stated per posting, '
+        f'by occupation group (ISCO-08), {esc(window_label)} window.</caption>'
+        f'<thead><tr><th>Occupation group</th><th>Postings with stated skills</th><th>Avg. skills per posting</th></tr></thead>'
+        f'<tbody>{intensity_rows}</tbody></table>'
+    ) if intensity_rows else "<p><em>Not enough postings with stated skills yet to tabulate by occupation group.</em></p>"
+
+    health_rows = []
+    if source_health:
+        status_tag = {
+            "active": '<span class="tag stable">ACTIVE</span>',
+            "quiet": '<span class="tag up">QUIET</span>',
+            "stalled": '<span class="tag down">STALLED</span>',
+            "no_data_yet": '<span class="tag new">NO DATA YET</span>',
+            "no_run_log": '<span class="tag new">NO LOG</span>',
+            "unknown": '<span class="tag new">UNKNOWN</span>',
+        }
+        for s in source_health.get("sources", []):
+            tag = status_tag.get(s["status"], "")
+            runs = s.get("total_runs_logged", "n/a")
+            last_new = s.get("last_run_new_postings", "n/a")
+            health_rows.append(
+                f"<tr><td>{esc(s['source'])}</td><td>{tag}</td><td>{esc(str(runs))}</td>"
+                f"<td>{esc(str(last_new))}</td></tr>"
+            )
+    health_table = (
+        f'<table class="data-table"><caption>Table 7. Per-source run reliability, as of this report\'s '
+        f'generation.</caption>'
+        f'<thead><tr><th>Source</th><th>Status</th><th>Runs logged</th><th>New postings, last run</th></tr></thead>'
+        f'<tbody>{"".join(health_rows)}</tbody></table>'
+    ) if health_rows else "<p><em>Source reliability data is not available for this edition.</em></p>"
+    stalled = source_health.get("summary", {}).get("stalled_sources", []) if source_health else []
+    health_note = (
+        f"<p>{', '.join(esc(s) for s in stalled)} show no new postings across several consecutive runs as "
+        f"of this edition. This is flagged for investigation against the live site, not stated as a "
+        f"confirmed failure, since a genuinely exhausted source can also post nothing new for a stretch.</p>"
+        if stalled else
+        "<p>No source is currently flagged as stalled under this report's reliability check.</p>"
+    )
+
+    body = f"""
+<h1 class="page-title" id="data-quality">Concentration, Coverage and Source Reliability</h1>
+<p>This section reports what the rest of the Analysis section does not. It covers how concentrated
+advertised demand is among a small set of skills, employers or economic activities, how coverage
+breaks down by employer identity, region and language, and how reliably each tracked source is
+actually producing new postings. None of this changes what the headline tables say. It is context for
+how much weight to put on them.</p>
+<h2>Concentration</h2>
+{concentration_body}
+<h2>Employer registry</h2>
+<p>Employer names are canonicalized (legal suffixes such as "PLC" or "S.C." and punctuation
+differences stripped) before counting, so the same employer posting under slightly different
+spellings is counted once rather than split across entries.</p>
+{registry_table}
+{registry_note}
+<h2>Postings by region</h2>
+<p>{region_sentence}</p>
+{region_table}
+<h2>Language coverage</h2>
+<p>Classified from the Unicode script of each posting's title and description text. This tells
+English from Ethiopic script (the script Amharic and Tigrinya are both written in) reliably, but
+does not distinguish Amharic from Tigrinya, and a posting using neither Latin nor Ethiopic letters,
+such as one stated only in numerals or symbols, falls outside both categories.</p>
+{lang_table}
+<h2>Skill intensity by occupation group</h2>
+<p>Occupation groups whose postings tend to list more distinct skills are not necessarily harder to
+fill. A longer skills list can simply reflect a more detailed job advertisement. This is reported as
+descriptive context, not as a shortage signal, and only for groups with at least three postings
+stating a skills list.</p>
+{intensity_table}
+<h2>Source reliability</h2>
+<p>Each tracked source's own run history is checked for whether it is still finding new postings. A
+source that logs several consecutive runs adding zero new postings is flagged as stalled below.</p>
+{health_table}
+{health_note}
+"""
+    return page(body)
+
+
 def build_limitations(insights):
     gaps = insights["coverage_gaps"]
     gap_sentence = ""
     if gaps:
         items = ", ".join(f"{esc(g['label'])} ({g['pct']}% of postings)" for g in gaps)
-        gap_sentence = (f"<p>In this edition specifically, coverage is thin for {items}. Three of the six "
+        gap_sentence = (f"<p>In this edition specifically, coverage is thin for {items}. Three of the ten "
                          f"tracked sources, Ethiopian Reporter Jobs, PalmJobs and DevNetJobs, are also "
                          f"currently contributing fewer postings than their true listing volume, for the "
                          f"technical reasons specific to each source set out on the Data Sources page. "
-                         f"Fixes for each have been applied and their effect is being confirmed over the "
-                         f"next few scheduled runs.</p>")
+                         f"Fixes for each have been applied on the pipeline side, but as of this edition "
+                         f"their posting volume has not yet recovered (see the source reliability table in "
+                         f"the previous section), and that is stated here rather than implied resolved. "
+                         f"ElelanaJobs, KebenaJobs, Afriworket and GeezJobs were "
+                         f"added to the tracked set most recently and do not yet have a confirmed run "
+                         f"history, so their stated volume should be read with that in mind until several "
+                         f"scheduled runs have passed.</p>")
     body = f"""
 <h1 class="page-title" id="limitations">Advantages, Limitations and Planned Improvements</h1>
 <h2>Advantages of this approach</h2>
@@ -808,9 +1027,12 @@ def build_limitations(insights):
   <li>Coverage is restricted to vacancies advertised on the specific online boards tracked. Informal,
   word of mouth, and unadvertised hiring, a substantial share of actual hiring activity in Ethiopia,
   is not observed at all.</li>
-  <li>Classification currently works on text written in English. A meaningful share of postings,
-  particularly from public institutions, are written in Amharic and are not yet classified into the
-  Skills, Education or Sector breakdowns, though they are still counted toward overall volume.</li>
+  <li>Classification currently works on text written in English. Postings written in Ethiopic script
+  (Amharic or Tigrinya), measured in the language table in the next section, are not yet classified
+  into the Skills, Education or Sector breakdowns, though they are still counted toward overall
+  volume.</li>
+  <li>Region is inferred from a keyword lookup against each posting's stated location, not a verified
+  gazetteer, and a location this lookup does not recognize is left unclassified rather than guessed.</li>
   <li>Employer type (Private, Public or NGO) is inferred from a keyword heuristic on the employer's own
   name, not a verified registry lookup, and should be read as indicative.</li>
   <li>Tracked history is still short relative to the seasonal cycles a labour market can exhibit over a
@@ -903,7 +1125,7 @@ def build_references():
 
 
 def render_report_html(report_title, period_label, window_label, generated_at, insights,
-                        window_data, this_url_name, other_report_link, dashboard_link):
+                        window_data, this_url_name, other_report_link, dashboard_link, source_health=None):
     current = insights["current"]
     pages = [
         build_cover(report_title, window_label, period_label, generated_at, other_report_link, dashboard_link),
@@ -912,6 +1134,7 @@ def render_report_html(report_title, period_label, window_label, generated_at, i
         build_introduction(window_label, period_label),
         build_sources(insights),
         build_analysis(window_label, current, insights, window_data),
+        build_data_quality(window_label, window_data, source_health),
         build_limitations(insights),
         build_conclusion(window_label, current, insights),
         build_recommendations(),
@@ -945,6 +1168,14 @@ def main():
     rollups = json.loads(Path(ROLLUPS_PATH).read_text())
     as_of_date = rollups["generated_at"][:10]  # "YYYY-MM-DD HH:MM:SS UTC" -> "YYYY-MM-DD"
 
+    source_health = None
+    health_path = Path(SOURCE_HEALTH_PATH)
+    if health_path.exists():
+        try:
+            source_health = json.loads(health_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            source_health = None
+
     history = update_history(HISTORY_PATH, rollups, as_of_date)
     weekly_baseline = find_baseline(history, as_of_date, target_days_ago=7)
     monthly_baseline = find_baseline(history, as_of_date, target_days_ago=30)
@@ -967,6 +1198,7 @@ def main():
             report_title=title, period_label=period_label, window_label=window_label,
             generated_at=rollups["generated_at"], insights=insights, window_data=window_data,
             this_url_name=this_name, other_report_link=other_name, dashboard_link="../index.html",
+            source_health=source_health,
         )
         html_path = Path(REPORTS_DIR) / f"{key}-intelligence-report.html"
         html_path.write_text(html)

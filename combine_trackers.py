@@ -1,5 +1,5 @@
 """
-Combine Trackers — merges ethiojobs_tracker.xlsx and hahujobs_tracker.xlsx
+Combine Trackers — merges every source tracker (see INPUT_FILES below)
 into one combined_tracker.xlsx, so the dashboard reflects vacancies from
 every source in one place, the way the user asked: "the final results,
 the vacancies, aggregated."
@@ -43,6 +43,10 @@ INPUT_FILES = [
     "palmjobs_tracker.xlsx",
     "devnetjobs_tracker.xlsx",
     "harmeejobs_tracker.xlsx",
+    "elelanajobs_tracker.xlsx",
+    "kebenajobs_tracker.xlsx",
+    "afriworket_tracker.xlsx",
+    "geezjobs_tracker.xlsx",
 ]
 OUTPUT_XLSX = "combined_tracker.xlsx"
 DEDUP_WINDOW_DAYS = 14
@@ -183,7 +187,10 @@ def combine(all_rows):
     return combined_rows, dup_count
 
 
-SOURCE_LOG_ORDER = ["EthioJobs", "HaHuJobs", "ReporterJobs", "PalmJobs", "DevNetJobs", "HarmeeJobs"]
+SOURCE_LOG_ORDER = [
+    "EthioJobs", "HaHuJobs", "ReporterJobs", "PalmJobs", "DevNetJobs", "HarmeeJobs",
+    "ElelanaJobs", "KebenaJobs", "Afriworket", "GeezJobs",
+]
 
 
 def write_output(rows, per_source_counts, dup_count):

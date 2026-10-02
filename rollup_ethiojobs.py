@@ -24,6 +24,7 @@ so it always summarizes the freshly updated combined dataset.
 """
 
 import json
+import re
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -34,6 +35,10 @@ import taxonomy
 
 INPUT_XLSX = "combined_tracker.xlsx"
 OUTPUT_JSON = "docs/data/rollups.json"
+SOURCE_LABEL = (
+    "EthioJobs, HaHuJobs, Ethiopian Reporter Jobs, PalmJobs, DevNetJobs, HarmeeJobs, "
+    "ElelanaJobs, KebenaJobs, Afriworket, GeezJobs"
+)
 
 WINDOWS = {
     "daily": 1,
@@ -69,6 +74,319 @@ def parse_scraped(value):
         return None
 
 
+def _with_share_pct(items, denom):
+    """Adds a share_pct field to each {"label", "count"} item, as a
+    percentage of `denom` (normally the number of postings in the window),
+    rounded to one decimal. Used throughout this file so every ranked list
+    also shows how concentrated it is, not just raw counts."""
+    if not denom:
+        return [dict(it, share_pct=0.0) for it in items]
+    return [dict(it, share_pct=round(it["count"] / denom * 100, 1)) for it in items]
+
+
+def _concentration_stats(counter):
+    """Simple concentration measures over a FULL (not top-n-truncated)
+    Counter: what share of all mentions/postings the top 5 and top 10
+    entries account for, and a Herfindahl-Hirschman Index (HHI, on a
+    0-10000 scale, computed over each entry's share of mentions) as a
+    single-number concentration summary. A higher HHI means demand is
+    concentrated in fewer entries, a lower one means it is spread out.
+    This needs no new data collection, only arithmetic over counts
+    already produced by the breakdown functions below."""
+    total = sum(counter.values())
+    if not counter or not total:
+        return {"distinct_count": 0, "top5_share_pct": 0.0, "top10_share_pct": 0.0, "hhi": 0.0}
+    most_common = counter.most_common()
+    top5 = sum(c for _, c in most_common[:5])
+    top10 = sum(c for _, c in most_common[:10])
+    hhi = sum((c / total * 100) ** 2 for _, c in most_common)
+    return {
+        "distinct_count": len(counter),
+        "top5_share_pct": round(top5 / total * 100, 1),
+        "top10_share_pct": round(top10 / total * 100, 1),
+        "hhi": round(hhi, 1),
+    }
+
+
+def _skills_counter(rows):
+    counter = Counter()
+    for r in rows:
+        if not r.get("skills_required"):
+            continue
+        for s in r["skills_required"].split(";"):
+            canon = taxonomy.normalize_skill(s)
+            if canon:
+                counter[canon] += 1
+    return counter
+
+
+def _employers_counter(rows):
+    counter = Counter()
+    for r in rows:
+        employer = r.get("employer")
+        if not employer:
+            continue
+        counter[taxonomy.title_case_label(employer.strip())] += 1
+    return counter
+
+
+def _categories_counter(rows):
+    counter = Counter()
+    for r in rows:
+        if not r.get("category"):
+            continue
+        for c in r["category"].split(";"):
+            c = c.strip().rstrip(".")
+            if not c:
+                continue
+            c = CATEGORY_EXPANSIONS.get(c, c)
+            sector = taxonomy.isic_section_for_text(c)
+            if sector:
+                counter[sector["label"]] += 1
+    return counter
+
+
+def skill_concentration(rows):
+    """How concentrated postings' stated skills are overall this window
+    (distinct from skill_groups/top_skills, which rank entries but don't
+    summarize concentration in one figure)."""
+    return _concentration_stats(_skills_counter(rows))
+
+
+def employer_concentration(rows):
+    """How concentrated postings are among a small set of employers this
+    window — a high top10_share_pct means a handful of employers account
+    for most tracked postings, which is useful context for reading
+    top_employers rather than treating every employer as equally
+    represented."""
+    return _concentration_stats(_employers_counter(rows))
+
+
+def category_concentration(rows):
+    """Same idea as skill_concentration/employer_concentration, for
+    economic activity (ISIC) categories."""
+    return _concentration_stats(_categories_counter(rows))
+
+
+_LEGAL_SUFFIX_RE = re.compile(
+    r"\b(plc|p\.l\.c\.?|s\.c\.?|share company|ltd|llc|inc|co\.?|company|"
+    r"pvt\.?\s*ltd\.?)\b\.?",
+    re.I,
+)
+_PUNCT_WS_RE = re.compile(r"[^\w\s]")
+_MULTI_WS_RE = re.compile(r"\s+")
+
+
+def normalize_employer_key(name):
+    """Collapses spelling variants of the same employer name (legal
+    suffixes like "PLC"/"S.C."/"Ltd", punctuation, casing) onto one key,
+    the same normalization combine_trackers.py already applies for
+    cross-source dedup, reused here so the employer registry below
+    doesn't count "Dashen Bank S.C." and "Dashen Bank" as two different
+    employers."""
+    if not name:
+        return ""
+    s = name.lower()
+    s = _LEGAL_SUFFIX_RE.sub("", s)
+    s = _PUNCT_WS_RE.sub(" ", s)
+    return _MULTI_WS_RE.sub(" ", s).strip()
+
+
+def employer_registry(rows, n=15):
+    """A canonicalized employer ranking: every spelling variant of the
+    same employer (differing only in legal suffix, punctuation or casing)
+    is merged into one entry before counting, with the most frequently
+    seen original spelling kept as the display label and the number of
+    distinct spellings seen recorded as variant_spellings, so a reader can
+    tell when a count already reflects several raw spellings merged
+    together. This is additive to top_employers (which keeps raw casing
+    differences separate) rather than a replacement for it."""
+    groups = {}
+    for r in rows:
+        employer = r.get("employer")
+        if not employer:
+            continue
+        key = normalize_employer_key(employer)
+        if not key:
+            continue
+        groups.setdefault(key, Counter())[employer.strip()] += 1
+    entries = []
+    for key, spellings in groups.items():
+        canonical_raw, _ = spellings.most_common(1)[0]
+        entries.append({
+            "label": taxonomy.title_case_label(canonical_raw),
+            "count": sum(spellings.values()),
+            "variant_spellings": len(spellings),
+        })
+    entries.sort(key=lambda e: e["count"], reverse=True)
+    return _with_share_pct(entries[:n], len(rows))
+
+
+ETHIOPIA_REGIONS = {
+    "Addis Ababa": ["addis ababa", "addis abeba", "finfinne"],
+    "Oromia": [
+        "adama", "nazret", "nazreth", "jimma", "bishoftu", "debre zeit",
+        "shashamene", "shashamane", "nekemte", "nekemt", "ambo", "asella",
+        "assela", "bale robe", "metu", "woliso", "waliso", "sebeta",
+        "burayu", "ziway", "zeway", "batu", "chiro", "goba",
+        "negele borena", "jimma zone",
+    ],
+    "Amhara": [
+        "bahir dar", "bahirdar", "gondar", "gonder", "dessie", "dese",
+        "debre birhan", "debre markos", "woldia", "weldiya", "kombolcha",
+        "lalibela", "injibara", "debre tabor", "finote selam", "bati",
+    ],
+    "Tigray": ["mekelle", "mekele", "adigrat", "axum", "aksum", "shire", "humera", "adwa"],
+    "Sidama": ["hawassa", "hawasa", "awasa", "yirgalem"],
+    "SNNPR": [
+        "arba minch", "wolaita sodo", "wolayta sodo", "sodo", "dilla",
+        "bonga", "mizan teferi", "jinka", "konso", "butajira", "worabe",
+    ],
+    "Somali": ["jijiga", "jigjiga", "degehabur", "gode", "kebri dehar", "shilabo"],
+    "Afar": ["semera", "dubti", "awash", "logiya", "asayita"],
+    "Benishangul-Gumuz": ["assosa", "asosa", "gilgel beles"],
+    "Gambela": ["gambela", "gambella"],
+    "Harari": ["harar"],
+    "Dire Dawa": ["dire dawa"],
+}
+
+
+def region_for_location(location):
+    """Maps a free-text location string onto one of Ethiopia's regions via
+    a keyword lookup (ETHIOPIA_REGIONS), the same kind of heuristic
+    approach taxonomy.employer_type already uses for employer type — not a
+    verified gazetteer lookup, so a city this table doesn't recognise (or
+    a vague value like "Remote") is left unclassified rather than
+    guessed."""
+    if not location:
+        return None
+    loc = location.lower()
+    for region, keywords in ETHIOPIA_REGIONS.items():
+        for kw in keywords:
+            if kw in loc:
+                return region
+    return None
+
+
+def region_breakdown(rows, n=15):
+    """Postings by Ethiopian region, inferred from the already-collected
+    location field. Needs no new source data, only the lookup above."""
+    counter = Counter()
+    known_total = 0
+    unclassified = 0
+    for r in rows:
+        loc = r.get("location")
+        if not loc or loc.strip().lower() in _BAD_LOCATION_LABELS:
+            continue
+        known_total += 1
+        region = region_for_location(loc)
+        if region:
+            counter[region] += 1
+        else:
+            unclassified += 1
+    return {
+        "known_total": known_total,
+        "total": len(rows),
+        "unclassified": unclassified,
+        "regions": _with_share_pct(
+            [{"label": label, "count": c} for label, c in counter.most_common(n)], known_total,
+        ),
+    }
+
+
+_ETHIOPIC_RANGE = (0x1200, 0x137F)
+
+
+def _script_mix(text):
+    """Classifies a piece of text as English, Ethiopic script, Mixed, or
+    Other/unclear, purely from the Unicode script of its letters (the
+    Ethiopic block U+1200-U+137F covers Amharic and Tigrinya alike, so
+    "Ethiopic script" is the accurate label, not "Amharic" specifically —
+    this cannot and does not try to tell Amharic from Tigrinya)."""
+    if not text:
+        return None
+    has_ethiopic = False
+    has_latin = False
+    for ch in text:
+        if not ch.isalpha():
+            continue
+        cp = ord(ch)
+        if _ETHIOPIC_RANGE[0] <= cp <= _ETHIOPIC_RANGE[1]:
+            has_ethiopic = True
+        elif cp < 0x2000:
+            has_latin = True
+    if has_ethiopic and has_latin:
+        return "Mixed"
+    if has_ethiopic:
+        return "Ethiopic script (Amharic/Tigrinya)"
+    if has_latin:
+        return "English"
+    return "Other/unclear"
+
+
+def language_breakdown(rows):
+    """Measured language coverage, replacing the vague "a meaningful share
+    of postings are in Amharic" language with an actual count, based on
+    the job title and description text every posting already carries (no
+    new data collection needed). A posting with neither field populated
+    is left out of known_total rather than guessed at."""
+    counter = Counter()
+    known_total = 0
+    for r in rows:
+        text = " ".join(filter(None, [r.get("job_title"), r.get("description")]))
+        if not text.strip():
+            continue
+        known_total += 1
+        label = _script_mix(text)
+        if label:
+            counter[label] += 1
+    order = ["English", "Ethiopic script (Amharic/Tigrinya)", "Mixed", "Other/unclear"]
+    return {
+        "known_total": known_total,
+        "total": len(rows),
+        "languages": _with_share_pct(
+            [{"label": label, "count": counter[label]} for label in order if counter.get(label)], known_total,
+        ),
+    }
+
+
+def skill_intensity_by_role(rows, n=10, min_postings=3):
+    """For each ISCO-08 occupation group with postings stating skills,
+    the average number of distinct ESCO-normalized skills listed per
+    posting — a rough "how skill-heavy is this kind of role's posting"
+    measure, built only from the skills_required field already collected
+    for every source, so it needs no new pipeline logic. A group is only
+    included once at least `min_postings` of its postings state a
+    skills_required value, for the same reason critical_skills_by_role
+    applies that floor."""
+    groups = {}
+    for r in rows:
+        title = r.get("job_title")
+        if not title:
+            continue
+        group = taxonomy.isco_group_for_title(title)
+        if group == "Not classified":
+            continue
+        groups.setdefault(group, []).append(r)
+
+    results = []
+    for label, group_rows in groups.items():
+        with_skills = [r for r in group_rows if r.get("skills_required")]
+        if len(with_skills) < min_postings:
+            continue
+        total_skills = 0
+        for r in with_skills:
+            seen = {taxonomy.normalize_skill(s) for s in r["skills_required"].split(";")}
+            total_skills += len([s for s in seen if s])
+        results.append({
+            "label": label,
+            "count": len(with_skills),
+            "avg_skills_per_posting": round(total_skills / len(with_skills), 1),
+        })
+    results.sort(key=lambda e: e["avg_skills_per_posting"], reverse=True)
+    return results[:n]
+
+
 def top_skills(rows, n=10):
     """Individual skills, ESCO-normalized (merges spacing/casing variants
     like "Teamwork" / "Team work" into one count) and filtered to reject
@@ -82,7 +400,7 @@ def top_skills(rows, n=10):
             canon = taxonomy.normalize_skill(s)
             if canon:
                 counter[canon] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def skill_groups(rows, n=8):
@@ -99,7 +417,7 @@ def skill_groups(rows, n=8):
             group = taxonomy.esco_group_for_skill(canon)
             if group != "Not classified":
                 counter[group] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def education_breakdown(rows):
@@ -135,7 +453,7 @@ def top_categories(rows, n=10):
             sector = taxonomy.isic_section_for_text(c)
             if sector:
                 counter[sector["label"]] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def top_jobs(rows, n=10):
@@ -148,7 +466,7 @@ def top_jobs(rows, n=10):
         group = taxonomy.isco_group_for_title(title)
         if group != "Not classified":
             counter[group] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def top_locations(rows, n=10):
@@ -165,7 +483,7 @@ def top_locations(rows, n=10):
         if not loc or loc.lower() in _BAD_LOCATION_LABELS:
             continue
         counter[taxonomy.title_case_label(loc)] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def sector_subcategories(rows, n=12):
@@ -183,7 +501,7 @@ def sector_subcategories(rows, n=12):
             label = taxonomy.normalize_category_label(c)
             if label:
                 counter[label] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 CRITICAL_SKILLS_TOP_N = 3
@@ -403,7 +721,7 @@ def top_employers(rows, n=10):
         if not employer:
             continue
         counter[taxonomy.title_case_label(employer.strip())] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def employer_type_breakdown(rows):
@@ -470,7 +788,7 @@ def source_site_breakdown(rows, n=10):
             site = site.strip()
             if site:
                 counter[site] += 1
-    return [{"label": label, "count": c} for label, c in counter.most_common(n)]
+    return _with_share_pct([{"label": label, "count": c} for label, c in counter.most_common(n)], len(rows))
 
 
 def posting_trends(rows):
@@ -529,6 +847,13 @@ def summarize(rows):
         "critical_skills_by_sector": critical_skills_by_sector(rows),
         "critical_skills_by_experience": critical_skills_by_experience(rows),
         "critical_skills_by_education": critical_skills_by_education(rows),
+        "skill_concentration": skill_concentration(rows),
+        "employer_concentration": employer_concentration(rows),
+        "category_concentration": category_concentration(rows),
+        "employer_registry": employer_registry(rows),
+        "region": region_breakdown(rows),
+        "language": language_breakdown(rows),
+        "skill_intensity_by_role": skill_intensity_by_role(rows),
     }
 
 
@@ -550,7 +875,7 @@ def main():
 
     payload = {
         "generated_at": now.strftime("%Y-%m-%d %H:%M:%S UTC"),
-        "source": "EthioJobs + HaHuJobs",
+        "source": SOURCE_LABEL,
         "taxonomies": {
             "skills": "ESCO (EU skills/competences taxonomy)",
             "jobs": "ISCO-08 (ILO International Standard Classification of Occupations)",
@@ -566,6 +891,22 @@ def main():
             "critical_skills": f"A sub-sector or role only appears here once at least "
                 f"{CRITICAL_SKILLS_MIN_POSTINGS} of its postings state a skills_required "
                 f"value, so a top-{CRITICAL_SKILLS_TOP_N} list is never built from a single posting.",
+            "employer_registry": "Employer names are grouped by stripping legal suffixes "
+                "and punctuation before counting, so minor spelling differences for the "
+                "same employer are merged. This is a text heuristic, not a verified "
+                "business registry lookup.",
+            "region": "Region is inferred from a keyword lookup against the location "
+                "field a posting already states. A location this lookup does not "
+                "recognize, including a bare country name or Remote, is left "
+                "unclassified rather than guessed.",
+            "language": "Language is classified from the Unicode script of each "
+                "posting's title and description text. This tells English from "
+                "Ethiopic script reliably, but does not distinguish Amharic from "
+                "Tigrinya or any other language written in that script.",
+            "concentration": "Top 5 and top 10 share and the Herfindahl-Hirschman Index "
+                "(HHI) describe how concentrated postings are among the leading "
+                "skills, employers or categories this window, not whether that "
+                "concentration reflects a genuine shortage.",
         },
         "windows": windows_out,
         "trends": trends,
