@@ -10,13 +10,52 @@ it. The label-based detail parser doesn't depend on field order and was
 already covered by a fixture built from the site's real field labels.
 """
 
-from reporterjobs_pipeline import parse_listing_card, parse_detail_text, structure_job
+from reporterjobs_pipeline import (
+    parse_listing_card, parse_detail_text, structure_job,
+    fetch_listing_page, ListingPageBlocked,
+)
 
 
 def check(name, condition):
     status = "PASS" if condition else "FAIL"
     print(f"[{status}] {name}")
     return condition
+
+
+class _FakeResponse:
+    def __init__(self, status):
+        self.status = status
+
+
+class _FakePage:
+    """Minimal stand-in for a Playwright Page, covering only the methods
+    fetch_listing_page actually calls, so the blocked-vs-legitimate-end
+    distinction can be tested without a real browser or network access."""
+
+    def __init__(self, status, has_job_links, title="Some Title", body="body text"):
+        self._status = status
+        self._has_job_links = has_job_links
+        self._title = title
+        self._body = body
+
+    def goto(self, url, wait_until=None, timeout=None, referer=None):
+        return _FakeResponse(self._status) if self._status is not None else None
+
+    def wait_for_selector(self, selector, timeout=None):
+        if not self._has_job_links:
+            raise TimeoutError("no matching selector")
+
+    def wait_for_timeout(self, ms):
+        pass
+
+    def title(self):
+        return self._title
+
+    def inner_text(self, selector):
+        return self._body
+
+    def evaluate(self, script):
+        return [] if not self._has_job_links else [{"href": "/jobs/1/", "text": "Title\n@ Co\nAddis Ababa"}]
 
 
 def main():
@@ -90,6 +129,51 @@ def main():
     # Degenerate shapes shouldn't crash the parser
     all_ok &= check("listing: empty text doesn't crash", parse_listing_card("/jobs/1/", "")["job_id"] == "1")
     all_ok &= check("detail: empty text doesn't crash", parse_detail_text("")["employment_type"] is None)
+
+    # --- Blocked-vs-legitimate-end detection (the 2026-10-02 fix) ---
+    # A 403 (or any 4xx/5xx) on page 1 must raise, never return [].
+    try:
+        fetch_listing_page(_FakePage(status=403, has_job_links=False), 1)
+        all_ok &= check("HTTP 403 on page 1 raises ListingPageBlocked", False)
+    except ListingPageBlocked:
+        all_ok &= check("HTTP 403 on page 1 raises ListingPageBlocked", True)
+
+    # A 403 on a LATER page must also raise (never a legitimate end signal).
+    try:
+        fetch_listing_page(_FakePage(status=403, has_job_links=False), 4)
+        all_ok &= check("HTTP 403 on a later page also raises", False)
+    except ListingPageBlocked:
+        all_ok &= check("HTTP 403 on a later page also raises", True)
+
+    # No response object at all (status None) must raise too.
+    try:
+        fetch_listing_page(_FakePage(status=None, has_job_links=False), 1)
+        all_ok &= check("no response object raises ListingPageBlocked", False)
+    except ListingPageBlocked:
+        all_ok &= check("no response object raises ListingPageBlocked", True)
+
+    # A 200 with zero job links on PAGE 1 specifically must raise (soft
+    # block / layout change) rather than being read as "no more postings."
+    try:
+        fetch_listing_page(_FakePage(status=200, has_job_links=False), 1)
+        all_ok &= check("200 with zero links on page 1 raises", False)
+    except ListingPageBlocked:
+        all_ok &= check("200 with zero links on page 1 raises", True)
+
+    # A 200 with zero job links on a LATER page is a legitimate end of
+    # pagination and must NOT raise — it should just return [].
+    try:
+        result = fetch_listing_page(_FakePage(status=200, has_job_links=False), 5)
+        all_ok &= check("200 with zero links on a later page returns [] (no raise)", result == [])
+    except ListingPageBlocked:
+        all_ok &= check("200 with zero links on a later page returns [] (no raise)", False)
+
+    # A normal, healthy page 1 must return real cards, not raise.
+    try:
+        result = fetch_listing_page(_FakePage(status=200, has_job_links=True), 1)
+        all_ok &= check("200 with real links on page 1 returns cards", len(result) == 1)
+    except ListingPageBlocked:
+        all_ok &= check("200 with real links on page 1 returns cards", False)
 
     print()
     print("ALL TESTS PASSED" if all_ok else "SOME TESTS FAILED")

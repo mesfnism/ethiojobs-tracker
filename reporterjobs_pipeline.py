@@ -23,6 +23,29 @@ so it should be fairly robust; the listing-card parser is positional, best
 real run — if a run fails or looks wrong, send the Action log and this
 gets corrected quickly, the same way the HaHuJobs pipeline's few early
 rough edges were.
+
+Update (2026-10-02): a real run's Action log confirmed the suspicion in
+the USER_AGENT comment below — a plain HTTP 403 on every listing-page
+request, which never got past the warm-up/header changes. The bug this
+exposed is architectural, not cosmetic: fetch_listing_page's "no cards
+found" return value was being used for two completely different
+situations — "we were blocked" and "we genuinely reached the end of the
+postings" — and main() treated both as the harmless latter case, so a
+403 on every page produced a valid-looking Excel file with zero rows, no
+error, and no sign anything was wrong. That's now fixed: fetch_listing_page
+raises ListingPageBlocked for an HTTP error status (any page) or for zero
+job links found on page 1 specifically with an otherwise-OK status (a
+soft block or layout change) — zero cards on a LATER page, after earlier
+pages already returned real postings, is still treated as a legitimate
+end of pagination. main() aborts the whole run (sys.exit(1), no workbook
+write at all) on ListingPageBlocked, rather than writing a file that would
+look identical to a genuinely quiet day. This does not by itself solve the
+403 — if GitHub Actions' outbound IP range is blocked at the WAF/ASN
+level, no amount of header or parser fixing from inside the runner can
+work around that (see the note in fetch_listing_page for what to try
+next: a proxy with a residential/non-data-center exit IP, or running this
+one script from somewhere that isn't on a cloud ASN) — it only makes sure
+that failure is loud instead of silent.
 """
 
 import os
@@ -111,6 +134,24 @@ EDUCATION_PATTERNS = [
     (re.compile(r"\bdiploma\b", re.I), "Diploma"),
     (re.compile(r"\bcertificate\b", re.I), "Certificate"),
 ]
+
+
+class ListingPageBlocked(Exception):
+    """Raised when a listing-page fetch looks like a block/failure rather
+    than a genuine end-of-listings. Distinguishing these two matters: the
+    pipeline must never treat "the site refused us" the same as "there are
+    no more postings," because both currently produce the same symptom
+    (zero cards) and writing that through as an empty tracker would make a
+    scraping failure look like real labor-market information (zero new
+    vacancies) to every downstream report. See fetch_listing_page below for
+    where this is raised, and main() for why it aborts the whole run
+    (sys.exit(1), no workbook write) instead of silently continuing."""
+
+    def __init__(self, page_num, status, reason):
+        self.page_num = page_num
+        self.status = status
+        self.reason = reason
+        super().__init__(f"page {page_num}, HTTP status {status!r}: {reason}")
 
 
 def _job_id_from_href(href):
@@ -297,6 +338,15 @@ def fetch_listing_page(page, page_num):
         referer=prev_url,
     )
     status = response.status if response else None
+
+    # An explicit HTTP error status (confirmed live on 2026-10-01: a bare
+    # 403 from this site) is never a legitimate "no more postings" signal
+    # on ANY page, so it always raises rather than falling through to the
+    # selector-timeout handling below. Likewise no response object at all
+    # (status is None) means the request itself never completed.
+    if status is None or status >= 400:
+        raise ListingPageBlocked(page_num, status, "request returned no response, or an HTTP error status")
+
     try:
         page.wait_for_selector('a[href*="/jobs/"]', timeout=20000)
     except Exception:
@@ -318,6 +368,20 @@ def fetch_listing_page(page, page_num):
         print(f"    [diagnostic] HTTP status: {status!r}")
         print(f"    [diagnostic] page title: {title!r}")
         print(f"    [diagnostic] body snippet: {snippet!r}")
+        if page_num == 1:
+            # No job links on the very first listing page, with an
+            # otherwise-OK HTTP status, almost never means "zero active
+            # postings" on a board that normally runs 1,000+ of them — it
+            # means something is wrong (a soft block that still returns
+            # 200, a layout change, a JS challenge). Treating this as
+            # "reached the end" would silently produce an empty tracker
+            # that looks identical to a genuinely quiet day. Page 1 is the
+            # one place this pipeline can be confident enough to say so.
+            raise ListingPageBlocked(
+                page_num, status,
+                f"no job links found on the first listing page (title={title!r}); "
+                "treated as a failure, not an empty listing",
+            )
         return []
     page.wait_for_timeout(600)
 
@@ -462,7 +526,25 @@ def main():
         for page_num in range(1, MAX_PAGES + 1):
             try:
                 cards = fetch_listing_page(list_page, page_num)
+            except ListingPageBlocked as e:
+                print(f"  Page {page_num}: BLOCKED/FAILED ({e}) — aborting this run without writing "
+                      f"anything, rather than committing a tracker that would look like a legitimate "
+                      f"'zero new postings' day.")
+                browser.close()
+                sys.exit(1)
             except Exception as e:
+                if page_num == 1:
+                    # The very first page failing to even load (a navigation
+                    # timeout, a crashed request) is the same "can't trust
+                    # this run" situation as ListingPageBlocked above, just
+                    # from a different kind of exception — so it gets the
+                    # same hard-abort treatment rather than silently
+                    # producing an empty-looking result.
+                    print(f"  Page {page_num}: failed to load ({e}) — aborting this run without writing "
+                          f"anything (see reporterjobs_pipeline.py's module docstring/ListingPageBlocked "
+                          f"for why page 1 is treated this strictly).")
+                    browser.close()
+                    sys.exit(1)
                 print(f"  Page {page_num}: failed to load ({e}) — stopping pagination.")
                 break
 
