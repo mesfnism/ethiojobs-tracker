@@ -1,0 +1,47 @@
+name: ReporterJobs Pipeline (manual test run)
+
+permissions:
+  contents: write
+
+# A standalone, on-demand workflow for ReporterJobs only. Use this to test
+# or re-test the pipeline (e.g. after the 2026-10-02 ListingPageBlocked fix)
+# without waiting for or disturbing the full daily_ethiojobs_pipeline.yml
+# run, which also scrapes 9 other sources, combines trackers, rebuilds the
+# dashboard, and regenerates the intelligence reports. Trigger it from
+# GitHub -> Actions -> "ReporterJobs Pipeline (manual test run)" -> Run
+# workflow. It is NOT on a schedule — it only runs when you click that
+# button, so it never duplicates or races with the daily workflow.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  run-reporterjobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright's Chromium
+        run: playwright install --with-deps chromium
+
+      - name: Run offline parser/blocked-detection tests first
+        run: python test_offline_reporterjobs.py
+
+      - name: Run ReporterJobs pipeline against the live site
+        run: python reporterjobs_pipeline.py
+
+      - name: Commit updated tracker, if anything changed
+        run: |
+          git config user.name "jobs-pipeline-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reporterjobs_tracker.xlsx
+          git diff --quiet --cached || git commit -m "ReporterJobs manual test run $(date -u +%Y-%m-%d)"
+          git push
