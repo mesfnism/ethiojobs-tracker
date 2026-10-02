@@ -59,6 +59,20 @@ fire, which has no equivalent when nothing executes any JavaScript at
 all; discover_api_credentials() (reading the public anon key straight out
 of the JS bundle text) was always the dominant, more reliable path
 anyway, so nothing of real value is lost.
+
+Update (2026-10-02, part 3): the first GitHub Actions run of the
+curl_cffi rewrite got back a 429 (rate limited) loading LIST_PAGE_URL,
+not a 403. That's a meaningfully different signal from ReporterJobs'
+dead-end 403s: a 429 means the site understood and accepted the request
+as a legitimate-looking client, just one going too fast, not one it has
+fingerprinted as automation. Added _get_with_retry() — backs off and
+retries on 429 (honoring a Retry-After header if the site sends one),
+used for every GET this file makes (the /jobs page, each JS chunk, and
+the paginated REST calls). Left genuinely unresolved: whether that 429
+was PalmJobs' own rate limiter or a side effect of GitHub Actions runners
+sharing IP ranges with other traffic — the retry logic handles either
+cause the same way, so it isn't necessary to tell them apart to move
+forward.
 """
 
 import os
@@ -193,6 +207,45 @@ def structure_job(row):
 _ANON_KEY_PATTERN = r"eyJ[a-zA-Z0-9_\-\.]{60,}"
 _SUPABASE_URL_PATTERN = r"https://[a-z0-9]+\.supabase\.co"
 
+RETRY_429_MAX_ATTEMPTS = int(os.environ.get("PALMJOBS_429_MAX_RETRIES", "4"))
+RETRY_429_BACKOFF_SECONDS = float(os.environ.get("PALMJOBS_429_BACKOFF", "8"))
+
+
+def _get_with_retry(session, url, headers=None, timeout=30):
+    """GETs a URL, retrying with backoff on HTTP 429 (rate limited).
+
+    Added 2026-10-02 (part 3): the very first GitHub Actions run of the
+    curl_cffi rewrite got a 429 loading LIST_PAGE_URL — a genuinely
+    different signal from the 403s documented elsewhere in this file and
+    in reporterjobs_pipeline.py's docstring. A 403 from those sites means
+    "you're detected as automation, full stop" — retrying changes
+    nothing. A 429 means "you're a legitimate-looking client going too
+    fast" — the site accepted and understood the request well enough to
+    rate-limit it rather than block it outright, so backing off and
+    retrying is the right response, not a reason to declare this blocked
+    too. Honors a Retry-After header when the server sends one; otherwise
+    waits an increasing backoff. Still returns the (non-retryable) response
+    as-is on any other status, or after exhausting retries, so callers'
+    existing status/exception handling is unchanged."""
+    attempt = 0
+    while True:
+        resp = session.get(url, headers=headers, timeout=timeout)
+        if resp.status_code != 429 or attempt >= RETRY_429_MAX_ATTEMPTS:
+            return resp
+        retry_after = None
+        try:
+            retry_after = resp.headers.get("Retry-After")
+        except Exception:
+            pass
+        try:
+            wait = float(retry_after) if retry_after else RETRY_429_BACKOFF_SECONDS * (attempt + 1)
+        except (TypeError, ValueError):
+            wait = RETRY_429_BACKOFF_SECONDS * (attempt + 1)
+        print(f"  Got 429 (rate limited) fetching {url} — waiting {wait:.0f}s "
+              f"before retry {attempt + 1}/{RETRY_429_MAX_ATTEMPTS}...")
+        time.sleep(wait)
+        attempt += 1
+
 
 def _chunk_script_urls(html, base_url):
     """Finds every /_next/static/chunks/ script src on the page, resolved
@@ -232,7 +285,7 @@ def discover_api_credentials(session):
     JS execution here to watch, and that method was already the weaker,
     fallback path even when a real browser was available."""
     try:
-        resp = session.get(LIST_PAGE_URL, timeout=30)
+        resp = _get_with_retry(session, LIST_PAGE_URL, timeout=30)
     except Exception as e:
         print(f"  Could not load {LIST_PAGE_URL}: {e}")
         return None, None
@@ -244,7 +297,7 @@ def discover_api_credentials(session):
     anon_key, supa_url = None, None
     for chunk_url in chunk_urls:
         try:
-            chunk_resp = session.get(chunk_url, timeout=30)
+            chunk_resp = _get_with_retry(session, chunk_url, timeout=30)
         except Exception:
             continue
         if chunk_resp.status_code != 200:
@@ -279,7 +332,7 @@ def fetch_jobs_page(session, base_url, headers, offset):
     # result query once broke pagination with "Cannot coerce the result
     # to a single JSON object"): this request's own intent always wins.
     request_headers = {**headers, "Accept": "application/json"}
-    resp = session.get(url, headers=request_headers, timeout=30)
+    resp = _get_with_retry(session, url, headers=request_headers, timeout=30)
     if resp.status_code != 200:
         raise RuntimeError(f"Unexpected status {resp.status_code} fetching jobs page: {resp.text[:300]}")
     return resp.json()

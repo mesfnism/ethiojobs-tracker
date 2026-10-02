@@ -11,21 +11,25 @@ responses, which is where any schema-mapping or header mistake would show
 up first and most cheaply.
 """
 
+import palmjobs_pipeline
 from palmjobs_pipeline import (
     normalize_education, build_salary_hint, structure_job, COLUMNS,
     fetch_jobs_page, _chunk_script_urls, discover_api_credentials,
+    _get_with_retry,
 )
 
 
 class _FakeResponse:
     """Mimics curl_cffi's Response shape: status_code (not .status) and
     .text as a plain attribute/property (not a method call like
-    Playwright's APIResponse.text())."""
+    Playwright's APIResponse.text()). `headers` defaults to an empty dict
+    (no Retry-After), same as a plain 429 with no explicit retry hint."""
 
-    def __init__(self, status_code, json_data=None, text=""):
+    def __init__(self, status_code, json_data=None, text="", headers=None):
         self.status_code = status_code
         self._json_data = json_data
         self.text = text
+        self.headers = headers if headers is not None else {}
 
     def json(self):
         return self._json_data
@@ -52,6 +56,25 @@ class _FakeSession:
         if url in self._responses_by_url:
             return self._responses_by_url[url]
         return _FakeResponse(self._default_status, json_data=self._default_json)
+
+
+class _FakeFlakySession:
+    """Returns 429 for the first `fail_times` calls to a given URL, then a
+    real response — used to test _get_with_retry's retry-then-succeed
+    path without a real network or a real site that rate-limits."""
+
+    def __init__(self, fail_times, success_response, retry_after=None):
+        self.fail_times = fail_times
+        self.success_response = success_response
+        self.retry_after = retry_after
+        self.call_count = 0
+
+    def get(self, url, headers=None, timeout=None):
+        self.call_count += 1
+        if self.call_count <= self.fail_times:
+            retry_headers = {"Retry-After": self.retry_after} if self.retry_after else {}
+            return _FakeResponse(429, headers=retry_headers)
+        return self.success_response
 
 
 def check(name, condition):
@@ -297,6 +320,43 @@ def main():
         "discover_api_credentials: no chunk scripts at all -> (None, None), not a crash",
         missing_headers is None and missing_base_url is None,
     )
+
+    # --- _get_with_retry (2026-10-02 part 3: 429 != 403) --------------
+    # Patch time.sleep for this block only, so the retry backoff doesn't
+    # actually slow the test suite down.
+    real_sleep = palmjobs_pipeline.time.sleep
+    sleep_calls = []
+    palmjobs_pipeline.time.sleep = lambda s: sleep_calls.append(s)
+    try:
+        success = _FakeResponse(200, json_data=[{"id": "1"}])
+        flaky = _FakeFlakySession(fail_times=2, success_response=success)
+        result = _get_with_retry(flaky, "https://palmjobs.et/jobs")
+        all_ok &= check(
+            "retry: eventually returns the real 200 response after two 429s",
+            result.status_code == 200,
+        )
+        all_ok &= check("retry: retried exactly twice before succeeding", flaky.call_count == 3)
+        all_ok &= check("retry: slept between each retry", len(sleep_calls) == 2)
+
+        # Honors an explicit Retry-After header rather than the default backoff.
+        sleep_calls.clear()
+        flaky_with_hint = _FakeFlakySession(fail_times=1, success_response=success, retry_after="3")
+        _get_with_retry(flaky_with_hint, "https://palmjobs.et/jobs")
+        all_ok &= check("retry: honors a Retry-After header", sleep_calls == [3.0])
+
+        # Gives up after exhausting retries and returns the last 429 as-is
+        # (not a crash), so main()'s existing "no credentials found"
+        # handling still applies.
+        sleep_calls.clear()
+        always_429 = _FakeFlakySession(fail_times=999, success_response=success)
+        exhausted = _get_with_retry(always_429, "https://palmjobs.et/jobs")
+        all_ok &= check("retry: gives up and returns the 429 after max attempts", exhausted.status_code == 429)
+        all_ok &= check(
+            "retry: never retries more than RETRY_429_MAX_ATTEMPTS times",
+            always_429.call_count == palmjobs_pipeline.RETRY_429_MAX_ATTEMPTS + 1,
+        )
+    finally:
+        palmjobs_pipeline.time.sleep = real_sleep
 
     print()
     print("ALL TESTS PASSED" if all_ok else "SOME TESTS FAILED")
